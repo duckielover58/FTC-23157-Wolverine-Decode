@@ -11,7 +11,13 @@ import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
 
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
-import org.firstinspires.ftc.teamcode.*;
+import org.firstinspires.ftc.teamcode.driveClasses.MecanumDrive;
+import org.firstinspires.ftc.teamcode.driveClasses.OctoQuadDrive;
+import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
+import org.firstinspires.ftc.teamcode.driveClasses.SparkFunOTOSDrive;
+import org.firstinspires.ftc.teamcode.driveClasses.TankDrive;
+import org.firstinspires.ftc.teamcode.driveClasses.ThreeDeadWheelLocalizer;
+import org.firstinspires.ftc.teamcode.driveClasses.TwoDeadWheelLocalizer;
 import org.firstinspires.ftc.teamcode.tuning.otos.OTOSHeadingOffsetTuner;
 import org.firstinspires.ftc.teamcode.tuning.otos.OTOSPositionOffsetTuner;
 

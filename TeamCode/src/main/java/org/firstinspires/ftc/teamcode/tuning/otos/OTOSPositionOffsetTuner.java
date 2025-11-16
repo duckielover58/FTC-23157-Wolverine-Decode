@@ -3,8 +3,7 @@ package org.firstinspires.ftc.teamcode.tuning.otos;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import org.firstinspires.ftc.teamcode.SparkFunOTOSDrive;
+import org.firstinspires.ftc.teamcode.driveClasses.SparkFunOTOSDrive;
 
 public class OTOSPositionOffsetTuner extends LinearOpMode {
 
