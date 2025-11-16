@@ -15,7 +15,7 @@ public class Flywheel {
         flywheel.setDirection(DcMotor.Direction.FORWARD);
     }
 
-    class Shoot implements Action {
+    public class Shoot implements Action {
         private boolean initialized = false;
 
         @Override
@@ -26,4 +26,5 @@ public class Flywheel {
             return false;
         }
     }
+    public Action shoot() { return new Shoot(); }
 }
