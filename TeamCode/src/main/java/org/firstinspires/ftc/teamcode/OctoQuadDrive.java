@@ -51,8 +51,8 @@ public class OctoQuadDrive extends AbsoluteLocalizerDrive {
         See the OctoQuad quickstart guide for a better explanation.
          */
         // These are tuned for 3110-0002-0001 Product Insight #1
-        public double xOffset = -5.24373777; // inches
-        public double yOffset = -3.412719295440588; // inches
+        public double xOffset = -6.5; // inches
+        public double yOffset = -7.5; // inches
 
         /*
         Set the encoder resolution of your odometry pods in ticks per millimeter.
