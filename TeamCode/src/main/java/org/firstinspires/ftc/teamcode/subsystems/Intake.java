@@ -5,14 +5,15 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Intake {
-    private CRServo intake;
+    private DcMotor intake;
     public double intakePower = 1;
 
     public Intake(HardwareMap hardwareMap) {
-        intake = hardwareMap.get(CRServo.class, "Intake");
+        intake = hardwareMap.get(DcMotor.class, "Intake");
     }
 
     class IntakeBall implements Action {
