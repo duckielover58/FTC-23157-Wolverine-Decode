@@ -13,7 +13,7 @@ public class Swivel {
     private Servo swivel;
 
     public Swivel (HardwareMap hardwareMap) {
-        swivel = hardwareMap.get(Servo.class, "swivel");
+        swivel = hardwareMap.get(Servo.class, "Swivel");
     }
 
     public class Aim implements Action {

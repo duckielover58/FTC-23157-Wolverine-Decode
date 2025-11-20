@@ -17,7 +17,7 @@ public class Index {
     private double ball3;
 
     public Index (HardwareMap hardwareMap) {
-        index = hardwareMap.get(Servo.class, "intake");
+        index = hardwareMap.get(Servo.class, "Index");
     }
 
     public class Index1 implements Action {
