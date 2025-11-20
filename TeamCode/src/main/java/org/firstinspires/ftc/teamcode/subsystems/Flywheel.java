@@ -10,7 +10,7 @@ public class Flywheel {
     private DcMotor flywheel;
 
     public Flywheel (HardwareMap hardwareMap) {
-        flywheel = hardwareMap.get(DcMotor.class, "flywheel");
+        flywheel = hardwareMap.get(DcMotor.class, "Flywheel");
         flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         flywheel.setDirection(DcMotor.Direction.FORWARD);
     }
