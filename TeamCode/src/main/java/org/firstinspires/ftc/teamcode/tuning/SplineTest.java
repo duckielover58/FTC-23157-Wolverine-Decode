@@ -15,7 +15,7 @@ public final class SplineTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Pose2d beginPose = new Pose2d(0, 0, 0);
-        if (TuningOpModes.DRIVE_CLASS.equals(OctoQuadDrive.class)) {
+        if (TuningOpModes.DRIVE_CLASS.equals(PinpointDrive.class)) {
             OctoQuadDrive drive = new OctoQuadDrive(hardwareMap, beginPose);
 
             waitForStart();
