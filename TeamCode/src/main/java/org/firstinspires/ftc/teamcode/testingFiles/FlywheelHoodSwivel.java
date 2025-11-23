@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@TeleOp(name = "IntakePushIndex")
+@TeleOp(name = "FlywheelHoodSwivel")
 public class FlywheelHoodSwivel extends LinearOpMode {
 
     private DcMotor flywheel;
@@ -26,74 +26,83 @@ public class FlywheelHoodSwivel extends LinearOpMode {
         double step = 0.1;
         double lastHoodPos = hoodPos;
         double lastSwivelPos = swivelPos;
-
-        hood.setPosition(hoodPos);
-        swivel.setPosition(swivelPos);
+        long slep = 150;
 
         waitForStart();
 
         while (opModeIsActive()) {
 
+            telemetry.addLine("Flywheel - Right/Left Bumper");
+            telemetry.addLine("Hood - a");
+            telemetry.addLine("Swivel - b");
+            telemetry.addLine("Increase/Decrease Servo Positions - Dpad up/down");
 
 
             if (gamepad1.right_bumper) {
                 flywheel.setPower(1.0);
-                sleep(50);
-                telemetry.addLine("Intake powered");
+                sleep(slep);
+                telemetry.addLine("Flywheel powered");
                 telemetry.update();
             }
 
             else if (gamepad1.left_bumper) {
                 flywheel.setPower(0.0);
-                sleep(50);
-                telemetry.addLine("Intake turned off");
+                sleep(slep);
+                telemetry.addLine("Flywheel turned off");
                 telemetry.update();
             }
 // very cool comment for pushing
             if (gamepad1.a) {
-                hood.setPosition(hoodPos);
+
                 onHood = true;
                 onSwivel = false;
-                sleep(50);
+                sleep(slep);
             }
 
             if (gamepad1.b) {
-                swivel.setPosition(swivelPos);
                 onSwivel = true;
                 onHood = false;
-                sleep(50);
+                sleep(slep);
             }
 
             if (gamepad1.dpad_up) {
                 if (onHood) hoodPos += step;
                 if (onSwivel) swivelPos += step;
-                sleep(50);
+                sleep(slep);
             }
 
             if (gamepad1.dpad_down) {
                 if (onHood) hoodPos -= step;
                 if (onSwivel) swivelPos -= step;
-                sleep(50);
+                sleep(slep);
             }
 
             if (hoodPos != lastHoodPos) {
-                telemetry.addData("New push position: ", hoodPos);
+                telemetry.addData("New hood position: ", hoodPos);
                 telemetry.update();
                 lastHoodPos = hoodPos;
-                sleep(50);
+                sleep(slep);
             }
 
             if (swivelPos != lastSwivelPos) {
-                telemetry.addData("New index position: ", swivelPos);
+                telemetry.addData("New swivel position: ", swivelPos);
                 telemetry.update();
                 lastSwivelPos = swivelPos;
-                sleep(50);
+                sleep(slep);
             }
 
             telemetry.addData("Flywheel Power", flywheel.getPower());
             telemetry.addData("Hood Pos", hoodPos);
             telemetry.addData("Swivel Pos", swivelPos);
             telemetry.update();
+
+            if (gamepad1.a) {
+                hood.setPosition(hoodPos);
+            }
+
+            if (gamepad1.b) {
+                swivel.setPosition(swivelPos);
+            }
         }
     }
 
