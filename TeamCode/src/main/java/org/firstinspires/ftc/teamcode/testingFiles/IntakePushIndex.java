@@ -27,52 +27,59 @@ public class IntakePushIndex extends LinearOpMode {
         double lastPushPos = pushPos;
         double lastIndexPos = indexPos;
 
-        push.setPosition(pushPos);
-        index.setPosition(indexPos);
-
         waitForStart();
 
         while (opModeIsActive()) {
 
 
-
             // Intake motor control - right bumper powers, left bumper turns off
             if (gamepad1.right_bumper) {
                 intake.setPower(1.0);
+                sleep(50);
                 telemetry.addLine("Intake powered");
                 telemetry.update();
             }
+
             else if (gamepad1.left_bumper) {
                 intake.setPower(0.0);
+                sleep(50);
                 telemetry.addLine("Intake turned off");
                 telemetry.update();
             }
 // very cool comment for pushing
             if (gamepad1.a) {
+                push.setPosition(pushPos);
                 onPush = true;
                 onIndex = false;
+                sleep(50);
             }
             if (gamepad1.b) {
+                index.setPosition(indexPos);
                 onIndex = true;
                 onPush = false;
+                sleep(50);
             }
             if (gamepad1.dpad_up) {
                 if (onPush) pushPos += step;
                 if (onIndex) indexPos += step;
+                sleep(50);
             }
             if (gamepad1.dpad_down) {
                 if (onPush) pushPos -= step;
                 if (onIndex) indexPos -= step;
+                sleep(50);
             }
             if (pushPos != lastPushPos) {
                 telemetry.addData("New push position: ", pushPos);
                 telemetry.update();
                 lastPushPos = pushPos;
+                sleep(50);
             }
             if (indexPos != lastIndexPos) {
                 telemetry.addData("New index position: ", indexPos);
                 telemetry.update();
                 lastIndexPos = indexPos;
+                sleep(50);
             }
 
             push.setPosition(pushPos);
