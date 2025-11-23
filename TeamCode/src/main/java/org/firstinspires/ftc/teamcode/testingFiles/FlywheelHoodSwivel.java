@@ -38,44 +38,57 @@ public class FlywheelHoodSwivel extends LinearOpMode {
 
             if (gamepad1.right_bumper) {
                 flywheel.setPower(1.0);
+                sleep(50);
                 telemetry.addLine("Intake powered");
                 telemetry.update();
             }
+
             else if (gamepad1.left_bumper) {
                 flywheel.setPower(0.0);
+                sleep(50);
                 telemetry.addLine("Intake turned off");
                 telemetry.update();
             }
 // very cool comment for pushing
             if (gamepad1.a) {
+                hood.setPosition(hoodPos);
                 onHood = true;
                 onSwivel = false;
+                sleep(50);
             }
+
             if (gamepad1.b) {
+                swivel.setPosition(swivelPos);
                 onSwivel = true;
                 onHood = false;
+                sleep(50);
             }
+
             if (gamepad1.dpad_up) {
                 if (onHood) hoodPos += step;
                 if (onSwivel) swivelPos += step;
+                sleep(50);
             }
+
             if (gamepad1.dpad_down) {
                 if (onHood) hoodPos -= step;
                 if (onSwivel) swivelPos -= step;
+                sleep(50);
             }
+
             if (hoodPos != lastHoodPos) {
                 telemetry.addData("New push position: ", hoodPos);
                 telemetry.update();
                 lastHoodPos = hoodPos;
+                sleep(50);
             }
+
             if (swivelPos != lastSwivelPos) {
                 telemetry.addData("New index position: ", swivelPos);
                 telemetry.update();
                 lastSwivelPos = swivelPos;
+                sleep(50);
             }
-
-            hood.setPosition(hoodPos);
-            swivel.setPosition(swivelPos);
 
             telemetry.addData("Flywheel Power", flywheel.getPower());
             telemetry.addData("Hood Pos", hoodPos);
