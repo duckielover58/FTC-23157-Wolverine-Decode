@@ -47,7 +47,7 @@ public class IntakePushIndex extends LinearOpMode {
                telemetry.addLine("Intake turned off");
                telemetry.update();
            }
-
+// very cool comment for pushing
             if (gamepad1.a) {
                 onPush = true;
                 onIndex = false;
