@@ -6,7 +6,6 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.driveClasses.MecanumDrive;
-import org.firstinspires.ftc.teamcode.driveClasses.OctoQuadDrive;
 import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
 import org.firstinspires.ftc.teamcode.driveClasses.SparkFunOTOSDrive;
 import org.firstinspires.ftc.teamcode.driveClasses.TankDrive;
@@ -16,7 +15,7 @@ public final class SplineTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Pose2d beginPose = new Pose2d(0, 0, 0);
         if (TuningOpModes.DRIVE_CLASS.equals(PinpointDrive.class)) {
-            OctoQuadDrive drive = new OctoQuadDrive(hardwareMap, beginPose);
+            PinpointDrive drive = new PinpointDrive(hardwareMap, beginPose);
 
             waitForStart();
 

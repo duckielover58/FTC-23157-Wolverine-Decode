@@ -22,73 +22,86 @@ public class IntakePushIndex extends LinearOpMode {
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         double pushPos  = 0.5;
-        double indexPos = 0.5;
+        double indexPos = 0.5; //0.5 -> 0.9
         double step = 0.1;
         double lastPushPos = pushPos;
         double lastIndexPos = indexPos;
+        long slep = 150;
 
         waitForStart();
 
         while (opModeIsActive()) {
 
+            telemetry.addLine("Intake - Right/Left Bumper");
+            telemetry.addLine("Push - a");
+            telemetry.addLine("Index - b");
+            telemetry.addLine("Increase/Decrease Servo Positions - Dpad up/down");
+
 
             // Intake motor control - right bumper powers, left bumper turns off
             if (gamepad1.right_bumper) {
                 intake.setPower(1.0);
-                sleep(50);
+                sleep(slep);
                 telemetry.addLine("Intake powered");
                 telemetry.update();
             }
 
             else if (gamepad1.left_bumper) {
                 intake.setPower(0.0);
-                sleep(50);
+                sleep(slep);
                 telemetry.addLine("Intake turned off");
                 telemetry.update();
             }
 // very cool comment for pushing
             if (gamepad1.a) {
-                push.setPosition(pushPos);
                 onPush = true;
                 onIndex = false;
-                sleep(50);
+                sleep(slep);
             }
             if (gamepad1.b) {
-                index.setPosition(indexPos);
                 onIndex = true;
                 onPush = false;
-                sleep(50);
+                sleep(slep);
             }
             if (gamepad1.dpad_up) {
-                if (onPush) pushPos += step;
+                if (onPush) {
+                    pushPos += step;
+                    if(pushPos >= 0.9) pushPos =0.9;
+                }
                 if (onIndex) indexPos += step;
-                sleep(50);
+                sleep(slep);
             }
             if (gamepad1.dpad_down) {
                 if (onPush) pushPos -= step;
                 if (onIndex) indexPos -= step;
-                sleep(50);
+                if(pushPos <= 0.5) pushPos =0.5;
+                sleep(slep);
             }
             if (pushPos != lastPushPos) {
                 telemetry.addData("New push position: ", pushPos);
                 telemetry.update();
                 lastPushPos = pushPos;
-                sleep(50);
+                sleep(slep);
             }
             if (indexPos != lastIndexPos) {
                 telemetry.addData("New index position: ", indexPos);
                 telemetry.update();
                 lastIndexPos = indexPos;
-                sleep(50);
+                sleep(slep);
             }
-
-            push.setPosition(pushPos);
-            index.setPosition(indexPos);
 
             telemetry.addData("Intake Power", intake.getPower());
             telemetry.addData("Push Pos", pushPos);
             telemetry.addData("Index Pos", indexPos);
             telemetry.update();
+
+            if (gamepad1.a) {
+                push.setPosition(pushPos);
+            }
+
+            if (gamepad1.b) {
+                index.setPosition(indexPos);
+            }
         }
     }
 
