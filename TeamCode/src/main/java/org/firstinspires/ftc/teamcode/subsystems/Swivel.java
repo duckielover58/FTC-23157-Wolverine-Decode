@@ -4,22 +4,22 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.teamcode.testingFiles.ShooterLockTest;
+
 public class Swivel {
 
-    public double aimPos; //move this into another global file
-
-    private Servo swivel;
+    private CRServo swivel;
 
     public Swivel (HardwareMap hardwareMap) {
-        swivel = hardwareMap.get(Servo.class, "Swivel");
+        swivel = hardwareMap.get(CRServo.class, "Swivel");
     }
 
     public class Aim implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            swivel.setPosition(aimPos);
+            swivel.setPower(ShooterLockTest.ServoPower);
             return false;
         }
     }
