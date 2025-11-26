@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.testingFiles;
 
 import android.util.Size;
 
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -14,7 +15,7 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-
+import org.firstinspires.ftc.teamcode.subsystems.Swivel;
 import java.util.List;
 
 @TeleOp public class ShooterLockTest extends LinearOpMode {
@@ -36,7 +37,7 @@ import java.util.List;
 
     private double robotHeading = 0; //placeholder
     private double cameraHeading = robotHeading;
-    private double ServoPower = 0;
+    public static double ServoPower = 0;
     @Override
     public void runOpMode() {
         initAprilTag();
@@ -106,6 +107,8 @@ import java.util.List;
 
     private void telemetryAprilTag() {
 
+        Swivel swivel = new Swivel(hardwareMap);
+
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         telemetry.addData("# AprilTags Detected", currentDetections.size());
 
@@ -114,11 +117,17 @@ import java.util.List;
             if (detection.id != 0) {
 
                 if (detection.ftcPose.bearing > 0) {
-                    ServoPower = -1;
-                } else if (detection.ftcPose.bearing < 0) {
                     ServoPower = 1;
-                } else if (detection.ftcPose.bearing + -0.1 == 0) {
+                    telemetry.addData("Bearing", bearing);
+                    Actions.runBlocking(swivel.aim());
+                } else if (detection.ftcPose.bearing < 0) {
+                    ServoPower = -1;
+                    telemetry.addData("Bearing", bearing);
+                    Actions.runBlocking(swivel.aim());
+                } else if (Math.abs(detection.ftcPose.bearing) <= 0.1) {
                     ServoPower = 0;
+                    telemetry.addData("Bearing", bearing);
+                    Actions.runBlocking(swivel.aim());
                 }
 
                 telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));

@@ -9,8 +9,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Push {
     private Servo push;
-    public static final double pushPower = 0;
-    public static final double setPosition = 0;
+    public static final double upPos = 0.95;
+    public static final double downPos = 0.45;
+
+    //push max 0.95
     public Push(HardwareMap hardwareMap) {
         push = hardwareMap.get(Servo.class, "Push");
     }
@@ -21,7 +23,7 @@ public class Push {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
-                push.setPosition(pushPower);
+                push.setPosition(upPos);
             }
             return false;
         }
@@ -33,7 +35,7 @@ public class Push {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
-                push.setPosition(0);
+                push.setPosition(downPos);
             }
             return false;
         }
