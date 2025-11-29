@@ -116,15 +116,17 @@ import java.util.List;
         for (AprilTagDetection detection : currentDetections) {
             if (detection.id != 0) {
 
-                if (detection.ftcPose.bearing > 0) {
-                    ServoPower = 1;
+                double sped = 0.1;
+
+                if (detection.ftcPose.bearing > 5) {
+                    ServoPower = -sped;
                     telemetry.addData("Bearing", bearing);
                     Actions.runBlocking(swivel.aim());
-                } else if (detection.ftcPose.bearing < 0) {
-                    ServoPower = -1;
+                } else if (detection.ftcPose.bearing < -5) {
+                    ServoPower = sped;
                     telemetry.addData("Bearing", bearing);
                     Actions.runBlocking(swivel.aim());
-                } else if (Math.abs(detection.ftcPose.bearing) <= 0.1) {
+                } else if (Math.abs(detection.ftcPose.bearing) <= 5) {
                     ServoPower = 0;
                     telemetry.addData("Bearing", bearing);
                     Actions.runBlocking(swivel.aim());
