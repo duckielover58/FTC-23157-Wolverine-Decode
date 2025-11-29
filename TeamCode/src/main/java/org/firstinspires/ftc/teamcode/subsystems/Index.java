@@ -13,7 +13,7 @@ public class Index {
 
     private Servo index;
     private double ball1 = 0.25;
-    private double ball2 = 0.5;
+    private double ball2 = 0.43;
     private double ball3 = 0.75;
 
     public Index (HardwareMap hardwareMap) {

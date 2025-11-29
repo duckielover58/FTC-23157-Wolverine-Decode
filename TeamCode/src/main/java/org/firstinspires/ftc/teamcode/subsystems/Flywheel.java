@@ -26,5 +26,20 @@ public class Flywheel {
             return false;
         }
     }
+
+    public class ShootStop implements Action {
+        private boolean initialized = false;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                flywheel.setPower(0);
+            }
+            return false;
+        }
+    }
     public Action shoot() { return new Shoot(); }
+    public Action shootStop() { return new ShootStop(); }
+
+
 }
