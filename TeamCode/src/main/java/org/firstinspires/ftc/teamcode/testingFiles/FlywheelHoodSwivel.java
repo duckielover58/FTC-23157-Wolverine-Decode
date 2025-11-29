@@ -60,7 +60,6 @@ public class FlywheelHoodSwivel extends LinearOpMode {
                 onSwivel = false;
                 sleep(slep);
             }
-
             if (gamepad1.b) {
                 onSwivel = true;
                 onHood = false;

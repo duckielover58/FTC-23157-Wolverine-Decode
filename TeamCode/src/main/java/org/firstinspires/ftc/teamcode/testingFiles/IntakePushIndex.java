@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 @TeleOp(name = "IntakePushIndex")
 public class IntakePushIndex extends LinearOpMode {
 
-    private DcMotor intake;
+    private DcMotor intake, flywheel;
     private Servo push, index;
     private boolean onPush = true;
     private boolean onIndex = false;
@@ -16,6 +16,7 @@ public class IntakePushIndex extends LinearOpMode {
     @Override
     public void runOpMode() {
         intake = hardwareMap.get(DcMotor.class, "Intake");
+        flywheel = hardwareMap.get(DcMotor.class, "Flywheel");
         push   = hardwareMap.get(Servo.class, "Push");
         index  = hardwareMap.get(Servo.class, "Index");
 
@@ -32,7 +33,7 @@ public class IntakePushIndex extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            telemetry.addLine("Intake - Right/Left Bumper");
+            telemetry.addLine("Flywheel - Right/Left Bumper");
             telemetry.addLine("Push - a");
             telemetry.addLine("Index - b");
             telemetry.addLine("Increase/Decrease Servo Positions - Dpad up/down");
@@ -40,19 +41,27 @@ public class IntakePushIndex extends LinearOpMode {
 
             // Intake motor control - right bumper powers, left bumper turns off
             if (gamepad1.right_bumper) {
-                intake.setPower(1.0);
+                flywheel.setPower(1.0);
                 sleep(slep);
                 telemetry.addLine("Intake powered");
                 telemetry.update();
             }
 
             else if (gamepad1.left_bumper) {
-                intake.setPower(0.0);
+                flywheel.setPower(0.0);
                 sleep(slep);
                 telemetry.addLine("Intake turned off");
                 telemetry.update();
             }
 // very cool comment for pushing
+            if (gamepad1.x) {
+                pushPos = 1;
+            }
+            if (gamepad1.y) {
+                pushPos = 0.5;
+            }
+
+
             if (gamepad1.a) {
                 onPush = true;
                 onIndex = false;
