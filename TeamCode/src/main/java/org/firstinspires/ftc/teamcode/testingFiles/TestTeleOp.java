@@ -22,8 +22,6 @@ public class TestTeleOp extends OpMode {
     DcMotor leftBack;
     DcMotor rightBack;
 
-    MecanumDrive md;
-
     Intake intake;
     Push push;
     Flywheel flywheel;
@@ -42,19 +40,12 @@ public class TestTeleOp extends OpMode {
         rightFront.setDirection(DcMotor.Direction.REVERSE);
         rightBack.setDirection(DcMotor.Direction.FORWARD);
 
-        md = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
     }
 
     @Override
     public void loop() {
 
-        md.updatePoseEstimate();
-        Pose2d pose = md.pose;
-
-        telemetry.addData("RR x", pose.position.x);
-        telemetry.addData("RR y", pose.position.y);
-        telemetry.addData("RR heading (deg)", Math.toDegrees(pose.heading.toDouble()));
 
 
         double vertical   = -gamepad1.left_stick_y;
