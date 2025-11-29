@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.testingFiles;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -9,7 +10,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class FlywheelHoodSwivel extends LinearOpMode {
 
     private DcMotor flywheel;
-    private Servo hood, swivel;
+    private Servo hood;
+    private CRServo swivel;
     private boolean onHood = true;
     private boolean onSwivel = false;
 
@@ -17,7 +19,7 @@ public class FlywheelHoodSwivel extends LinearOpMode {
     public void runOpMode() {
         flywheel = hardwareMap.get(DcMotor.class, "Flywheel");
         hood   = hardwareMap.get(Servo.class, "Hood");
-        swivel  = hardwareMap.get(Servo.class, "Swivel");
+        swivel  = hardwareMap.get(CRServo.class, "Swivel");
 
         flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -58,7 +60,6 @@ public class FlywheelHoodSwivel extends LinearOpMode {
                 onSwivel = false;
                 sleep(slep);
             }
-
             if (gamepad1.b) {
                 onSwivel = true;
                 onHood = false;
@@ -101,7 +102,7 @@ public class FlywheelHoodSwivel extends LinearOpMode {
             }
 
             if (gamepad1.b) {
-                swivel.setPosition(swivelPos);
+                swivel.setPower(swivelPos);
             }
         }
     }
