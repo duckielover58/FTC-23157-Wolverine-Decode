@@ -44,15 +44,14 @@ import java.util.List;
 
         waitForStart();
         while (opModeIsActive()) {
-            telemetryAprilTag();
+            boolean isCameraWithinBearing = telemetryAprilTag();
             telemetry.update();
-
             //servo.setPosition(turnPosition);
 
             // Share the CPU.
             sleep(20);
 
-            if (isStopRequested()) {
+            if (isStopRequested() || isCameraWithinBearing) {
                 visionPortal.close();
             }
         }
@@ -105,7 +104,7 @@ import java.util.List;
 
     private double bearing;
 
-    private void telemetryAprilTag() {
+    private boolean telemetryAprilTag() {
 
         Swivel swivel = new Swivel(hardwareMap);
 
@@ -113,23 +112,25 @@ import java.util.List;
         telemetry.addData("# AprilTags Detected", currentDetections.size());
 
         // Step through the list of detections and display info for each one.
+        boolean isCameraWithinBearing = false;
         for (AprilTagDetection detection : currentDetections) {
             if (detection.id != 0) {
-
                 double sped = 0.1;
-
-                if (detection.ftcPose.bearing > 5) {
+                if (detection.ftcPose.bearing > 1) {
                     ServoPower = -sped;
                     telemetry.addData("Bearing", bearing);
                     Actions.runBlocking(swivel.aim());
-                } else if (detection.ftcPose.bearing < -5) {
+
+                } else if (detection.ftcPose.bearing < -1) {
                     ServoPower = sped;
                     telemetry.addData("Bearing", bearing);
                     Actions.runBlocking(swivel.aim());
-                } else if (Math.abs(detection.ftcPose.bearing) <= 5) {
+                } else if (Math.abs(detection.ftcPose.bearing) <= 1) {
                     ServoPower = 0;
                     telemetry.addData("Bearing", bearing);
                     Actions.runBlocking(swivel.aim());
+                    isCameraWithinBearing = true;
+                    telemetry.addData("Bearing reached within limit", bearing);
                 }
 
                 telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
@@ -148,6 +149,7 @@ import java.util.List;
 
             sleep(20);
         }
+        return isCameraWithinBearing;
     }
 
 
