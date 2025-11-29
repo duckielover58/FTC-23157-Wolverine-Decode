@@ -74,12 +74,14 @@ public class closePassive extends LinearOpMode {
 
         Action closePassive = drive.actionBuilder(startPose)
                 .stopAndAdd(new ShootThreeBalls())
+                .waitSeconds(5)
                 .strafeToLinearHeading(new Vector2d(-12.5,-31),Math.toRadians(270))
                 .afterTime(0.3, intake.IntakeBall())
                 .strafeTo(new Vector2d(-12.5, -50))
                 .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(110))
                 .afterTime(0.3, intake.IntakeBallStop())
                 .stopAndAdd(new ShootThreeBalls())
+                .waitSeconds(5)
                 .setTangent(45)
                 .splineToLinearHeading(new Pose2d(11, -31, Math.toRadians(270)), Math.toRadians(270))
                 .afterTime(0.3, intake.IntakeBall())
@@ -87,6 +89,7 @@ public class closePassive extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(110))
                 .afterTime(0.3, intake.IntakeBallStop())
                 .stopAndAdd(new ShootThreeBalls())
+                .waitSeconds(5)
                 .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(180))
                 .build();
 
