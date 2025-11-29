@@ -21,6 +21,8 @@ public class IntakePushIndex extends LinearOpMode {
         index  = hardwareMap.get(Servo.class, "Index");
 
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        flywheel.setDirection(DcMotor.Direction.REVERSE);
+
 
         double pushPos  = 0.5;
         double indexPos = 0.5; //0.5 -> 0.9
