@@ -26,7 +26,7 @@ public class IntakePushIndex extends LinearOpMode {
 
         double pushPos  = 0;
         double indexPos = 0.5;
-        double pushMax = 0.5;
+        double pushMax = 0.35;
         double pushMin = 0;
         double step = 0.1;
         double lastPushPos = pushPos;
