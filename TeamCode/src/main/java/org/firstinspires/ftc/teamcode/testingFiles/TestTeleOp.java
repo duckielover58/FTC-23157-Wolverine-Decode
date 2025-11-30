@@ -103,6 +103,9 @@ public class TestTeleOp extends OpMode {
         if (gamepad1.dpad_right) {
             Actions.runBlocking(swivel.aim());
         }
+        if (gamepad1.right_bumper) {
+            Actions.runBlocking(flywheel.shootStop());
+        }
 
     }
 }
