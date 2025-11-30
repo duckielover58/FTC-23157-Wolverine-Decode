@@ -43,14 +43,14 @@ public class IntakePushIndex extends LinearOpMode {
 
             // Intake motor control - right bumper powers, left bumper turns off
             if (gamepad1.right_bumper) {
-                flywheel.setPower(1.0);
+                intake.setPower(1.0);
                 sleep(slep);
                 telemetry.addLine("Intake powered");
                 telemetry.update();
             }
 
             else if (gamepad1.left_bumper) {
-                flywheel.setPower(0.0);
+                intake.setPower(0.0);
                 sleep(slep);
                 telemetry.addLine("Intake turned off");
                 telemetry.update();
