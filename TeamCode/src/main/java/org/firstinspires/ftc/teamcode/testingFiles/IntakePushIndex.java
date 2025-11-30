@@ -48,7 +48,7 @@ public class IntakePushIndex extends LinearOpMode {
                 telemetry.addLine("Intake powered");
                 telemetry.update();
             }
-
+//hello
             else if (gamepad1.left_bumper) {
                 intake.setPower(0.0);
                 sleep(slep);
