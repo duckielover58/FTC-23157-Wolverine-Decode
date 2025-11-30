@@ -11,23 +11,27 @@ public class FlywheelHoodSwivel extends LinearOpMode {
 
     private DcMotor flywheel;
     private Servo hood;
-    private CRServo swivel;
-    private boolean onHood = true;
-    private boolean onSwivel = false;
+    private Servo push;
+    private boolean onPush = true;
+    private boolean onHood = false;
+    private boolean onFlywheel = false;
 
     @Override
     public void runOpMode() {
         flywheel = hardwareMap.get(DcMotor.class, "Flywheel");
         hood   = hardwareMap.get(Servo.class, "Hood");
-        swivel  = hardwareMap.get(CRServo.class, "Swivel");
+        push  = hardwareMap.get(Servo.class, "Push");
 
         flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        double flywheelPos = 0.5;
         double hoodPos  = 0.5;
-        double swivelPos = 0.5;
+        double pushMax = 0.35;
+        double pushMin = 0;
+        double pushPos = 0;
         double step = 0.1;
         double lastHoodPos = hoodPos;
-        double lastSwivelPos = swivelPos;
+        double lastPushPos = pushPos;
         long slep = 150;
 
         waitForStart();
@@ -36,46 +40,55 @@ public class FlywheelHoodSwivel extends LinearOpMode {
 
             telemetry.addLine("Flywheel - Right/Left Bumper");
             telemetry.addLine("Hood - a");
-            telemetry.addLine("Swivel - b");
+            telemetry.addLine("Push - b");
             telemetry.addLine("Increase/Decrease Servo Positions - Dpad up/down");
 
 
-            if (gamepad1.right_bumper) {
-                flywheel.setPower(1.0);
-                sleep(slep);
-                telemetry.addLine("Flywheel powered");
-                telemetry.update();
-            }
-
-            else if (gamepad1.left_bumper) {
-                flywheel.setPower(0.0);
-                sleep(slep);
-                telemetry.addLine("Flywheel turned off");
-                telemetry.update();
-            }
 // very cool comment for pushing
             if (gamepad1.a) {
-
-                onHood = true;
-                onSwivel = false;
+                onPush = true;
+                onHood = false;
+                onFlywheel = false;
                 sleep(slep);
             }
             if (gamepad1.b) {
-                onSwivel = true;
-                onHood = false;
+                onHood = true;
+                onPush = false;
+                onFlywheel = false;
                 sleep(slep);
+            }
+            if (gamepad1.x) {
+                onHood = false;
+                onPush = false;
+                onFlywheel = true;
             }
 
             if (gamepad1.dpad_up) {
+                if (onPush) {
+                    pushPos += step;
+                    if(pushPos >= pushMax) pushPos = pushMax;
+                }
                 if (onHood) hoodPos += step;
-                if (onSwivel) swivelPos += step;
                 sleep(slep);
             }
 
             if (gamepad1.dpad_down) {
+                if (onPush) pushPos -= step;
                 if (onHood) hoodPos -= step;
-                if (onSwivel) swivelPos -= step;
                 sleep(slep);
+            }
+            if (gamepad1.right_bumper) {
+                flywheelPos += step;
+                sleep(slep);
+                telemetry.addLine("New Flywheel position:" + flywheelPos);
+                telemetry.update();
+            }
+
+            else if (gamepad1.left_bumper) {
+                flywheelPos -= step;
+                sleep(slep);
+                telemetry.addLine("New Flywheel position:" + flywheelPos);
+                telemetry.update();
             }
 
             if (hoodPos != lastHoodPos) {
@@ -85,16 +98,16 @@ public class FlywheelHoodSwivel extends LinearOpMode {
                 sleep(slep);
             }
 
-            if (swivelPos != lastSwivelPos) {
-                telemetry.addData("New swivel position: ", swivelPos);
+            if (pushPos != lastPushPos) {
+                telemetry.addData("New swivel position: ", pushPos);
                 telemetry.update();
-                lastSwivelPos = swivelPos;
+                lastPushPos = pushPos;
                 sleep(slep);
             }
 
             telemetry.addData("Flywheel Power", flywheel.getPower());
             telemetry.addData("Hood Pos", hoodPos);
-            telemetry.addData("Swivel Pos", swivelPos);
+            telemetry.addData("Push Pos", pushPos);
             telemetry.update();
 
             if (gamepad1.a) {
@@ -102,7 +115,11 @@ public class FlywheelHoodSwivel extends LinearOpMode {
             }
 
             if (gamepad1.b) {
-                swivel.setPower(swivelPos);
+                push.setPosition(pushPos);
+            }
+
+            if (gamepad1.x) {
+                flywheel.setPower(flywheelPos);
             }
         }
     }
