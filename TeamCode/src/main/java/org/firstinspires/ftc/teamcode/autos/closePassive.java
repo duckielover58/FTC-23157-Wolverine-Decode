@@ -11,6 +11,8 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
+
+import org.firstinspires.ftc.teamcode.subsystems.Camera;
 import org.firstinspires.ftc.teamcode.subsystems.Flywheel;
 import org.firstinspires.ftc.teamcode.subsystems.Index;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
@@ -22,7 +24,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
-
+import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 
 
 @Config
@@ -31,9 +33,12 @@ public class closePassive extends LinearOpMode {
 
     private Flywheel flywheel;
     private Index index;
+    private Camera camera;
     private Intake intake;
     private Push push;
     private Swivel swivel;
+
+    public static final int RED_TAG_ID = 24;
 
     private class ShootThreeBalls implements Action {
         private final Action sequence;
@@ -65,6 +70,7 @@ public class closePassive extends LinearOpMode {
         PinpointDrive drive = new PinpointDrive(hardwareMap, startPose);
 
         flywheel = new Flywheel(hardwareMap);
+        camera = new Camera(hardwareMap, telemetry);
         index = new Index(hardwareMap);
         intake = new Intake(hardwareMap);
         push = new Push(hardwareMap);
@@ -80,6 +86,7 @@ public class closePassive extends LinearOpMode {
                 .strafeTo(new Vector2d(-12.5, -50))
                 .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(110))
                 .afterTime(0.3, intake.IntakeBallStop())
+                .afterTime(0.1, camera.getCamLock(RED_TAG_ID))
                 .stopAndAdd(new ShootThreeBalls())
                 .waitSeconds(5)
                 .setTangent(45)
@@ -88,6 +95,7 @@ public class closePassive extends LinearOpMode {
                 .strafeTo(new Vector2d(11, -50))
                 .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(110))
                 .afterTime(0.3, intake.IntakeBallStop())
+                .afterTime(0.1, camera.getCamLock(RED_TAG_ID))
                 .stopAndAdd(new ShootThreeBalls())
                 .waitSeconds(5)
                 .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(180))
