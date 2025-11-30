@@ -24,8 +24,6 @@ import java.util.Date;
 import java.util.List;
 
 public class Camera {
-
-    private final Telemetry telemetry;
     private Position cameraPosition = new Position(DistanceUnit.INCH,
             0, 8.5, 1, 0);
     private YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
@@ -38,7 +36,9 @@ public class Camera {
     private double cameraHeading = robotHeading;
     public static double ServoPower = 0;
 
-    private HardwareMap hardwareMap;
+    private final HardwareMap hardwareMap;
+    private final Telemetry telemetry;
+
 
     public Camera(HardwareMap hardwareMap, Telemetry telemetry) {
         this.hardwareMap = hardwareMap;
@@ -48,6 +48,7 @@ public class Camera {
 
 
     private void initAprilTag() {
+        telemetry.addData("Initializing Camera...", aprilTag);
         // Create the AprilTag processor.
         WebcamName cam = hardwareMap.get(WebcamName.class, "Webcam 1");
         aprilTag = new AprilTagProcessor.Builder()
@@ -72,6 +73,7 @@ public class Camera {
         long startTimeMillis = new Date().getTime();
         int timeDeltaSec = 0;
 
+        telemetry.addData("starting turret lock While...", aprilTag);
         while (Math.abs(bearing) <= 1 && timeDeltaSec < maxWaitSec) {
         List<AprilTagDetection> currentDetections = this.aprilTag.getDetections();
         telemetry.addData("# AprilTags Detected", currentDetections.size());
@@ -131,7 +133,10 @@ public class Camera {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+
             try {
+                telemetry.addData("starting turret lock ", aprilTag);
+                telemetryPacket.addLine("starting turret lock ");
                 boolean camLockResult = telemetryAprilTag(aprilTag, 5);
                 telemetry.addData("Camera lock for Tag ", camLockResult);
             } catch (InterruptedException e) {
@@ -141,7 +146,8 @@ public class Camera {
         }
     }
     public Action getCamLock (int aprilTag){
-        return new Camera.CamLock(aprilTag);
+        telemetry.addData("Adding Camera for ", aprilTag);
+        return new CamLock(aprilTag);
     }
 
 }
