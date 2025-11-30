@@ -24,8 +24,10 @@ public class IntakePushIndex extends LinearOpMode {
         flywheel.setDirection(DcMotor.Direction.REVERSE);
 
 
-        double pushPos  = 0.5;
-        double indexPos = 0.5; //0.5 -> 0.9
+        double pushPos  = 0;
+        double indexPos = 0.5;
+        double pushMax = 0.5;
+        double pushMin = 0;
         double step = 0.1;
         double lastPushPos = pushPos;
         double lastIndexPos = indexPos;
@@ -35,7 +37,7 @@ public class IntakePushIndex extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            telemetry.addLine("Flywheel - Right/Left Bumper");
+            telemetry.addLine("Intake - Right/Left Bumper");
             telemetry.addLine("Push - a");
             telemetry.addLine("Index - b");
             telemetry.addLine("Increase/Decrease Servo Positions - Dpad up/down");
@@ -56,12 +58,6 @@ public class IntakePushIndex extends LinearOpMode {
                 telemetry.update();
             }
 // very cool comment for pushing
-            if (gamepad1.x) {
-                pushPos = 1;
-            }
-            if (gamepad1.y) {
-                pushPos = 0.5;
-            }
 
             if (gamepad1.a) {
                 onPush = true;
@@ -76,7 +72,7 @@ public class IntakePushIndex extends LinearOpMode {
             if (gamepad1.dpad_up) {
                 if (onPush) {
                     pushPos += step;
-                    if(pushPos >= 0.9) pushPos =0.9;
+                    if(pushPos >= pushMax) pushPos = pushMax;
                 }
                 if (onIndex) indexPos += step;
                 sleep(slep);
@@ -84,7 +80,7 @@ public class IntakePushIndex extends LinearOpMode {
             if (gamepad1.dpad_down) {
                 if (onPush) pushPos -= step;
                 if (onIndex) indexPos -= step;
-                if(pushPos <= 0.5) pushPos =0.5;
+                if(pushPos <= pushMin) pushPos = pushMin;
                 sleep(slep);
             }
             if (pushPos != lastPushPos) {
