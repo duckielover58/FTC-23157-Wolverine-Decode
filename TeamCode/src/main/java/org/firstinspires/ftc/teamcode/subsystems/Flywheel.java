@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Flywheel {
     private DcMotor flywheel;
@@ -12,7 +13,7 @@ public class Flywheel {
     public Flywheel (HardwareMap hardwareMap) {
         flywheel = hardwareMap.get(DcMotor.class, "Flywheel");
         flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        flywheel.setDirection(DcMotor.Direction.FORWARD);
+        flywheel.setDirection(DcMotor.Direction.REVERSE);
     }
 
     public class Shoot implements Action {
@@ -21,7 +22,7 @@ public class Flywheel {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
-                flywheel.setPower(1);
+                flywheel.setPower(0.7);
             }
             return false;
         }
