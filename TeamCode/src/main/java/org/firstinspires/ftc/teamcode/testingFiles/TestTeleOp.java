@@ -19,6 +19,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Swivel;
 @TeleOp(name = "TestTeleOp")
 public class TestTeleOp extends OpMode {
 
+    private boolean pushedUp = false;
+
     DcMotor leftFront;
     DcMotor rightFront;
     DcMotor leftBack;
@@ -84,11 +86,12 @@ public class TestTeleOp extends OpMode {
         if (gamepad1.left_bumper) {
             Actions.runBlocking(intake.IntakeBallStop());
         }
-        if (gamepad1.b) {
+        if (gamepad1.b && !pushedUp) {
             Actions.runBlocking(push.PushBallUp());
-        }
-        if (gamepad1.dpad_down) {
+            pushedUp = true;
+        } else {
             Actions.runBlocking(push.PushBallDown());
+            pushedUp = false;
         }
         if (gamepad1.y) {
             Actions.runBlocking(flywheel.shoot());
