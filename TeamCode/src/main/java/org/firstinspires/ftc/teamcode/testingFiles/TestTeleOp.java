@@ -91,6 +91,9 @@ public class TestTeleOp extends OpMode {
         if (gamepad1.y) {
             Actions.runBlocking(flywheel.shoot());
         }
+        if (gamepad1.right_bumper){
+            Actions.runBlocking(flywheel.shootStop());
+        }
         if (gamepad1.x) {
             Actions.runBlocking(index.index1());
         }
