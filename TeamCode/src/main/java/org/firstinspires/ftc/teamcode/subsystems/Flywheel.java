@@ -22,7 +22,7 @@ public class Flywheel {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
-                flywheel.setPower(1);
+                flywheel.setPower(0.7);
             }
             return false;
         }
