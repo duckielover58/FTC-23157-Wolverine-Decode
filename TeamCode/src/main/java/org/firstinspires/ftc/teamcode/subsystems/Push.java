@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Push {
     private Servo push;
-    public static final double upPos = 0.95;
-    public static final double downPos = 0.45;
+    public static final double upPos = 0.5;
+    public static final double downPos = 0;
 
     //push max 0.95
     public Push(HardwareMap hardwareMap) {
