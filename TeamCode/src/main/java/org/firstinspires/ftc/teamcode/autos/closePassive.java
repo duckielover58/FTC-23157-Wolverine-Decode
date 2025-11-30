@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import org.firstinspires.ftc.teamcode.subsystems.Flywheel;
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Index;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Push;
 import org.firstinspires.ftc.teamcode.subsystems.Swivel;
+
 
 // Non-RR imports
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -35,7 +37,7 @@ public class closePassive extends LinearOpMode {
     private Push push;
     private Swivel swivel;
 
-    private class ShootThreeBalls implements Action {
+    public class ShootThreeBalls implements Action {
         private final Action sequence;
 
         @Override
@@ -45,17 +47,27 @@ public class closePassive extends LinearOpMode {
         public ShootThreeBalls() {
             sequence = new SequentialAction(
                     index.index1(),
-                    new ParallelAction(push.PushBallUp(), flywheel.shoot()),
+                    flywheel.shoot(),
+                    new SleepAction(100),
+                    push.PushBallUp(),
+                    new SleepAction(150),
                     push.PushBallDown(),
 
                     index.index2(),
-                    new ParallelAction(push.PushBallUp(), flywheel.shoot()),
+                    flywheel.shoot(),
+                    new SleepAction(100),
+                    push.PushBallUp(),
+                    new SleepAction(150),
                     push.PushBallDown(),
 
                     index.index3(),
-                    new ParallelAction(push.PushBallUp(), flywheel.shoot()),
-                    push.PushBallDown()
-            );
+                    flywheel.shoot(),
+                    new SleepAction(100),
+                    push.PushBallUp(),
+                    new SleepAction(150),
+                    push.PushBallDown(),
+                    flywheel.shootStop()
+                    );
         }
     }
 
