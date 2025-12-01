@@ -41,6 +41,7 @@ public class FlywheelHoodPush extends LinearOpMode {
             telemetry.addLine("Hood - a");
             telemetry.addLine("Push - b");
             telemetry.addLine("Increase/Decrease Servo Positions - Dpad up/down");
+            telemetry.addLine("Increase/Decrease Flywheel Position - Right Bumper is Up/Left Bumper is down");
 
 
 // very cool comment for pushing
@@ -60,6 +61,7 @@ public class FlywheelHoodPush extends LinearOpMode {
                 onHood = false;
                 onPush = false;
                 onFlywheel = true;
+                sleep(slep);
             }
 
             if (gamepad1.dpad_up) {
@@ -78,28 +80,26 @@ public class FlywheelHoodPush extends LinearOpMode {
             }
             if (gamepad1.right_bumper) {
                 flywheelPos += step;
+                Math.round((int) (flywheelPos));
                 sleep(slep);
                 telemetry.addLine("New Flywheel position:" + flywheelPos);
-                telemetry.update();
             }
 
             else if (gamepad1.left_bumper) {
                 flywheelPos -= step;
+                Math.round((int) (flywheelPos));
                 sleep(slep);
                 telemetry.addLine("New Flywheel position:" + flywheelPos);
-                telemetry.update();
             }
 
             if (hoodPos != lastHoodPos) {
                 telemetry.addData("New hood position: ", hoodPos);
-                telemetry.update();
                 lastHoodPos = hoodPos;
                 sleep(slep);
             }
 
             if (pushPos != lastPushPos) {
-                telemetry.addData("New swivel position: ", pushPos);
-                telemetry.update();
+                telemetry.addData("New push position: ", pushPos);
                 lastPushPos = pushPos;
                 sleep(slep);
             }
