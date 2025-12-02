@@ -41,36 +41,40 @@ public class TestTeleOpv2 extends LinearOpMode {
 
             drive.updatePoseEstimate();
 
-            if (gamepad1.a) {
+            if (gamepad1.right_bumper) {
                 Actions.runBlocking(intake.IntakeBall());
             }
             if (gamepad1.left_bumper) {
                 Actions.runBlocking(intake.IntakeBallStop());
             }
-            if (gamepad1.b) {
+            if (gamepad2.dpad_up) {
                 Actions.runBlocking(push.PushBallUp());
             }
-            if (gamepad1.dpad_down) {
+            if (gamepad2.dpad_down) {
                 Actions.runBlocking(push.PushBallDown());
             }
-            if (gamepad1.y) {
+            if (gamepad2.right_bumper) {
                 Actions.runBlocking(flywheel.shoot());
             }
-            if (gamepad1.x) {
+            if (gamepad2.left_bumper) {
+                Actions.runBlocking(flywheel.shootStop());
+            }
+            if (gamepad2.x) {
                 Actions.runBlocking(index.index1());
             }
-            if (gamepad1.dpad_up) {
+            if (gamepad2.y) {
                 Actions.runBlocking(index.index2());
             }
-            if (gamepad1.dpad_left) {
+            if (gamepad2.b) {
                 Actions.runBlocking(index.index3());
             }
+            /*
             if (gamepad1.dpad_right) {
                 Actions.runBlocking(swivel.aim());
             }
-            if (gamepad1.right_bumper) {
-                Actions.runBlocking(flywheel.shootStop());
-            }
+
+             */
+
 
             telemetry.update();
         }
