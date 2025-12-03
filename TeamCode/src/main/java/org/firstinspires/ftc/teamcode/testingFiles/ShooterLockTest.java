@@ -102,7 +102,7 @@ import java.util.List;
 
     }
 
-    private double bearing;
+    public static double bearing;
 
     private boolean telemetryAprilTag() {
 
