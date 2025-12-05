@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.testingFiles.ShooterLockTest;
+import org.firstinspires.ftc.teamcode.testingFiles.TestTeleOpv2;
 
 public class Swivel {
 
@@ -26,7 +27,7 @@ public class Swivel {
     public class Aim implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            swivel.setPower(ShooterLockTest.ServoPower);
+            swivel.setPower(TestTeleOpv2.ServoPower);
             return false;
         }
     }
