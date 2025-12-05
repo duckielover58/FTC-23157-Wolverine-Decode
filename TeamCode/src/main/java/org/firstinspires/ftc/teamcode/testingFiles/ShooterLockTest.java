@@ -5,6 +5,7 @@ import android.util.Size;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -38,22 +39,26 @@ import java.util.List;
     private double robotHeading = 0; //placeholder
     private double cameraHeading = robotHeading;
     public static double ServoPower = 0;
+    public boolean servoLocked = false;
+
     @Override
     public void runOpMode() {
         initAprilTag();
 
         waitForStart();
         while (opModeIsActive()) {
-            boolean isCameraWithinBearing = telemetryAprilTag();
-            telemetry.update();
-            //servo.setPosition(turnPosition);
-
-            // Share the CPU.
-            sleep(20);
-
-            if (isStopRequested() || isCameraWithinBearing) {
-                visionPortal.close();
+            while (!servoLocked) {
+                telemetryAprilTag();
+                telemetry.update();
+                ServoPower = 0;
+                Swivel swivel1 = new Swivel(hardwareMap);
+                swivel1.aim();
+                sleep(20);
             }
+
+
+            visionPortal.close();
+
         }
         visionPortal.close();
     }
@@ -104,7 +109,7 @@ import java.util.List;
 
     public static double bearing;
 
-    private boolean telemetryAprilTag() {
+    private void telemetryAprilTag() {
 
         Swivel swivel = new Swivel(hardwareMap);
 
@@ -112,25 +117,27 @@ import java.util.List;
         telemetry.addData("# AprilTags Detected", currentDetections.size());
 
         // Step through the list of detections and display info for each one.
-        boolean isCameraWithinBearing = false;
         for (AprilTagDetection detection : currentDetections) {
             if (detection.id != 0) {
                 double sped = 0.1;
-                if (detection.ftcPose.bearing > 1) {
+                double bearingErr = 1;
+                telemetry.addData("BearingErr: ", bearingErr);
+
+                if (detection.ftcPose.bearing > bearingErr + 3) {
                     ServoPower = -sped;
-                    telemetry.addData("Bearing", bearing);
+                    telemetry.addData("Bearing: ", bearing);
                     Actions.runBlocking(swivel.aim());
 
-                } else if (detection.ftcPose.bearing < -1) {
+                } else if (detection.ftcPose.bearing < -bearingErr + 3) {
                     ServoPower = sped;
-                    telemetry.addData("Bearing", bearing);
+                    telemetry.addData("Bearing: ", bearing);
                     Actions.runBlocking(swivel.aim());
-                } else if (Math.abs(detection.ftcPose.bearing) <= 1) {
+                } else if (-bearingErr + 3 <= detection.ftcPose.bearing && detection.ftcPose.bearing <= bearingErr + 3) {
                     ServoPower = 0;
-                    telemetry.addData("Bearing", bearing);
+                    telemetry.addData("Bearing: ", bearing);
                     Actions.runBlocking(swivel.aim());
-                    isCameraWithinBearing = true;
                     telemetry.addData("Bearing reached within limit", bearing);
+                    servoLocked = true;
                 }
 
                 telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
@@ -149,7 +156,6 @@ import java.util.List;
 
             sleep(20);
         }
-        return isCameraWithinBearing;
     }
 
 
