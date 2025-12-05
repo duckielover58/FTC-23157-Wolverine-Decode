@@ -25,4 +25,16 @@ public class Hood {
         return new HoodPosition();
     }
 
+    /*
+    public Action hoodPos() {
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                hood.setPosition(0.5);
+                return false;
+            }
+        };
+    }
+    */
+
 }

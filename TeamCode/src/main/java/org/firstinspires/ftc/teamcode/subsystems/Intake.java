@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Intake {
@@ -22,19 +23,19 @@ public class Intake {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
-                intake.setPower(1);
+                intake.setPower(-1.0);
             }
             return false;
         }
     }
 
-    class OuttakeBall implements Action {
+    class IntakeBallReverse implements Action {
         private boolean initialized = false;
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
-                intake.setPower(-1);
+                intake.setPower(1.0);
             }
             return false;
         }
@@ -50,15 +51,15 @@ public class Intake {
             }
             return false;
         }
-
-
     }
-    public Action IntakeBall() { return new IntakeBall(); }
-    public Action OuttakeBall() { return new OuttakeBall(); }
-    public Action IntakeBallStop (){
+
+    public Action IntakeBall() {
+        return new IntakeBall();
+    }
+    public Action IntakeBallReverse (){
+        return new IntakeBallReverse();
+    }
+    public Action IntakeBallStop() {
         return new IntakeBallStop();
     }
-
 }
-
-//hello

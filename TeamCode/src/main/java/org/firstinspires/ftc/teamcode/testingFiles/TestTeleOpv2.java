@@ -94,12 +94,14 @@ public class TestTeleOpv2 extends LinearOpMode {
                 Actions.runBlocking(intake.IntakeBallStop());
             }
             if (gamepad1.left_trigger > 0.1) {
-                Actions.runBlocking(intake.OuttakeBall());
+                Actions.runBlocking(intake.IntakeBallReverse());
             } else {
                 Actions.runBlocking(intake.IntakeBallStop());
             }
             if (gamepad2.dpad_up) {
-                Actions.runBlocking(new SequentialAction(push.PushBallUp(), push.PushBallDown()));
+                Actions.runBlocking(push.PushBallUp());
+                sleep(450);
+                Actions.runBlocking(push.PushBallDown());
             }
             if (gamepad2.dpad_down) {
                 Actions.runBlocking(push.PushBallDown());
