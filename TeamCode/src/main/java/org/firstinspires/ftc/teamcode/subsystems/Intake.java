@@ -28,6 +28,18 @@ public class Intake {
         }
     }
 
+    class OuttakeBall implements Action {
+        private boolean initialized = false;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (!initialized) {
+                intake.setPower(-intakePower);
+            }
+            return false;
+        }
+    }
+
     class IntakeBallStop implements Action {
         private boolean initialized = false;
 
@@ -41,9 +53,8 @@ public class Intake {
 
 
     }
-    public Action IntakeBall() {
-        return new IntakeBall();
-    }
+    public Action IntakeBall() { return new IntakeBall(); }
+    public Action OuttakeBall() { return new OuttakeBall(); }
     public Action IntakeBallStop (){
         return new IntakeBallStop();
     }
