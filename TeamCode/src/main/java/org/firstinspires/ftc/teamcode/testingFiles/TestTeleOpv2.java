@@ -1,11 +1,15 @@
 package org.firstinspires.ftc.teamcode.testingFiles;
 
+import static org.firstinspires.ftc.teamcode.testingFiles.ShooterLockTest.bearing;
+
 import android.util.Size;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -22,7 +26,6 @@ import org.firstinspires.ftc.teamcode.subsystems.Index;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Push;
 import org.firstinspires.ftc.teamcode.subsystems.Swivel;
-import org.firstinspires.ftc.teamcode.testingFiles.ShooterLockTest;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -32,7 +35,15 @@ import java.util.List;
 @TeleOp(name = "TestTeleOpv2")
 public class TestTeleOpv2 extends LinearOpMode {
 
+    // Non-blocking lock state
+    boolean lockActive = false;
+    int lockTarget1 = 0;
+    int lockTarget2 = 0;
+    long lastSeenTime = 0;
+    final long LOST_TIMEOUT_MS = 300;  // stop lock if no tag for 0.3 sec
 
+    public boolean servoLocked = false;
+    public boolean detectionsExist = true;
     private Position cameraPosition = new Position(DistanceUnit.INCH,
             0, 8.5, 1, 0);
     //TODO Measure with tape
@@ -53,7 +64,7 @@ public class TestTeleOpv2 extends LinearOpMode {
     private double cameraHeading = robotHeading;
     public static double ServoPower = 0;
     public final int blueTag = 20;
-    public final int RedTag = 24;
+    public final int redTag = 24;
 
     @Override
     public void runOpMode() {
@@ -77,20 +88,23 @@ public class TestTeleOpv2 extends LinearOpMode {
 
             drive.updatePoseEstimate();
 
-            if (gamepad1.right_bumper) {
+            if (gamepad1.right_trigger > 0.1) {
                 Actions.runBlocking(intake.IntakeBall());
+            } else {
+                Actions.runBlocking(intake.IntakeBallStop());
             }
-            if (gamepad1.left_bumper) {
+            if (gamepad1.left_trigger > 0.1) {
+                Actions.runBlocking(intake.OuttakeBall());
+            } else {
                 Actions.runBlocking(intake.IntakeBallStop());
             }
             if (gamepad2.dpad_up) {
-                Actions.runBlocking(push.PushBallUp());
+                Actions.runBlocking(new SequentialAction(push.PushBallUp(), push.PushBallDown()));
             }
             if (gamepad2.dpad_down) {
                 Actions.runBlocking(push.PushBallDown());
             }
             if (gamepad2.right_bumper) {
-                lock(blueTag);
                 Actions.runBlocking(flywheel.shoot());
             }
             if (gamepad2.left_bumper) {
@@ -105,6 +119,10 @@ public class TestTeleOpv2 extends LinearOpMode {
             if (gamepad2.b) {
                 Actions.runBlocking(index.index3());
             }
+            if (gamepad2.a) {
+                servoLocked = false;
+                lock(redTag, blueTag);
+            }
             /*
             if (gamepad1.dpad_right) {
                 Actions.runBlocking(swivel.aim());
@@ -112,26 +130,25 @@ public class TestTeleOpv2 extends LinearOpMode {
 
              */
 
-
+            telemetry.addData("Servo Locked", servoLocked);
+            telemetry.addData("detectionsExist", detectionsExist);
             telemetry.update();
         }
     }
 
-    private void lock(int tag) {
+    private void lock(int tag1, int tag2) {
         initAprilTag();
-        telemetryAprilTag(tag);
-        while (ShooterLockTest.ServoPower != 0) {
-            boolean isCameraWithinBearing = telemetryAprilTag(tag);
+        while (!servoLocked && detectionsExist) {
+            telemetryAprilTag(tag1, tag2);
             telemetry.update();
-            //servo.setPosition(turnPosition);
-
-            // Share the CPU.
+            ServoPower = 0;
+            Swivel swivel1 = new Swivel(hardwareMap);
+            swivel1.aim();
             sleep(20);
-
-            if (isStopRequested() || isCameraWithinBearing) {
-                visionPortal.close();
-            }
         }
+
+        detectionsExist = true;
+
         visionPortal.close();
     }
     private void initAprilTag() {
@@ -177,35 +194,40 @@ public class TestTeleOpv2 extends LinearOpMode {
         visionPortal.setProcessorEnabled(aprilTag, true);
 
     }
-
-
-    private boolean telemetryAprilTag(int tag) {
-
-        Swivel swivel = new Swivel(hardwareMap);
-
+    private void telemetryAprilTag(int tag1, int tag2) {
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         telemetry.addData("# AprilTags Detected", currentDetections.size());
 
+        if (currentDetections.isEmpty()) {
+            detectionsExist = false;
+        } else {
+            detectionsExist = true;
+        }
+
+        Swivel swivel = new Swivel(hardwareMap);
+
         // Step through the list of detections and display info for each one.
-        boolean isCameraWithinBearing = false;
         for (AprilTagDetection detection : currentDetections) {
-            if (detection.id == tag) {
+        if (detection.id == tag1 || detection.id == tag2) {
+            if (detection.id != 0) {
                 double sped = 0.1;
-                if (detection.ftcPose.bearing > 1) {
+                double bearingErr = 1;
+
+                if (detection.ftcPose.bearing > bearingErr + 3) {
                     ServoPower = -sped;
-                    telemetry.addData("Bearing", ShooterLockTest.bearing);
+                    telemetry.addData("Bearing", bearing);
                     Actions.runBlocking(swivel.aim());
 
-                } else if (detection.ftcPose.bearing < -1) {
+                } else if (detection.ftcPose.bearing < -bearingErr + 3) {
                     ServoPower = sped;
-                    telemetry.addData("Bearing", ShooterLockTest.bearing);
+                    telemetry.addData("Bearing", bearing);
                     Actions.runBlocking(swivel.aim());
-                } else if (Math.abs(detection.ftcPose.bearing) <= 1) {
+                } else if (-bearingErr + 3 <= detection.ftcPose.bearing && detection.ftcPose.bearing <= bearingErr + 3) {
                     ServoPower = 0;
-                    telemetry.addData("Bearing", ShooterLockTest.bearing);
+                    telemetry.addData("Bearing", bearing);
                     Actions.runBlocking(swivel.aim());
-                    isCameraWithinBearing = true;
-                    telemetry.addData("Bearing reached within limit", ShooterLockTest.bearing);
+                    telemetry.addData("Bearing reached within limit", bearing);
+                    servoLocked = true;
                 }
 
                 telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
@@ -215,17 +237,19 @@ public class TestTeleOpv2 extends LinearOpMode {
                 telemetry.addData("Bearing:", detection.ftcPose.bearing);
 
             }
+        }
 
             // Add "key" information to telemetry
             telemetry.addData("Servo Power:", ServoPower);
-            telemetry.addData("Bearing:", ShooterLockTest.bearing);
+            telemetry.addData("Bearing:", bearing);
             telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
             telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
 
             sleep(20);
         }
-        return isCameraWithinBearing;
     }
+
+
 
 }
 
