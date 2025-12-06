@@ -80,14 +80,14 @@ public class FlywheelHoodPush extends LinearOpMode {
             }
             if (gamepad1.right_bumper) {
                 flywheelPos += step;
-                Math.round((int) (flywheelPos));
+                flywheelPos = Math.round((int) (flywheelPos));
                 sleep(slep);
                 telemetry.addLine("New Flywheel position:" + flywheelPos);
             }
 
             else if (gamepad1.left_bumper) {
                 flywheelPos -= step;
-                Math.round((int) (flywheelPos));
+                flywheelPos = Math.round((int) (flywheelPos));
                 sleep(slep);
                 telemetry.addLine("New Flywheel position:" + flywheelPos);
             }

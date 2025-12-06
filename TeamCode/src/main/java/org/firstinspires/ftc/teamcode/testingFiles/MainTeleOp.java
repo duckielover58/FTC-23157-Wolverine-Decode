@@ -6,14 +6,11 @@ import android.util.Size;
 
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -25,15 +22,14 @@ import org.firstinspires.ftc.teamcode.subsystems.Flywheel;
 import org.firstinspires.ftc.teamcode.subsystems.Index;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Push;
-import org.firstinspires.ftc.teamcode.subsystems.Swivel;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
 
-@TeleOp(name = "TestTeleOpv2")
-public class TestTeleOpv2 extends LinearOpMode {
+@TeleOp(name = "MainTeleOp")
+public class MainTeleOp extends LinearOpMode {
 
     // Non-blocking lock state
     boolean lockActive = false;
@@ -65,6 +61,7 @@ public class TestTeleOpv2 extends LinearOpMode {
     public static double ServoPower = 0;
     public final int blueTag = 20;
     public final int redTag = 24;
+    private CRServo swivel;
 
     @Override
     public void runOpMode() {
@@ -74,7 +71,8 @@ public class TestTeleOpv2 extends LinearOpMode {
         Intake intake = new Intake(hardwareMap);
         Push push = new Push(hardwareMap);
         Flywheel flywheel = new Flywheel(hardwareMap);
-        Swivel swivel = new Swivel(hardwareMap);
+        //Swivel swivel = new Swivel(hardwareMap);
+        swivel = hardwareMap.get(CRServo.class, "Swivel");
         Index index = new Index(hardwareMap);
 
         telemetry.addLine("Initialized");
@@ -100,7 +98,7 @@ public class TestTeleOpv2 extends LinearOpMode {
             }
             if (gamepad2.dpad_up) {
                 Actions.runBlocking(push.PushBallUp());
-                sleep(450);
+                sleep(400);
                 Actions.runBlocking(push.PushBallDown());
             }
             if (gamepad2.dpad_down) {
@@ -140,12 +138,12 @@ public class TestTeleOpv2 extends LinearOpMode {
 
     private void lock(int tag1, int tag2) {
         initAprilTag();
+        telemetryAprilTag(tag1, tag2);
         while (!servoLocked && detectionsExist) {
             telemetryAprilTag(tag1, tag2);
             telemetry.update();
             ServoPower = 0;
-            Swivel swivel1 = new Swivel(hardwareMap);
-            swivel1.aim();
+            swivel.setPower(ServoPower);
             sleep(20);
         }
 
@@ -195,18 +193,18 @@ public class TestTeleOpv2 extends LinearOpMode {
 
         visionPortal.setProcessorEnabled(aprilTag, true);
 
-    }
-    private void telemetryAprilTag(int tag1, int tag2) {
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        telemetry.addData("# AprilTags Detected", currentDetections.size());
-
+        sleep(100);
+        telemetry.addData("On Init: # AprilTags Detected", currentDetections.size());
         if (currentDetections.isEmpty()) {
             detectionsExist = false;
         } else {
             detectionsExist = true;
         }
-
-        Swivel swivel = new Swivel(hardwareMap);
+    }
+    private void telemetryAprilTag(int tag1, int tag2) {
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        telemetry.addData("# AprilTags Detected", currentDetections.size());
 
         // Step through the list of detections and display info for each one.
         for (AprilTagDetection detection : currentDetections) {
@@ -218,16 +216,16 @@ public class TestTeleOpv2 extends LinearOpMode {
                 if (detection.ftcPose.bearing > bearingErr + 3) {
                     ServoPower = -sped;
                     telemetry.addData("Bearing", bearing);
-                    Actions.runBlocking(swivel.aim());
+                    swivel.setPower(ServoPower);
 
                 } else if (detection.ftcPose.bearing < -bearingErr + 3) {
                     ServoPower = sped;
                     telemetry.addData("Bearing", bearing);
-                    Actions.runBlocking(swivel.aim());
+                    swivel.setPower(ServoPower);
                 } else if (-bearingErr + 3 <= detection.ftcPose.bearing && detection.ftcPose.bearing <= bearingErr + 3) {
                     ServoPower = 0;
                     telemetry.addData("Bearing", bearing);
-                    Actions.runBlocking(swivel.aim());
+                    swivel.setPower(ServoPower);
                     telemetry.addData("Bearing reached within limit", bearing);
                     servoLocked = true;
                 }
