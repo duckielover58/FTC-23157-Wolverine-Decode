@@ -51,10 +51,43 @@ public class Index3 implements Action {
         }
     }
 
+    public class TurnRight implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (index.getPosition() == ball1) {
+                index.setPosition(ball2);
+            }
+            if (index.getPosition() == ball2) {
+                index.setPosition(ball3);
+            }
+            if (index.getPosition() == ball3) {
+                index.setPosition(ball1);
+            }
+            return false;
+        }
+    }
+
+    public class TurnLeft implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (index.getPosition() == ball3) {
+                index.setPosition(ball2);
+            }
+            if (index.getPosition() == ball2) {
+                index.setPosition(ball1);
+            }
+            if (index.getPosition() == ball1) {
+                index.setPosition(ball3);
+            }
+            return false;
+        }
+    }
+
     public Action index1() { return new Index.Index1(); }
     public Action index2() { return new Index.Index2(); }
     public Action index3() { return new Index.Index3(); }
-
     public Action indexHome() { return new Index.IndexHome(); }
+    public Action turnRight() { return new Index.TurnRight(); }
+    public Action turnLeft() { return new Index.TurnLeft(); }
 
 }

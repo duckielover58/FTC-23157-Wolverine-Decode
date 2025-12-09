@@ -110,14 +110,11 @@ public class MainTeleOp extends LinearOpMode {
             if (gamepad2.left_bumper) {
                 Actions.runBlocking(flywheel.shootStop());
             }
-            if (gamepad2.x) {
-                Actions.runBlocking(index.index1());
-            }
             if (gamepad2.y) {
-                Actions.runBlocking(index.index2());
+                index.turnLeft();
             }
             if (gamepad2.b) {
-                Actions.runBlocking(index.index3());
+                index.turnRight();
             }
             if (gamepad2.a) {
                 servoLocked = false;
