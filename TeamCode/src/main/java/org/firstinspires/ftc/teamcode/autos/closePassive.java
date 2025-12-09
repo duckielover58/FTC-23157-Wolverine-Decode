@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 
@@ -39,7 +40,6 @@ public class closePassive extends LinearOpMode {
     private Swivel swivel;
 
     public static final int RED_TAG_ID = 24;
-
     private class ShootThreeBalls implements Action {
         private final Action sequence;
 
@@ -47,19 +47,36 @@ public class closePassive extends LinearOpMode {
         public boolean run(@NonNull TelemetryPacket packet) {
             return sequence.run(packet);
         }
+
         public ShootThreeBalls() {
             sequence = new SequentialAction(
-                    index.index1(),
-                    new ParallelAction(push.PushBallUp(), flywheel.shoot()),
+                    flywheel.shoot(),
+                    new SleepAction(0.2),
                     push.PushBallDown(),
+                    new SleepAction(2.75),
+                    push.PushBallUp(),
+                    new SleepAction(0.3),
+                    push.PushBallDown(),
+                    new SleepAction(0.5),
+
 
                     index.index2(),
-                    new ParallelAction(push.PushBallUp(), flywheel.shoot()),
+                    new SleepAction(1.5),
+                    push.PushBallUp(),
+                    new SleepAction(0.3),
                     push.PushBallDown(),
+                    new SleepAction(0.5),
+
 
                     index.index3(),
-                    new ParallelAction(push.PushBallUp(), flywheel.shoot()),
-                    push.PushBallDown()
+                    new SleepAction(0.5),
+                    push.PushBallUp(),
+                    new SleepAction(0.3),
+                    push.PushBallDown(),
+                    new SleepAction(0.5),
+                    flywheel.shootStop(),
+                    new SleepAction(0.2),
+                    index.index1()
             );
         }
     }
@@ -80,18 +97,25 @@ public class closePassive extends LinearOpMode {
 
         Action closePassive = drive.actionBuilder(startPose)
                 .stopAndAdd(new ShootThreeBalls())
-                .waitSeconds(5)
-                .strafeToLinearHeading(new Vector2d(-12.5,-31),Math.toRadians(270))
-                .afterTime(0.3, intake.IntakeBall())
-                .strafeTo(new Vector2d(-12.5, -50))
+                .strafeToLinearHeading(new Vector2d(-9.5,-30),Math.toRadians(270))
+                .afterTime(0.3, intake.IntakeBallReverse())
+                .stopAndAdd(index.index1())
+                .strafeTo(new Vector2d(-9.5, -33))
+                .waitSeconds(1.5)
+                .stopAndAdd(index.index2())
+                .strafeTo(new Vector2d(-9.5, -36))
+                .waitSeconds(1.5)
+                .stopAndAdd(index.index3())
+                .strafeTo(new Vector2d(-9.5, -39))
+                .waitSeconds(1.5)
+                .stopAndAdd(intake.IntakeBallStop())
                 .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(110))
-                .afterTime(0.3, intake.IntakeBallStop())
                 .stopAndAdd(camera.getCamLock(RED_TAG_ID))
                 .stopAndAdd(new ShootThreeBalls())
                 .waitSeconds(5)
                 .setTangent(45)
                 .splineToLinearHeading(new Pose2d(11, -31, Math.toRadians(270)), Math.toRadians(270))
-                .afterTime(0.3, intake.IntakeBall())
+                .afterTime(0.3, intake.IntakeBallReverse())
                 .strafeTo(new Vector2d(11, -50))
                 .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(110))
                 .afterTime(0.3, intake.IntakeBallStop())
