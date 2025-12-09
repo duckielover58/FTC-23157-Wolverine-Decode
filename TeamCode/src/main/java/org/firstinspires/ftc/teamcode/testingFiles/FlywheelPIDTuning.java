@@ -13,7 +13,7 @@ public class FlywheelPIDTuning extends LinearOpMode {
     private DcMotor flywheel;
     public double powerMultiplier = 0.001;
     private double flywheelPower = -0.75;
-    private double flywheelTicksPerMilliSec = 928.8 / 1000;
+    private double flywheelTicksPerMilliSec = -928.8 / 1000;
     private double flywheelTargetTicks;
     private double flywheelTicks;
     private double flywheelError;
@@ -25,11 +25,12 @@ public class FlywheelPIDTuning extends LinearOpMode {
         flywheel = hardwareMap.get(DcMotor.class, "Flywheel");
         flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         flywheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         double pushPos = 0;
         double step = 0.1;
         long slep = 20;
-        double rantime = 0;
+        long rantime = 0;
 
 
         waitForStart();
@@ -45,9 +46,7 @@ public class FlywheelPIDTuning extends LinearOpMode {
             telemetry.addData("Flywheel Tick Difference: ", flywheelTargetTicks - flywheelTicks);
             telemetry.addData("Goal Reached? ", goalReached);
 
-            if (flywheelTargetTicks <= flywheelTicks + flywheelAllowedError &&
-                    flywheelTicks - flywheelAllowedError <= flywheelTargetTicks)
-            {
+            if (flywheelTargetTicks <= flywheelTicks + flywheelAllowedError && flywheelTicks - flywheelAllowedError <= flywheelTargetTicks) {
                 flywheelPower += (powerMultiplier * flywheelError);
                 telemetry.update();
                 sleep(slep);
@@ -59,8 +58,6 @@ public class FlywheelPIDTuning extends LinearOpMode {
             telemetry.addData("Flywheel Ticks", flywheel.getCurrentPosition());
             telemetry.update();
         }
-
-
     }
 }
 

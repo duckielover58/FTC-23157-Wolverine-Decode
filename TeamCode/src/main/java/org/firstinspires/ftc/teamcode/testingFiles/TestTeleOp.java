@@ -1,6 +1,13 @@
 package org.firstinspires.ftc.teamcode.testingFiles;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -28,12 +35,13 @@ public class TestTeleOp extends OpMode {
     Swivel swivel;
     Index index;
 
+
     @Override
     public void init() {
-        leftFront  = hardwareMap.get(DcMotor.class, "FrontLeft");
+        leftFront = hardwareMap.get(DcMotor.class, "FrontLeft");
         rightFront = hardwareMap.get(DcMotor.class, "FrontRight");
-        leftBack   = hardwareMap.get(DcMotor.class, "BackLeft");
-        rightBack  = hardwareMap.get(DcMotor.class, "BackRight");
+        leftBack = hardwareMap.get(DcMotor.class, "BackLeft");
+        rightBack = hardwareMap.get(DcMotor.class, "BackRight");
 
         leftFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.REVERSE);
@@ -45,30 +53,78 @@ public class TestTeleOp extends OpMode {
         flywheel = new Flywheel(hardwareMap);
         swivel = new Swivel(hardwareMap);
         index = new Index(hardwareMap);
+
     }
+
+    public void start() {
+        Actions.runBlocking(index.indexHome());
+    }
+
+
+    private class ShootThreeBalls implements Action {
+        private final Action sequence;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            return sequence.run(packet);
+        }
+
+        public ShootThreeBalls() {
+            sequence = new SequentialAction(
+                    flywheel.shoot(),
+                    new SleepAction(0.2),
+                    push.PushBallDown(),
+                    new SleepAction(3.5),
+                    push.PushBallUp(),
+                    new SleepAction(0.3),
+                    push.PushBallDown(),
+                    new SleepAction(0.5),
+
+
+                    index.index2(),
+                    new SleepAction(0.5),
+                    push.PushBallUp(),
+                    new SleepAction(0.3),
+                    push.PushBallDown(),
+                    new SleepAction(0.5),
+
+
+                    index.index3(),
+                    new SleepAction(0.5),
+                    push.PushBallUp(),
+                    new SleepAction(0.3),
+                    push.PushBallDown(),
+                    new SleepAction(0.5),
+                    flywheel.shootStop(),
+                    new SleepAction(0.2),
+                    index.index1()
+            );
+        }
+    }
+
     //hello
 
     @Override
     public void loop() {
 
-        double vertical   = -gamepad1.left_stick_y;
+        double vertical = -gamepad1.left_stick_y;
         double horizontal = gamepad1.left_stick_x;
-        double pivot      = gamepad1.right_stick_x;
+        double pivot = gamepad1.right_stick_x;
 
-        double frontLeftPower  = vertical + horizontal + pivot;
+        double frontLeftPower = vertical + horizontal + pivot;
         double frontRightPower = vertical + horizontal - pivot;
-        double backLeftPower   = vertical - horizontal + pivot;
-        double backRightPower  = vertical - horizontal - pivot;
+        double backLeftPower = vertical - horizontal + pivot;
+        double backRightPower = vertical - horizontal - pivot;
 
         double max = Math.max(Math.abs(frontLeftPower),
                 Math.max(Math.abs(frontRightPower),
                         Math.max(Math.abs(backLeftPower), Math.abs(backRightPower))));
 
         if (max > 1.0) {
-            frontLeftPower  /= max;
+            frontLeftPower /= max;
             frontRightPower /= max;
-            backLeftPower   /= max;
-            backRightPower  /= max;
+            backLeftPower /= max;
+            backRightPower /= max;
         }
 
         leftFront.setPower(frontLeftPower);
@@ -91,7 +147,7 @@ public class TestTeleOp extends OpMode {
         if (gamepad1.y) {
             Actions.runBlocking(flywheel.shoot());
         }
-        if (gamepad1.right_bumper){
+        if (gamepad1.right_bumper) {
             Actions.runBlocking(flywheel.shootStop());
         }
         if (gamepad1.x) {
@@ -106,6 +162,9 @@ public class TestTeleOp extends OpMode {
         if (gamepad1.dpad_right) {
             Actions.runBlocking(swivel.aim());
         }
-
+        if (gamepad2.right_bumper) {
+            Actions.runBlocking(index.index1());
+            Actions.runBlocking(new ShootThreeBalls());
+        }
     }
 }

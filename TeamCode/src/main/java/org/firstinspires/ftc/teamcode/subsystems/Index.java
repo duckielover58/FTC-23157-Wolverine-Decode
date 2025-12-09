@@ -43,9 +43,18 @@ public class Index3 implements Action {
             return false;
         }
     }
+    public class IndexHome implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            index.setPosition(0);
+            return false;
+        }
+    }
 
     public Action index1() { return new Index.Index1(); }
     public Action index2() { return new Index.Index2(); }
     public Action index3() { return new Index.Index3(); }
+
+    public Action indexHome() { return new Index.IndexHome(); }
 
 }
