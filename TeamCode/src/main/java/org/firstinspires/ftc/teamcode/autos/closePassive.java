@@ -40,7 +40,6 @@ public class closePassive extends LinearOpMode {
     private Swivel swivel;
 
     public static final int RED_TAG_ID = 24;
-
     private class ShootThreeBalls implements Action {
         private final Action sequence;
 
@@ -99,7 +98,7 @@ public class closePassive extends LinearOpMode {
         Action closePassive = drive.actionBuilder(startPose)
                 .stopAndAdd(new ShootThreeBalls())
                 .strafeToLinearHeading(new Vector2d(-9.5,-30),Math.toRadians(270))
-                .afterTime(0.3, intake.IntakeBall())
+                .afterTime(0.3, intake.IntakeBallReverse())
                 .stopAndAdd(index.index1())
                 .strafeTo(new Vector2d(-9.5, -33))
                 .waitSeconds(1.5)
@@ -116,7 +115,7 @@ public class closePassive extends LinearOpMode {
                 .waitSeconds(5)
                 .setTangent(45)
                 .splineToLinearHeading(new Pose2d(11, -31, Math.toRadians(270)), Math.toRadians(270))
-                .afterTime(0.3, intake.IntakeBall())
+                .afterTime(0.3, intake.IntakeBallReverse())
                 .strafeTo(new Vector2d(11, -50))
                 .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(110))
                 .afterTime(0.3, intake.IntakeBallStop())
