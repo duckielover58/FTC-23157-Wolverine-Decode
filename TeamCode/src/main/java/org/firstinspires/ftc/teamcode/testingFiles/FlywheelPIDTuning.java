@@ -12,12 +12,13 @@ public class FlywheelPIDTuning extends LinearOpMode {
 
     private DcMotor flywheel;
     public double powerMultiplier = 0.001;
-    private double flywheelPower = 0.75;
-    private double flywheelTicksPerMilliSec = 928.8/1000;
+    private double flywheelPower = -0.75;
+    private double flywheelTicksPerMilliSec = 928.8 / 1000;
     private double flywheelTargetTicks;
     private double flywheelTicks;
     private double flywheelError;
     public double flywheelAllowedError = 100;
+    public boolean goalReached = false;
 
     @Override
     public void runOpMode() {
@@ -30,29 +31,36 @@ public class FlywheelPIDTuning extends LinearOpMode {
         long slep = 20;
         double rantime = 0;
 
+
         waitForStart();
 
         while (opModeIsActive()) {
             flywheel.setPower(flywheelPower);
             flywheelTargetTicks = flywheelTicksPerMilliSec * rantime;
             flywheelTicks = flywheel.getCurrentPosition();
-            flywheelError = flywheelTargetTicks-flywheelTicks;
-            telemetry.addData("Flywheel Power", flywheelPower);
-            telemetry.addData("Flywheel Ticks", flywheelTicks);
-            telemetry.addData("Flywheel Target Ticks", flywheelTargetTicks);
+            flywheelError = flywheelTargetTicks - flywheelTicks;
+            telemetry.addData("Flywheel Power: ", flywheelPower);
+            telemetry.addData("Flywheel Ticks: ", flywheelTicks);
+            telemetry.addData("Flywheel Target Ticks: ", flywheelTargetTicks);
+            telemetry.addData("Flywheel Tick Difference: ", flywheelTargetTicks - flywheelTicks);
+            telemetry.addData("Goal Reached? ", goalReached);
 
-            if (flywheelTargetTicks <= flywheelTicks + flywheelAllowedError && flywheelTicks - flywheelAllowedError <= flywheelTargetTicks) {
-                flywheelPower += (powerMultiplier*flywheelError);
+            if (flywheelTargetTicks <= flywheelTicks + flywheelAllowedError &&
+                    flywheelTicks - flywheelAllowedError <= flywheelTargetTicks)
+            {
+                flywheelPower += (powerMultiplier * flywheelError);
+                telemetry.update();
+                sleep(slep);
+                rantime += slep;
+                goalReached = false;
+            } else {
+                goalReached = true;
             }
-
+            telemetry.addData("Flywheel Ticks", flywheel.getCurrentPosition());
             telemetry.update();
-            sleep(slep);
-            rantime += slep;
         }
-        telemetry.addData("Flywheel Ticks", flywheel.getCurrentPosition());
-        telemetry.update();
+
+
     }
-
-
 }
 
