@@ -48,15 +48,16 @@ public class FlywheelPIDTuning extends LinearOpMode {
 
             if (flywheelTargetTicks <= flywheelTicks + flywheelAllowedError && flywheelTicks - flywheelAllowedError <= flywheelTargetTicks) {
                 flywheelPower += (powerMultiplier * flywheelError);
+                flywheelPower = Math.max(-1.0, Math.min(1.0, flywheelPower));
                 telemetry.update();
-                sleep(slep);
-                rantime += slep;
                 goalReached = false;
             } else {
                 goalReached = true;
             }
             telemetry.addData("Flywheel Ticks", flywheel.getCurrentPosition());
             telemetry.update();
+            sleep(slep);
+            rantime += slep;
         }
     }
 }

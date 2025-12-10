@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Flywheel;
+import org.firstinspires.ftc.teamcode.subsystems.FlywheelController;
 import org.firstinspires.ftc.teamcode.subsystems.Index;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Push;
@@ -72,14 +74,15 @@ public class MainTeleOp extends LinearOpMode {
         Intake intake = new Intake(hardwareMap);
         Push push = new Push(hardwareMap);
         Flywheel flywheel = new Flywheel(hardwareMap);
+        DcMotor flywheelMotor = hardwareMap.get(DcMotor.class, "Flywheel");
+        FlywheelController flyCtrl = new FlywheelController(flywheelMotor);
+
         //Swivel swivel = new Swivel(hardwareMap);
         swivel = hardwareMap.get(CRServo.class, "Swivel");
         Index index = new Index(hardwareMap);
 
         telemetry.addLine("Initialized");
         telemetry.update();
-
-
 
         waitForStart();
 
@@ -107,11 +110,10 @@ public class MainTeleOp extends LinearOpMode {
             if (gamepad2.dpad_down) {
                 Actions.runBlocking(push.PushBallDown());
             }
-            if (gamepad2.right_bumper) {
-                Actions.runBlocking(flywheel.shoot());
-            }
-            if (gamepad2.left_bumper) {
-                Actions.runBlocking(flywheel.shootStop());
+            if (gamepad2.right_trigger >= 0.1) {
+                flyCtrl.update();     // runs every loop; does not block
+            } else {
+                flyCtrl.stop();
             }
             if (gamepad2.y) {
                 if (ballFocused == 1) {
