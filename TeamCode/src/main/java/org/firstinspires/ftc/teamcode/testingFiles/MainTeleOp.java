@@ -61,6 +61,7 @@ public class MainTeleOp extends LinearOpMode {
     public static double ServoPower = 0;
     public final int blueTag = 20;
     public final int redTag = 24;
+    public int ballFocused = 1;
     private CRServo swivel;
 
     @Override
@@ -77,6 +78,8 @@ public class MainTeleOp extends LinearOpMode {
 
         telemetry.addLine("Initialized");
         telemetry.update();
+
+
 
         waitForStart();
 
@@ -111,10 +114,31 @@ public class MainTeleOp extends LinearOpMode {
                 Actions.runBlocking(flywheel.shootStop());
             }
             if (gamepad2.y) {
-                index.turnLeft();
+                if (ballFocused == 1) {
+                    Actions.runBlocking(index.index2());
+                    sleep(150);
+                    ballFocused = 2;
+                } else if (ballFocused == 2) {
+                    Actions.runBlocking(index.index3());
+                    ballFocused = 3;
+                    sleep(150);
+                } else {
+                    Actions.runBlocking(index.index1());
+                    ballFocused = 1;
+                    sleep(150);
+                }
             }
             if (gamepad2.b) {
-                index.turnRight();
+                if (ballFocused == 3) {
+                    Actions.runBlocking(index.index2());
+                    ballFocused = 2;
+                } else if (ballFocused == 1) {
+                    Actions.runBlocking(index.index3());
+                    ballFocused = 3;
+                } else {
+                    Actions.runBlocking(index.index1());
+                    ballFocused = 1;
+                }
             }
             if (gamepad2.a) {
                 servoLocked = false;

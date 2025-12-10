@@ -54,7 +54,7 @@ public class Index3 implements Action {
     public class TurnRight implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (index.getPosition() == ball1) {
+            if (index.getPosition() == ball1 || index.getPosition() == 0) {
                 index.setPosition(ball2);
             }
             if (index.getPosition() == ball2) {
@@ -76,7 +76,7 @@ public class Index3 implements Action {
             if (index.getPosition() == ball2) {
                 index.setPosition(ball1);
             }
-            if (index.getPosition() == ball1) {
+            if (index.getPosition() == ball1 || index.getPosition() == 0) {
                 index.setPosition(ball3);
             }
             return false;
