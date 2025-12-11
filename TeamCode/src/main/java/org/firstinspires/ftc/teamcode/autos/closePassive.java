@@ -12,11 +12,10 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
-
-import org.firstinspires.ftc.teamcode.subsystems.Camera;
 import org.firstinspires.ftc.teamcode.subsystems.Flywheel;
 import org.firstinspires.ftc.teamcode.subsystems.Index;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.Limelight;
 import org.firstinspires.ftc.teamcode.subsystems.Push;
 import org.firstinspires.ftc.teamcode.subsystems.Swivel;
 
@@ -34,12 +33,13 @@ public class closePassive extends LinearOpMode {
 
     private Flywheel flywheel;
     private Index index;
-    private Camera camera;
     private Intake intake;
     private Push push;
     private Swivel swivel;
+    private Limelight limelight;
 
     public static final int RED_TAG_ID = 24;
+
     private class ShootThreeBalls implements Action {
         private final Action sequence;
 
@@ -87,11 +87,11 @@ public class closePassive extends LinearOpMode {
         PinpointDrive drive = new PinpointDrive(hardwareMap, startPose);
 
         flywheel = new Flywheel(hardwareMap);
-        camera = new Camera(hardwareMap, telemetry);
         index = new Index(hardwareMap);
         intake = new Intake(hardwareMap);
         push = new Push(hardwareMap);
         swivel = new Swivel(hardwareMap);
+        limelight = new Limelight(hardwareMap);
 
         waitForStart();
 
@@ -110,7 +110,7 @@ public class closePassive extends LinearOpMode {
                 .waitSeconds(1.5)
                 .stopAndAdd(intake.IntakeBallStop())
                 .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(110))
-                .stopAndAdd(camera.getCamLock(RED_TAG_ID))
+                .stopAndAdd(limelight.limelightRed())
                 .stopAndAdd(new ShootThreeBalls())
                 .waitSeconds(5)
                 .setTangent(45)
@@ -119,7 +119,7 @@ public class closePassive extends LinearOpMode {
                 .strafeTo(new Vector2d(11, -50))
                 .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(110))
                 .afterTime(0.3, intake.IntakeBallStop())
-                .stopAndAdd(camera.getCamLock(RED_TAG_ID))
+                .stopAndAdd(limelight.limelightRed())
                 .stopAndAdd(new ShootThreeBalls())
                 .waitSeconds(5)
                 .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(180))
