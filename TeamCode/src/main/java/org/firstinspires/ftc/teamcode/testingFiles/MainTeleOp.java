@@ -81,10 +81,10 @@ public class MainTeleOp extends LinearOpMode {
         intake1 = hardwareMap.get(DcMotorEx.class, "Intake");
         Push push = new Push(hardwareMap);
         Flywheel flywheel = new Flywheel(hardwareMap);
-        Gamepad currentGamepad1 = new Gamepad();
-        Gamepad currentGamepad2 = new Gamepad();
-        Gamepad previousGamepad1 = new Gamepad();
-        Gamepad previousGamepad2 = new Gamepad();
+        Gamepad cG1 = new Gamepad();
+        Gamepad cG2 = new Gamepad();
+        Gamepad pG1 = new Gamepad();
+        Gamepad pG2 = new Gamepad();
         FtcDashboard dash = FtcDashboard.getInstance();
         List<Action> runningActions = new ArrayList<>();
 
@@ -99,11 +99,11 @@ public class MainTeleOp extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            previousGamepad1.copy(currentGamepad1);
-            previousGamepad2.copy(currentGamepad2);
+            pG1.copy(cG1);
+            pG2.copy(cG2);
 
-            currentGamepad1.copy(gamepad1);
-            currentGamepad2.copy(gamepad2);
+            cG1.copy(gamepad1);
+            cG2.copy(gamepad2);
 
             TelemetryPacket packet = new TelemetryPacket();
 
@@ -125,28 +125,28 @@ public class MainTeleOp extends LinearOpMode {
 
             drive.updatePoseEstimate();
 
-            if (!currentGamepad1.right_bumper && previousGamepad1.left_bumper) {
+            if (!cG1.right_bumper && pG1.left_bumper) {
                 runningActions.add(new SequentialAction(intake.IntakeBall()));
             } else {
                 runningActions.add(new SequentialAction(intake.IntakeBallStop()));
             }
-            if (currentGamepad1.left_trigger >= 0.1 && previousGamepad1.right_trigger >= 0.1) {
+            if (cG1.left_trigger >= 0.1 && pG1.right_trigger >= 0.1) {
                 runningActions.add(new SequentialAction(intake.IntakeBallReverse()));
             } else {
                 runningActions.add(new SequentialAction(intake.IntakeBallStop()));
             }
-            if (!currentGamepad2.dpad_up && previousGamepad2.dpad_up) {
+            if (!cG2.dpad_up && pG2.dpad_up) {
                 runningActions.add(new SequentialAction(push.PushBallUp()));
             }
-            if (!currentGamepad2.dpad_down && previousGamepad2.dpad_down) {
+            if (!cG2.dpad_down && pG2.dpad_down) {
                 runningActions.add(new SequentialAction(push.PushBallDown()));
             }
-            if (currentGamepad2.right_bumper && !previousGamepad2.left_bumper) {
+            if (cG2.right_bumper && !pG2.left_bumper) {
                 runningActions.add(new SequentialAction(flywheel.shoot()));
             } else {
                 runningActions.add(new SequentialAction(flywheel.shootStop()));
             }
-            if (!currentGamepad2.y && previousGamepad2.y) {
+            if (!cG2.y && pG2.y) {
                 if (ballFocused == 1) {
                     Actions.runBlocking(index.index2());
                     ballFocused = 2;
@@ -159,7 +159,7 @@ public class MainTeleOp extends LinearOpMode {
 
                 }
             }
-            if (!currentGamepad2.b && previousGamepad2.b) {
+            if (!cG2.b && pG2.b) {
                 if (ballFocused == 3) {
                     runningActions.add(new SequentialAction(index.index2()));
                     ballFocused = 2;
