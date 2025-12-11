@@ -18,14 +18,16 @@ public class Push {
     }
 
     class PushBallUp implements Action {
-        private boolean initialized = false;
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            if (!initialized) {
+            if (push.getPosition() == upPos) {
+                push.setPosition(downPos);
+                return false;
+            } else {
                 push.setPosition(upPos);
+                return true;
             }
-            return false;
         }
 
 
@@ -39,7 +41,6 @@ public class Push {
             }
             return false;
         }
-
     }
 
     public Action PushBallUp() {
