@@ -137,10 +137,9 @@ public class MainTeleOp extends LinearOpMode {
                 intake1.setPower(-1);
             }
             if (!cG2.dpad_up && pG2.dpad_up) {
-                runningActions.add(new SequentialAction(push.PushBallUp()));
-            }
-            if (!cG2.dpad_down && pG2.dpad_down) {
-                runningActions.add(new SequentialAction(push.PushBallDown()));
+                Actions.runBlocking(push.PushBallUp());
+                sleep(200);
+                Actions.runBlocking(push.PushBallDown());
             }
             if (cG2.right_bumper && !pG2.left_bumper) {
                 runningActions.add(new SequentialAction(flywheel.shoot()));
