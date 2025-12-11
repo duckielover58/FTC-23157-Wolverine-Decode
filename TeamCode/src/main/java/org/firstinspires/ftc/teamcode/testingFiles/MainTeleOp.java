@@ -127,26 +127,24 @@ public class MainTeleOp extends LinearOpMode {
 
             drive.updatePoseEstimate();
 
-            if (gamepad1.right_trigger > 0.1) {
-                Actions.runBlocking(intake.IntakeBall());
+            if (!currentGamepad1.right_bumper && previousGamepad1.left_bumper) {
+                runningActions.add(new SequentialAction(intake.IntakeBall()));
             } else {
-                Actions.runBlocking(intake.IntakeBallStop());
+                runningActions.add(new SequentialAction(intake.IntakeBallStop()));
             }
-            if (gamepad1.left_trigger > 0.1) {
-                Actions.runBlocking(intake.IntakeBallReverse());
+            if (!currentGamepad1.left_bumper && previousGamepad1.right_bumper) {
+                runningActions.add(new SequentialAction(intake.IntakeBallReverse()));
             } else {
-                Actions.runBlocking(intake.IntakeBallStop());
+                runningActions.add(new SequentialAction(intake.IntakeBallStop()));
             }
-            if (gamepad2.dpad_up) {
-                Actions.runBlocking(push.PushBallUp());
-                sleep(400);
-                Actions.runBlocking(push.PushBallDown());
+            if (!currentGamepad2.dpad_up && previousGamepad2.dpad_up) {
+                runningActions.add(new SequentialAction(push.PushBallUp()));
             }
-            if (gamepad2.dpad_down) {
-                Actions.runBlocking(push.PushBallDown());
+            if (!currentGamepad2.dpad_down && previousGamepad2.dpad_down) {
+                runningActions.add(new SequentialAction(push.PushBallDown()));
             }
-            if (gamepad2.right_trigger >= 0.1) {
-                Actions.runBlocking(flywheel.shoot());
+            if (currentGamepad2.right_bumper && !previousGamepad2.left_bumper) {
+                runningActions.add(new SequentialAction(flywheel.shoot()));
             } else {
                 runningActions.add(new SequentialAction(flywheel.shootStop()));
             }
