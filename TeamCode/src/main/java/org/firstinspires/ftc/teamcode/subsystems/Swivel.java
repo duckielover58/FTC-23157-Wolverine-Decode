@@ -6,15 +6,12 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
-
-import org.firstinspires.ftc.teamcode.testingFiles.ShooterLockTest;
-import org.firstinspires.ftc.teamcode.testingFiles.MainTeleOp;
 
 public class Swivel {
 
     private double blueTarget;
     private double redTarget;
+    private double servoPower;
 
     private CRServo swivel;
     //private Servo swivel;
@@ -24,10 +21,15 @@ public class Swivel {
         //swivel = hardwareMap.get(Servo.class, "Swivel");
     }
 
+    public void setPower(double servoPower) {
+        this.servoPower = servoPower;
+    }
+
+
     public class Aim implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            swivel.setPower(MainTeleOp.ServoPower);
+            swivel.setPower(servoPower);
             return false;
         }
     }
