@@ -15,7 +15,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -25,7 +25,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Flywheel;
-import org.firstinspires.ftc.teamcode.subsystems.FlywheelController;
 import org.firstinspires.ftc.teamcode.subsystems.Index;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Push;
@@ -71,6 +70,7 @@ public class MainTeleOp extends LinearOpMode {
     public final int redTag = 24;
     public int ballFocused = 1;
     private CRServo swivel;
+    private DcMotorEx intake1;
 
     @Override
     public void runOpMode() {
@@ -78,15 +78,13 @@ public class MainTeleOp extends LinearOpMode {
         PinpointDrive drive = new PinpointDrive(hardwareMap, new Pose2d(0,0,0));
 
         Intake intake = new Intake(hardwareMap);
+        intake1 = hardwareMap.get(DcMotorEx.class, "Intake");
         Push push = new Push(hardwareMap);
         Flywheel flywheel = new Flywheel(hardwareMap);
-        DcMotor flywheelMotor = hardwareMap.get(DcMotor.class, "Flywheel");
-        FlywheelController flyCtrl = new FlywheelController(flywheelMotor);
-        Gamepad currentGamepad1 = new Gamepad();
-        Gamepad currentGamepad2 = new Gamepad();
-
-        Gamepad previousGamepad1 = new Gamepad();
-        Gamepad previousGamepad2 = new Gamepad();
+        Gamepad cG1 = new Gamepad();
+        Gamepad cG2 = new Gamepad();
+        Gamepad pG1 = new Gamepad();
+        Gamepad pG2 = new Gamepad();
         FtcDashboard dash = FtcDashboard.getInstance();
         List<Action> runningActions = new ArrayList<>();
 
@@ -101,11 +99,11 @@ public class MainTeleOp extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            previousGamepad1.copy(currentGamepad1);
-            previousGamepad2.copy(currentGamepad2);
+            pG1.copy(cG1);
+            pG2.copy(cG2);
 
-            currentGamepad1.copy(gamepad1);
-            currentGamepad2.copy(gamepad2);
+            cG1.copy(gamepad1);
+            cG2.copy(gamepad2);
 
             TelemetryPacket packet = new TelemetryPacket();
 
@@ -127,30 +125,28 @@ public class MainTeleOp extends LinearOpMode {
 
             drive.updatePoseEstimate();
 
-            if (gamepad1.right_trigger > 0.1) {
-                Actions.runBlocking(intake.IntakeBall());
+            if (!cG1.right_bumper && pG1.left_bumper) {
+                runningActions.add(new SequentialAction(intake.IntakeBall()));
             } else {
-                Actions.runBlocking(intake.IntakeBallStop());
+                runningActions.add(new SequentialAction(intake.IntakeBallStop()));
             }
-            if (gamepad1.left_trigger > 0.1) {
-                Actions.runBlocking(intake.IntakeBallReverse());
+            if (cG1.left_trigger >= 0.1 && pG1.right_trigger >= 0.1) {
+                runningActions.add(new SequentialAction(intake.IntakeBallReverse()));
             } else {
-                Actions.runBlocking(intake.IntakeBallStop());
+                runningActions.add(new SequentialAction(intake.IntakeBallStop()));
             }
-            if (gamepad2.dpad_up) {
-                Actions.runBlocking(push.PushBallUp());
-                sleep(400);
-                Actions.runBlocking(push.PushBallDown());
+            if (!cG2.dpad_up && pG2.dpad_up) {
+                runningActions.add(new SequentialAction(push.PushBallUp()));
             }
-            if (gamepad2.dpad_down) {
-                Actions.runBlocking(push.PushBallDown());
+            if (!cG2.dpad_down && pG2.dpad_down) {
+                runningActions.add(new SequentialAction(push.PushBallDown()));
             }
-            if (gamepad2.right_trigger >= 0.1) {
-                Actions.runBlocking(flywheel.shoot());
+            if (cG2.right_bumper && !pG2.left_bumper) {
+                runningActions.add(new SequentialAction(flywheel.shoot()));
             } else {
                 runningActions.add(new SequentialAction(flywheel.shootStop()));
             }
-            if (!currentGamepad2.y && previousGamepad2.y) {
+            if (!cG2.y && pG2.y) {
                 if (ballFocused == 1) {
                     Actions.runBlocking(index.index2());
                     ballFocused = 2;
@@ -163,7 +159,7 @@ public class MainTeleOp extends LinearOpMode {
 
                 }
             }
-            if (!currentGamepad2.b && previousGamepad2.b) {
+            if (!cG2.b && pG2.b) {
                 if (ballFocused == 3) {
                     runningActions.add(new SequentialAction(index.index2()));
                     ballFocused = 2;
