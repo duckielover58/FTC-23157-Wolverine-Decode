@@ -24,8 +24,6 @@ public class LimelightShooterLockRed extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-
-
         // Initialize Limelight
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.start();
@@ -34,6 +32,7 @@ public class LimelightShooterLockRed extends LinearOpMode {
         CRServo swivel = hardwareMap.get(CRServo.class, "Swivel");
         while (opModeIsActive()) {
 
+/*
             if (gamepad1.dpad_down) {
                 servoSpeed -= 0.1;
                 telemetry.addData("Speed ", servoSpeed);
@@ -50,7 +49,7 @@ public class LimelightShooterLockRed extends LinearOpMode {
                 star = true;
             }
 
-
+ */
 
             LLResult result = limelight.getLatestResult();
             if (result != null && result.isValid() && !servoLocked && star) {

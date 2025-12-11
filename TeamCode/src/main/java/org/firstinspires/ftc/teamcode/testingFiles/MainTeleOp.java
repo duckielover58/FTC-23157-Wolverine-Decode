@@ -12,6 +12,8 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -21,6 +23,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
@@ -66,12 +69,13 @@ public class MainTeleOp extends LinearOpMode {
     private double robotHeading = 0; //placeholder
     private double cameraHeading = robotHeading;
     public static double ServoPower = 0;
-    public final int blueTag = 20;
-    public final int redTag = 24;
+    public final int blueTag = 2;
+    public final int redTag = 0;
     public int ballFocused = 1;
     private CRServo swivel;
     private DcMotorEx intake1;
-
+    private Limelight3A limelight;
+    private boolean locking;
     @Override
     public void runOpMode() {
 
@@ -87,10 +91,9 @@ public class MainTeleOp extends LinearOpMode {
         Gamepad pG2 = new Gamepad();
         FtcDashboard dash = FtcDashboard.getInstance();
         List<Action> runningActions = new ArrayList<>();
-
-        //Swivel swivel = new Swivel(hardwareMap);
         swivel = hardwareMap.get(CRServo.class, "Swivel");
         Index index = new Index(hardwareMap);
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
         telemetry.addLine("Initialized");
         telemetry.update();
@@ -125,15 +128,13 @@ public class MainTeleOp extends LinearOpMode {
 
             drive.updatePoseEstimate();
 
-            if (!cG1.right_bumper && pG1.left_bumper) {
-                runningActions.add(new SequentialAction(intake.IntakeBall()));
+            if (cG1.right_trigger >= 0.1) {
+                intake1.setPower(1);
             } else {
-                runningActions.add(new SequentialAction(intake.IntakeBallStop()));
+                intake1.setPower(0);
             }
-            if (cG1.left_trigger >= 0.1 && pG1.right_trigger >= 0.1) {
-                runningActions.add(new SequentialAction(intake.IntakeBallReverse()));
-            } else {
-                runningActions.add(new SequentialAction(intake.IntakeBallStop()));
+            if (cG1.left_trigger >= 0.1) {
+                intake1.setPower(-1);
             }
             if (!cG2.dpad_up && pG2.dpad_up) {
                 runningActions.add(new SequentialAction(push.PushBallUp()));
@@ -171,9 +172,11 @@ public class MainTeleOp extends LinearOpMode {
                     ballFocused = 1;
                 }
             }
-            if (gamepad2.a) {
+            if (cG2.a && !pG2.a) {
                 servoLocked = false;
-                lock(redTag, blueTag);
+            }
+            if (!servoLocked) {
+                lock(redTag);
             }
             /*
             if (gamepad1.dpad_right) {
@@ -188,120 +191,36 @@ public class MainTeleOp extends LinearOpMode {
         }
     }
 
-    private void lock(int tag1, int tag2) {
-        initAprilTag();
-        telemetryAprilTag(tag1, tag2);
-        while (!servoLocked && detectionsExist) {
-            telemetryAprilTag(tag1, tag2);
-            telemetry.update();
-            ServoPower = 0;
-            swivel.setPower(ServoPower);
-            sleep(20);
-        }
+    private void lock(int tag1) {
+        limelight.pipelineSwitch(tag1);
+        LLResult result = limelight.getLatestResult();
+        if (result != null && result.isValid() && !servoLocked) {
+            Pose3D botpose = result.getBotpose(); // pose from Limelight
+            double bearing = result.getTx(); // x offset in degrees from target (target x and bearing are the same thing i think)
 
-        detectionsExist = true;
+            // servo aiming/locking
+            double bearingThreshold = 3;
+            double servoSpeed = 1;
 
-        visionPortal.close();
-    }
-    private void initAprilTag() {
-
-        // Create the AprilTag processor.
-        aprilTag = new AprilTagProcessor.Builder()
-                //Cam visual settings
-                // The following default settings are available to un-comment and edit as needed.
-                //.setDrawAxes(false)
-                //.setDrawCubeProjection(false)
-                //.setDrawTagOutline(true)
-                //.setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-                .setTagLibrary(AprilTagGameDatabaseEditable.getCurrentGameTagLibrary())
-                .setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
-                .setCameraPose(cameraPosition, cameraOrientation)
-                // == CAMERA CALIBRATION ==
-                // If you do not manually specify calibration parameters, the SDK will attempt
-                // to load a predefined calibration for your camera.
-                //.setLensIntrinsics(578.272, 578.272, 402.145, 221.506)
-                // ... these parameters are fx, fy, cx, cy.
-                .build();
-
-        //Cam fps
-        // Adjust Image Decimation to trade-off detection-range for detection-rate.
-        // eg: Some typical detection data using a Logitech C920 WebCam
-        // Decimation = 1 ..  Detect 2" Tag from 10 feet away at 10 Frames per second
-        // Decimation = 2 ..  Detect 2" Tag from 6  feet away at 22 Frames per second
-        // Decimation = 3 ..  Detect 2" Tag from 4  feet away at 30 Frames Per Second (default)
-        // Decimation = 3 ..  Detect 5" Tag from 10 feet away at 30 Frames Per Second (default)
-        // Note: Decimation can be changed on-the-fly to adapt during a match.
-        //aprilTag.setDecimation(3);
-
-        VisionPortal.Builder builder = new VisionPortal.Builder();
-        builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
-        builder.setCameraResolution(new Size(640, 480));
-        //builder.enableLiveView(true);
-        builder.setStreamFormat(VisionPortal.StreamFormat.MJPEG);
-        builder.setAutoStopLiveView(false);
-
-        builder.addProcessor(aprilTag);
-        visionPortal = builder.build();
-
-        visionPortal.setProcessorEnabled(aprilTag, true);
-
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        sleep(100);
-        telemetry.addData("On Init: # AprilTags Detected", currentDetections.size());
-        if (currentDetections.isEmpty()) {
-            detectionsExist = false;
-        } else {
-            detectionsExist = true;
-        }
-    }
-    private void telemetryAprilTag(int tag1, int tag2) {
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        telemetry.addData("# AprilTags Detected", currentDetections.size());
-
-        // Step through the list of detections and display info for each one.
-        for (AprilTagDetection detection : currentDetections) {
-        if (detection.id == tag1 || detection.id == tag2) {
-            if (detection.id != 0) {
-                double sped = 0.1;
-                double bearingErr = 1;
-
-                if (detection.ftcPose.bearing > bearingErr + 3) {
-                    ServoPower = -sped;
-                    telemetry.addData("Bearing", bearing);
-                    swivel.setPower(ServoPower);
-
-                } else if (detection.ftcPose.bearing < -bearingErr + 3) {
-                    ServoPower = sped;
-                    telemetry.addData("Bearing", bearing);
-                    swivel.setPower(ServoPower);
-                } else if (-bearingErr + 3 <= detection.ftcPose.bearing && detection.ftcPose.bearing <= bearingErr + 3) {
-                    ServoPower = 0;
-                    telemetry.addData("Bearing", bearing);
-                    swivel.setPower(ServoPower);
-                    telemetry.addData("Bearing reached within limit", bearing);
-                    servoLocked = true;
-                }
-
-                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
-                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
-                telemetry.addData("Servo Power:", ServoPower);
-                telemetry.addData("Bearing:", detection.ftcPose.bearing);
-
+            if (bearing > bearingThreshold) {
+                ServoPower = -servoSpeed;
+            } else if (bearing < -bearingThreshold) {
+                ServoPower = servoSpeed;
+            } else {
+                ServoPower = 0;
+                servoLocked = true;
             }
-        }
 
-            // Add "key" information to telemetry
-            telemetry.addData("Servo Power:", ServoPower);
-            telemetry.addData("Bearing:", bearing);
-            telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
-            telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
+            swivel.setPower(ServoPower);
 
-            sleep(20);
+            // telemetry
+            telemetry.addData("Bearing", bearing);
+            telemetry.addData("Servo Power", ServoPower);
+            telemetry.addData("Servo Locked", servoLocked);
+            telemetry.addData("Target Valid", result.isValid());
+            telemetry.update();
         }
+        sleep(20);
     }
-
-
-
 }
 
