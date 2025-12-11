@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.testingFiles;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import java.util.concurrent.ExecutionException;
@@ -22,10 +23,10 @@ public class FlywheelPIDTuning extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        flywheel = hardwareMap.get(DcMotor.class, "Flywheel");
-        flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        flywheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel");
+        flywheel.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        flywheel.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         double pushPos = 0;
         double step = 0.1;
