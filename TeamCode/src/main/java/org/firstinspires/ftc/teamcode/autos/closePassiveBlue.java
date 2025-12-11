@@ -28,8 +28,8 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 
 
 @Config
-@Autonomous(name = "closePassive", group = "Robot")
-public class closePassive extends LinearOpMode {
+@Autonomous(name = "closePassiveBlue", group = "Robot")
+public class closePassiveBlue extends LinearOpMode {
 
     private Flywheel flywheel;
     private Index index;
@@ -38,7 +38,7 @@ public class closePassive extends LinearOpMode {
     private Swivel swivel;
     private Limelight limelight;
 
-    public static final int RED_TAG_ID = 24;
+    public static final int BLUE_TAG_ID = 20;
 
     private class ShootThreeBalls implements Action {
         private final Action sequence;
@@ -83,7 +83,7 @@ public class closePassive extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d startPose = new Pose2d(-61, -9, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(-61, 9, Math.toRadians(270));
         PinpointDrive drive = new PinpointDrive(hardwareMap, startPose);
 
         flywheel = new Flywheel(hardwareMap);
@@ -97,32 +97,32 @@ public class closePassive extends LinearOpMode {
 
         Action closePassive = drive.actionBuilder(startPose)
                 .stopAndAdd(new ShootThreeBalls())
-                .strafeToLinearHeading(new Vector2d(-9.5,-30),Math.toRadians(270))
+                .strafeToLinearHeading(new Vector2d(-9.5,30),Math.toRadians(90))
                 .afterTime(0.3, intake.IntakeBallReverse())
                 .stopAndAdd(index.index1())
-                .strafeTo(new Vector2d(-9.5, -33))
+                .strafeTo(new Vector2d(-9.5, 33))
                 .waitSeconds(1.5)
                 .stopAndAdd(index.index2())
-                .strafeTo(new Vector2d(-9.5, -36))
+                .strafeTo(new Vector2d(-9.5, 36))
                 .waitSeconds(1.5)
                 .stopAndAdd(index.index3())
-                .strafeTo(new Vector2d(-9.5, -39))
+                .strafeTo(new Vector2d(-9.5, 39))
                 .waitSeconds(1.5)
                 .stopAndAdd(intake.IntakeBallStop())
-                .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(110))
+                .strafeToLinearHeading(new Vector2d(-29.3, 30.3), Math.toRadians(225))
                 .stopAndAdd(limelight.limelightRed())
                 .stopAndAdd(new ShootThreeBalls())
                 .waitSeconds(5)
                 .setTangent(45)
-                .splineToLinearHeading(new Pose2d(11, -31, Math.toRadians(270)), Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(11, 31, Math.toRadians(90)), Math.toRadians(90))
                 .afterTime(0.3, intake.IntakeBallReverse())
                 .strafeTo(new Vector2d(11, -50))
-                .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(110))
+                .strafeToLinearHeading(new Vector2d(-29.3, 30.3), Math.toRadians(225))
                 .afterTime(0.3, intake.IntakeBallStop())
                 .stopAndAdd(limelight.limelightRed())
                 .stopAndAdd(new ShootThreeBalls())
                 .waitSeconds(5)
-                .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(180))
+                .strafeToLinearHeading(new Vector2d(-29.3, 30.3), Math.toRadians(0))
                 .build();
 
         Action fullRoutine = new SequentialAction(closePassive);

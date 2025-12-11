@@ -12,8 +12,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Index {
 
     private Servo index;
-    private double ball1 = 0.02; //0.05
-    private double ball2 = 0.39; //0.40
+    private double ball1 = 0.01; //0.05
+    private double ball2 = 0.38; //0.40
     private double ball3 = 0.75; //0.75
 
     public Index (HardwareMap hardwareMap) {
