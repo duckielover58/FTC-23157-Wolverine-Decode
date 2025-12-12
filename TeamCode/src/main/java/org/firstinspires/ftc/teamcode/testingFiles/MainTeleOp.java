@@ -48,7 +48,7 @@ public class MainTeleOp extends LinearOpMode {
     long lastSeenTime = 0;
     final long LOST_TIMEOUT_MS = 300;  // stop lock if no tag for 0.3 sec
 
-    public boolean servoLocked = false;
+    public boolean servoLocked = true;
     public boolean detectionsExist = true;
     private Position cameraPosition = new Position(DistanceUnit.INCH,
             0, 8.5, 1, 0);
@@ -102,6 +102,8 @@ public class MainTeleOp extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+            sleep(20);
+
             pG1.copy(cG1);
             pG2.copy(cG2);
 
@@ -138,10 +140,10 @@ public class MainTeleOp extends LinearOpMode {
             }
             if (!cG2.dpad_up && pG2.dpad_up) {
                 Actions.runBlocking(push.PushBallUp());
-                sleep(200);
+                sleep(300);
                 Actions.runBlocking(push.PushBallDown());
             }
-            if (cG2.right_bumper && !pG2.left_bumper) {
+            if (cG2.right_trigger >= 0.1) {
                 runningActions.add(new SequentialAction(flywheel.shoot()));
             } else {
                 runningActions.add(new SequentialAction(flywheel.shootStop()));
@@ -173,53 +175,63 @@ public class MainTeleOp extends LinearOpMode {
             }
             if (cG2.a && !pG2.a) {
                 servoLocked = false;
+                telemetry.addLine("limelight started");
+                telemetry.update();
+                sleep(100);
+                limelight.start();
+                limelight.pipelineSwitch(redTag);
+                telemetry.addLine("limelight pipeline switched");
+                telemetry.update();
+                sleep(100);
+
             }
             if (!servoLocked) {
-                lock(redTag);
-            }
-            /*
-            if (gamepad1.dpad_right) {
-                Actions.runBlocking(swivel.aim());
-            }
+                LLResult result = limelight.getLatestResult();
+                telemetry.addLine("result");
+                telemetry.update();
+                sleep(100);
+                if (result != null && result.isValid() && !servoLocked) {
+                    telemetry.addLine("in loop");
+                    telemetry.update();
+                    sleep(100);
+                    Pose3D botpose = result.getBotpose(); // pose from Limelight
+                    double bearing = result.getTx(); // x offset in degrees from target (target x and bearing are the same thing i think)
 
-             */
+                    // servo aiming/locking
+                    double bearingThreshold = 3;
+                    double servoSpeed = 1;
+
+                    if (bearing > bearingThreshold) {
+                        telemetry.addLine("adjusting swivel");
+                        telemetry.update();
+                        ServoPower = -servoSpeed;
+                    } else if (bearing < -bearingThreshold) {
+                        telemetry.addLine("adjusting swivel");
+                        telemetry.update();
+                        ServoPower = servoSpeed;
+                    } else {
+                        telemetry.addLine("stopping swivel");
+                        telemetry.update();
+                        ServoPower = 0;
+                        servoLocked = true;
+                        limelight.stop();
+                    }
+
+                    swivel.setPower(ServoPower);
+
+                    // telemetry
+                    telemetry.addData("Bearing", bearing);
+                    telemetry.addData("Servo Power", ServoPower);
+                    telemetry.addData("Servo Locked", servoLocked);
+                    telemetry.addData("Target Valid", result.isValid());
+                    telemetry.update();
+                }
+            }
 
             telemetry.addData("Servo Locked", servoLocked);
             telemetry.addData("detectionsExist", detectionsExist);
             telemetry.update();
         }
-    }
-
-    private void lock(int tag1) {
-        limelight.pipelineSwitch(tag1);
-        LLResult result = limelight.getLatestResult();
-        if (result != null && result.isValid() && !servoLocked) {
-            Pose3D botpose = result.getBotpose(); // pose from Limelight
-            double bearing = result.getTx(); // x offset in degrees from target (target x and bearing are the same thing i think)
-
-            // servo aiming/locking
-            double bearingThreshold = 3;
-            double servoSpeed = 1;
-
-            if (bearing > bearingThreshold) {
-                ServoPower = -servoSpeed;
-            } else if (bearing < -bearingThreshold) {
-                ServoPower = servoSpeed;
-            } else {
-                ServoPower = 0;
-                servoLocked = true;
-            }
-
-            swivel.setPower(ServoPower);
-
-            // telemetry
-            telemetry.addData("Bearing", bearing);
-            telemetry.addData("Servo Power", ServoPower);
-            telemetry.addData("Servo Locked", servoLocked);
-            telemetry.addData("Target Valid", result.isValid());
-            telemetry.update();
-        }
-        sleep(20);
     }
 }
 
