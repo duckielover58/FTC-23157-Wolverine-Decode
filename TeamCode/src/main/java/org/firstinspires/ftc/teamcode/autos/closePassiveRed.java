@@ -107,7 +107,7 @@ public class closePassiveRed extends LinearOpMode {
                 .strafeTo(new Vector2d(-9.5, -39))
                 .waitSeconds(1.5)
                 .stopAndAdd(intake.IntakeBallStop())
-                .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(135))
+                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(135))
                 .stopAndAdd(limelight.limelightRed())
                 .stopAndAdd(new ShootThreeBalls())
                 .waitSeconds(5)
