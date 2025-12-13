@@ -9,9 +9,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 public class Flywheelgm0PIDtest extends LinearOpMode {
 
     // PID constants (START SMALL)
-    double kP = 0.0015;
+    double kP = 0.0200;
     double kI = 0.0;
-    double kD = 0.00001;
+    double kD = 0.00003;
 
     double integralSum = 0;
     double previousError = 0;
@@ -34,7 +34,7 @@ public class Flywheelgm0PIDtest extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            double targetVelocity = 928.8;
+            double targetVelocity = 740;
             double currentVelocity = flywheel.getVelocity();
             double currentTime = getRuntime();
             double dt = currentTime - previousTime;

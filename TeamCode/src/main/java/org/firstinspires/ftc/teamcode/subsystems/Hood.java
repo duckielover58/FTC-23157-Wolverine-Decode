@@ -4,9 +4,10 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.teamcode.testingFiles.MainTeleOp;
 
 public class Hood {
     private Servo hood;
@@ -43,7 +44,15 @@ public class Hood {
         }
     }
 
-    public Action HoodPosition() {
+    public class HoodPos implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            MainTeleOp.hoodPoss = hood.getPosition();
+            return false;
+        }
+    }
+
+    public Action hoodPosition() {
         return new HoodPosition();
     }
     public Action hoodDown() {
@@ -51,6 +60,10 @@ public class Hood {
     }
     public Action hoodUp() {
         return new HoodUp();
+    }
+
+    public Action hoodPos() {
+        return new HoodPos();
     }
 
     /*

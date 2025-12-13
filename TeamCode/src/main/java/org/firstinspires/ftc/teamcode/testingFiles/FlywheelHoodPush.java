@@ -3,12 +3,13 @@ package org.firstinspires.ftc.teamcode.testingFiles;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name = "FlywheelHoodSwivel")
 public class FlywheelHoodPush extends LinearOpMode {
 
-    private DcMotor flywheel;
+    private DcMotorEx flywheel;
     private Servo hood;
     private Servo push;
     private boolean onPush = true;
@@ -17,13 +18,13 @@ public class FlywheelHoodPush extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        flywheel = hardwareMap.get(DcMotor.class, "Flywheel");
+        flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel");
         hood   = hardwareMap.get(Servo.class, "Hood");
         push  = hardwareMap.get(Servo.class, "Push");
 
         flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        double flywheelPos = 0.5;
+        double flywheelPower = 10/13.29;
         double hoodPos  = 0.5;
         double pushMax = 0.35;
         double pushMin = 0;
@@ -79,17 +80,16 @@ public class FlywheelHoodPush extends LinearOpMode {
                 sleep(slep);
             }
             if (gamepad1.right_bumper) {
-                flywheelPos += step;
-                flywheelPos = Math.round((int) (flywheelPos));
+                flywheelPower += step;
+                flywheelPower = Math.round((int) (flywheelPower));
                 sleep(slep);
-                telemetry.addLine("New Flywheel position:" + flywheelPos);
             }
 
             else if (gamepad1.left_bumper) {
-                flywheelPos -= step;
-                flywheelPos = Math.round((int) (flywheelPos));
+                flywheelPower -= step;
+                flywheelPower = Math.round((int) (flywheelPower));
                 sleep(slep);
-                telemetry.addLine("New Flywheel position:" + flywheelPos);
+                telemetry.addLine("New Flywheel position:" + flywheelPower);
             }
 
             if (hoodPos != lastHoodPos) {
@@ -118,7 +118,10 @@ public class FlywheelHoodPush extends LinearOpMode {
             }
 
             if (gamepad1.x) {
-                flywheel.setPower(flywheelPos);
+                flywheel.setPower(flywheelPower);
+                telemetry.addLine("New Flywheel position:" + flywheelPower);
+                telemetry.addData("Flywheel Velocity:", flywheel.getVelocity());
+                telemetry.update();
             }
         }
     }

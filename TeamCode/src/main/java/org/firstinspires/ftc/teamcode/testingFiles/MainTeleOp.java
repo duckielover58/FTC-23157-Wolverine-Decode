@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.testingFiles;
 
-import static org.firstinspires.ftc.teamcode.testingFiles.ShooterLockTest.bearing;
-
-import android.util.Size;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
@@ -18,22 +14,21 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
-import org.firstinspires.ftc.teamcode.subsystems.Flywheel;
 import org.firstinspires.ftc.teamcode.subsystems.Hood;
 import org.firstinspires.ftc.teamcode.subsystems.Index;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Push;
 import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
@@ -70,6 +65,9 @@ public class MainTeleOp extends LinearOpMode {
     private double robotHeading = 0; //placeholder
     private double cameraHeading = robotHeading;
     public static double ServoPower = 0;
+    public static double ServoPos = 0;
+    public static double flywheelV;
+    public static double hoodPoss;
     public final int blueTag = 2;
     public final int redTag = 0;
     public int ballFocused = 1;
@@ -77,6 +75,18 @@ public class MainTeleOp extends LinearOpMode {
     private DcMotorEx intake1;
     private Limelight3A limelight;
     private boolean locking;
+    double kP = 0.02809;
+    double kI = 0.0;
+    double kD = 0.000032;
+
+    double integralSum = 0;
+    double previousError = 0;
+    double previousTime = 0;
+    boolean rumble = false;
+    double close = 690;
+    double far = 840;
+    DcMotorEx flywheel;
+
     @Override
     public void runOpMode() {
 
@@ -85,7 +95,8 @@ public class MainTeleOp extends LinearOpMode {
         Intake intake = new Intake(hardwareMap);
         intake1 = hardwareMap.get(DcMotorEx.class, "Intake");
         Push push = new Push(hardwareMap);
-        Flywheel flywheel = new Flywheel(hardwareMap);
+        flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel");
+        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         Hood hood = new Hood(hardwareMap);
         Gamepad cG1 = new Gamepad();
         Gamepad cG2 = new Gamepad();
@@ -100,7 +111,7 @@ public class MainTeleOp extends LinearOpMode {
         telemetry.addLine("Initialized");
         telemetry.update();
 
-        Actions.runBlocking(new SequentialAction(index.indexHome(), push.PushBallDown(), hood.hoodUp(), hood.hoodDown()));
+        Actions.runBlocking(new SequentialAction(index.indexHome(), push.PushBallDown(), hood.hoodPosition()));
 
         waitForStart();
 
@@ -148,15 +159,18 @@ public class MainTeleOp extends LinearOpMode {
                 Actions.runBlocking(push.PushBallDown());
             }
             if (cG2.right_trigger >= 0.1) {
-                runningActions.add(new SequentialAction(flywheel.shoot()));
-            } else {
-                runningActions.add(new SequentialAction(flywheel.shootStop()));
+                flywheelPID(close);
+            } else flywheel.setPower(0);
+            if (cG2.left_trigger >= 0.1) {
+                flywheelPID(far);
             }
             if (cG2.right_bumper && !pG2.right_bumper) {
                 runningActions.add(new SequentialAction(hood.hoodUp()));
+                runningActions.add(new SequentialAction(hood.hoodPos()));
             }
             if (cG2.left_bumper && !pG2.left_bumper) {
                 runningActions.add(new SequentialAction(hood.hoodDown()));
+                runningActions.add(new SequentialAction(hood.hoodPos()));
             }
             if (!cG2.y && pG2.y) {
                 if (ballFocused == 1) {
@@ -183,17 +197,23 @@ public class MainTeleOp extends LinearOpMode {
                     ballFocused = 1;
                 }
             }
-            if (cG2.x && !pG2.x) {
+            if (cG1.a && !pG1.a) {
                 limelightInits();
             }
+            if (rumble) {
+                cG2.rumble(500);
+            }
             lodk();
+
+            telemetry.addData("Hood Position", hoodPoss);
             telemetry.addData("Servo Locked", servoLocked);
             telemetry.addData("detectionsExist", detectionsExist);
+            telemetry.addData("flywheel vel", flywheelV);
             telemetry.update();
         }
     }
     void limelightInits() {
-        servoLocked = !servoLocked;
+        servoLocked = false;
         telemetry.addLine("limelight started");
         telemetry.update();
         sleep(100);
@@ -209,7 +229,7 @@ public class MainTeleOp extends LinearOpMode {
             telemetry.addLine("result");
             telemetry.update();
             sleep(100);
-            if (result != null && result.isValid() && !servoLocked) {
+            if (!servoLocked) {
                 telemetry.addLine("in loop");
                 telemetry.update();
                 sleep(100);
@@ -242,8 +262,38 @@ public class MainTeleOp extends LinearOpMode {
                 telemetry.addData("Servo Power", ServoPower);
                 telemetry.addData("Servo Locked", servoLocked);
                 telemetry.addData("Target Valid", result.isValid());
-                telemetry.update();
             }
+        }
+    }
+    void flywheelPID (double target) {
+        previousTime = getRuntime();
+
+        double targetVelocity = target;
+        double currentVelocity = flywheel.getVelocity();
+        double currentTime = getRuntime();
+        double dt = currentTime - previousTime;
+        double error = targetVelocity - currentVelocity;
+
+        integralSum += error * dt;
+        double derivative = (error - previousError) / dt;
+
+        double output = (kP * error) + (kI * integralSum) + (kD * derivative);
+        output = Math.max(-1.0, Math.min(1.0, output));
+
+        flywheel.setPower(output);
+
+        telemetry.addData("Target Velocity: ", targetVelocity);
+        telemetry.addData("Current Velocity: ", currentVelocity);
+        telemetry.addData("Error: ", error);
+        telemetry.addData("Power: ", output);
+
+        previousError = error;
+        previousTime = currentTime;
+
+        if (error <= 40) {
+            rumble = true;
+        } else {
+            rumble = false;
         }
     }
 }
