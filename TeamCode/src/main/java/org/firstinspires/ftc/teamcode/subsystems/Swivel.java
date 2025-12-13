@@ -79,6 +79,7 @@ public class Swivel {
     }
     public Action turn90right() { return new Turn90right(); }
     public Action turn90left() { return new Turn90left(); }
+    public Action stop() {return new StopSwivel();}
     public Action targetBlue() { return new TargetBlue(); }
     public Action targetRed() { return new TargetRed(); }
 }
