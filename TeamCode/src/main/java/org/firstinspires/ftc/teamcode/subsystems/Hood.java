@@ -9,15 +9,15 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Hood {
-    private CRServo hood;
+    private Servo hood;
     public Hood (HardwareMap hardwareMap) {
-        hood = hardwareMap.get(CRServo.class, "Hood");
+        hood = hardwareMap.get(Servo.class, "Hood");
     }
 
     public class HoodPosition implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            //hood.setPosition(0.5);
+            hood.setPosition(0.5);
             return false;
         }
     }
@@ -25,7 +25,7 @@ public class Hood {
     public class HoodUp implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            hood.setPower(0.01);
+            hood.setPosition(0.01);
             return false;
         }
     }
@@ -33,7 +33,7 @@ public class Hood {
     public class HoodDown implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            hood.setPower(-0.01);
+            hood.setPosition(-0.01);
             return false;
         }
     }
