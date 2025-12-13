@@ -28,6 +28,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Flywheel;
+import org.firstinspires.ftc.teamcode.subsystems.Hood;
 import org.firstinspires.ftc.teamcode.subsystems.Index;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Push;
@@ -70,7 +71,7 @@ public class MainTeleOp extends LinearOpMode {
     private double cameraHeading = robotHeading;
     public static double ServoPower = 0;
     public final int blueTag = 2;
-    //public final int redTag = 0;
+    public final int redTag = 0;
     public int ballFocused = 1;
     private CRServo swivel;
     private DcMotorEx intake1;
@@ -85,6 +86,7 @@ public class MainTeleOp extends LinearOpMode {
         intake1 = hardwareMap.get(DcMotorEx.class, "Intake");
         Push push = new Push(hardwareMap);
         Flywheel flywheel = new Flywheel(hardwareMap);
+        Hood hood = new Hood(hardwareMap);
         Gamepad cG1 = new Gamepad();
         Gamepad cG2 = new Gamepad();
         Gamepad pG1 = new Gamepad();
@@ -97,6 +99,8 @@ public class MainTeleOp extends LinearOpMode {
 
         telemetry.addLine("Initialized");
         telemetry.update();
+
+        Actions.runBlocking(new SequentialAction(index.indexHome(), push.PushBallDown(), hood.hoodUp(), hood.hoodDown()));
 
         waitForStart();
 
@@ -148,6 +152,12 @@ public class MainTeleOp extends LinearOpMode {
             } else {
                 runningActions.add(new SequentialAction(flywheel.shootStop()));
             }
+            if (cG2.right_bumper && !pG2.right_bumper) {
+                runningActions.add(new SequentialAction(hood.hoodUp()));
+            }
+            if (cG2.left_bumper && !pG2.left_bumper) {
+                runningActions.add(new SequentialAction(hood.hoodDown()));
+            }
             if (!cG2.y && pG2.y) {
                 if (ballFocused == 1) {
                     Actions.runBlocking(index.index2());
@@ -173,64 +183,67 @@ public class MainTeleOp extends LinearOpMode {
                     ballFocused = 1;
                 }
             }
-            if (cG2.a && !pG2.a) {
-                servoLocked = false;
-                telemetry.addLine("limelight started");
-                telemetry.update();
-                sleep(100);
-                limelight.start();
-                limelight.pipelineSwitch(0);
-                telemetry.addLine("limelight pipeline switched");
-                telemetry.update();
-                sleep(100);
-
+            if (cG2.x && !pG2.x) {
+                limelightInits();
             }
-            if (!servoLocked) {
-                LLResult result = limelight.getLatestResult();
-                telemetry.addLine("result");
-                telemetry.update();
-                sleep(100);
-                if (true) {
-                    telemetry.addLine("in loop");
-                    telemetry.update();
-                    sleep(100);
-                    Pose3D botpose = result.getBotpose(); // pose from Limelight
-                    double bearing = result.getTx(); // x offset in degrees from target (target x and bearing are the same thing i think)
-
-                    // servo aiming/locking
-                    double bearingThreshold = 1;
-                    double servoSpeed = 0.3;
-
-                    if (bearing > bearingThreshold) {
-                        telemetry.addLine("adjusting negative swivel");
-                        telemetry.update();
-                        ServoPower = -servoSpeed;
-                    } else if (bearing < -bearingThreshold) {
-                        telemetry.addLine("adjusting positive swivel");
-                        telemetry.update();
-                        ServoPower = servoSpeed;
-                    } else {
-                        telemetry.addLine("stopping swivel");
-                        telemetry.update();
-                        ServoPower = 0;
-                        servoLocked = true;
-                        limelight.stop();
-                    }
-
-                    swivel.setPower(ServoPower);
-
-                    // telemetry
-                    telemetry.addData("Bearing", bearing);
-                    telemetry.addData("Servo Power", ServoPower);
-                    telemetry.addData("Servo Locked", servoLocked);
-                    telemetry.addData("Target Valid", result.isValid());
-                    telemetry.update();
-                }
-            }
-
+            lodk();
             telemetry.addData("Servo Locked", servoLocked);
             telemetry.addData("detectionsExist", detectionsExist);
             telemetry.update();
+        }
+    }
+    void limelightInits() {
+        servoLocked = !servoLocked;
+        telemetry.addLine("limelight started");
+        telemetry.update();
+        sleep(100);
+        limelight.start();
+        limelight.pipelineSwitch(redTag);
+        telemetry.addLine("limelight pipeline switched");
+        telemetry.update();
+        sleep(100);
+    }
+    void lodk () {
+        if (!servoLocked) {
+            LLResult result = limelight.getLatestResult();
+            telemetry.addLine("result");
+            telemetry.update();
+            sleep(100);
+            if (result != null && result.isValid() && !servoLocked) {
+                telemetry.addLine("in loop");
+                telemetry.update();
+                sleep(100);
+                Pose3D botpose = result.getBotpose(); // pose from Limelight
+                double bearing = result.getTx(); // x offset in degrees from target (target x and bearing are the same thing i think)
+
+                // servo aiming/locking
+                double bearingThreshold = 3;
+                double servoSpeed = 1;
+
+                if (bearing > bearingThreshold) {
+                    telemetry.addLine("adjusting swivel");
+                    telemetry.update();
+                    ServoPower = -servoSpeed;
+                } else if (bearing < -bearingThreshold) {
+                    telemetry.addLine("adjusting swivel");
+                    telemetry.update();
+                    ServoPower = servoSpeed;
+                } else {
+                    telemetry.addLine("stopping swivel");
+                    telemetry.update();
+                    ServoPower = 0;
+                    limelight.stop();
+                }
+
+                swivel.setPower(ServoPower);
+
+                // telemetry
+                telemetry.addData("Bearing", bearing);
+                telemetry.addData("Servo Power", ServoPower);
+                telemetry.addData("Servo Locked", servoLocked);
+                telemetry.addData("Target Valid", result.isValid());
+                telemetry.update();
+            }
         }
     }
 }
