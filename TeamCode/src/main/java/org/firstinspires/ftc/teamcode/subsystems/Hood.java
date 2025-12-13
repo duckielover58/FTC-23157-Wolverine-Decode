@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Hood {
     private Servo hood;
+    public double hoodPos;
     public Hood (HardwareMap hardwareMap) {
         hood = hardwareMap.get(Servo.class, "Hood");
     }
@@ -25,7 +26,9 @@ public class Hood {
     public class HoodUp implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            hood.setPosition(0.01);
+            hoodPos = hood.getPosition();
+            hoodPos += 0.1;
+            hood.setPosition(hoodPos);
             return false;
         }
     }
@@ -33,7 +36,9 @@ public class Hood {
     public class HoodDown implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            hood.setPosition(-0.01);
+            hoodPos = hood.getPosition();
+            hoodPos -= 0.1;
+            hood.setPosition(hoodPos);
             return false;
         }
     }
