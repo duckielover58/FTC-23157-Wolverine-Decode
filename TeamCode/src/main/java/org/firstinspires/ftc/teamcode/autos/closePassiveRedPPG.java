@@ -27,8 +27,8 @@ import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
 
 
 @Config
-@Autonomous(name = "closePassiveRed", group = "Robot")
-public class closePassiveRed extends LinearOpMode {
+@Autonomous(name = "closePassiveRedPPG", group = "Robot")
+public class closePassiveRedPPG extends LinearOpMode {
 
     private Flywheel flywheel;
     private Index index;
@@ -39,7 +39,7 @@ public class closePassiveRed extends LinearOpMode {
 
     public static final int RED_TAG_ID = 24;
 
-    private class ShootThreeBalls implements Action {
+    private class ShootThreeBallsPPG implements Action {
         private final Action sequence;
 
         @Override
@@ -47,7 +47,7 @@ public class closePassiveRed extends LinearOpMode {
             return sequence.run(packet);
         }
 
-        public ShootThreeBalls() {
+        public ShootThreeBallsPPG() {
             sequence = new SequentialAction(
                     index.index1(),
                     flywheel.shoot(),
@@ -81,7 +81,7 @@ public class closePassiveRed extends LinearOpMode {
         }
     }
 
-    private class ShootThreeBallsCorner implements Action {
+    private class ShootThreeBallsCornerPPG implements Action {
         private final Action sequence;
 
         @Override
@@ -89,9 +89,9 @@ public class closePassiveRed extends LinearOpMode {
             return sequence.run(packet);
         }
 
-        public ShootThreeBallsCorner() {
+        public ShootThreeBallsCornerPPG() {
             sequence = new SequentialAction(
-                    index.index1(),
+                    index.index2(),
                     new SleepAction(0.2),
                     push.PushBallDown(),
                     new SleepAction(0.5),
@@ -101,7 +101,7 @@ public class closePassiveRed extends LinearOpMode {
                     new SleepAction(0.5),
 
 
-                    index.index2(),
+                    index.index3(),
                     new SleepAction(0.85),
                     push.PushBallUp(),
                     new SleepAction(0.3),
@@ -109,7 +109,7 @@ public class closePassiveRed extends LinearOpMode {
                     new SleepAction(0.5),
 
 
-                    index.index3(),
+                    index.index1(),
                     new SleepAction(0.75),
                     push.PushBallUp(),
                     new SleepAction(0.3),
@@ -137,7 +137,7 @@ public class closePassiveRed extends LinearOpMode {
         waitForStart();
 
         Action closePassive = drive.actionBuilder(startPose)
-                .stopAndAdd(new ShootThreeBalls())
+                .stopAndAdd(new ShootThreeBallsPPG())
                 .strafeToLinearHeading(new Vector2d(-9.5,-30),Math.toRadians(270))
                 .afterTime(0.3, intake.IntakeBallReverse())
                 .stopAndAdd(index.index1())
@@ -152,7 +152,7 @@ public class closePassiveRed extends LinearOpMode {
                 .stopAndAdd(intake.IntakeBallStop())
                 .stopAndAdd(flywheel.shoot())
                 .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(135))
-                .stopAndAdd(new ShootThreeBallsCorner())
+                .stopAndAdd(new ShootThreeBallsCornerPPG())
                 .setTangent(45)
                 .splineToLinearHeading(new Pose2d(14, -30, Math.toRadians(270)), Math.toRadians(270))
                 .stopAndAdd(intake.IntakeBallReverse())
