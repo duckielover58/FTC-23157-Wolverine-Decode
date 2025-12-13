@@ -38,7 +38,7 @@ public class tes extends LinearOpMode {
         Swivel swivel = new Swivel(hardwareMap);
 
         long swivelWaitTime = 0;
-        double inv = 0.1;
+        double inv = 50;
         long skep = 100;
         waitForStart();
 
@@ -61,7 +61,12 @@ public class tes extends LinearOpMode {
             }
 
             telemetry.addData("wait time: ", swivelWaitTime);
+            for (double i = 0; i < 100; i++) {
+                telemetry.addData("looped: ", i);
+            }
+
             telemetry.update();
+            sleep(skep);
         }
     }
 
