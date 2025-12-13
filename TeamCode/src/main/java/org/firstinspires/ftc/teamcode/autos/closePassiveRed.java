@@ -295,6 +295,7 @@ public class closePassiveRed extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Pose2d startPose = new Pose2d(-61, -9, Math.toRadians(90));
+        Pose2d shootPose = new Pose2d(-12, 0, Math.toRadians(135));
         PinpointDrive drive = new PinpointDrive(hardwareMap, startPose);
 
         flywheel = new Flywheel(hardwareMap);
@@ -309,10 +310,13 @@ public class closePassiveRed extends LinearOpMode {
         limelight.start();
         limelight.pipelineSwitch(colorPipeline);
         LLResult results = limelight.getLatestResult();
+        sleep(100);
 
         if (!results.isValid()) {
             colorPipeline = 4;
             limelight.pipelineSwitch(colorPipeline);
+            results = limelight.getLatestResult();
+            sleep(100);
             if (!results.isValid()) {
                 colorPipeline = 5;
             }
@@ -345,7 +349,19 @@ public class closePassiveRed extends LinearOpMode {
                 .stopAndAdd(intake.IntakeBallStop())
                 .stopAndAdd(flywheel.shoot())
                 .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(135))
+                .build();
+
+        Action closePassivetab3PPG = drive.actionBuilder(shootPose)
                 .stopAndAdd(new ShootThreeBallsCornerPPG())
+                .build();
+        Action closePassivetab3PGP = drive.actionBuilder(shootPose)
+                .stopAndAdd(new ShootThreeBallsCornerPGP())
+                .build();
+        Action closePassivetab3GPP = drive.actionBuilder(shootPose)
+                .stopAndAdd(new ShootThreeBallsCornerGPP())
+                .build();
+
+        Action closePassivetab4 = drive.actionBuilder(shootPose)
                 .setTangent(45)
                 .splineToLinearHeading(new Pose2d(14, -30, Math.toRadians(270)), Math.toRadians(270))
                 .stopAndAdd(intake.IntakeBallReverse())
@@ -362,12 +378,18 @@ public class closePassiveRed extends LinearOpMode {
                 .build();
 
         if (colorPipeline == 3) {
-            Actions.runBlocking(closePassivetab1PGP);
-        } else if (colorPipeline == 4) {
             Actions.runBlocking(closePassivetab1PPG);
-        } else if (colorPipeline == 5) {
+            Actions.runBlocking(closePassivetab3PPG);
+        } else if (colorPipeline == 4) {
             Actions.runBlocking(closePassivetab1GPP);
+            Actions.runBlocking(closePassivetab3GPP);
+        } else if (colorPipeline == 5) {
+            Actions.runBlocking(closePassivetab1PGP);
+            Actions.runBlocking(closePassivetab3PGP);
         }
+
+
+
 //        Action fullRoutine = new SequentialAction(closePassive);
 //hello
 //        Actions.runBlocking(fullRoutine);

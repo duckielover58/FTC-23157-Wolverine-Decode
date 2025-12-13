@@ -50,9 +50,35 @@ public class Swivel {
         }
     }
 
-    public Action aim () {
-        return new Swivel.Aim();
+    public class Turn90right implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            swivel.setPower(-1);
+            return false;
+        }
     }
+
+    public class Turn90left implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            swivel.setPower(1);
+            return false;
+        }
+    }
+
+    public class StopSwivel implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            swivel.setPower(0);
+            return false;
+        }
+    }
+
+    public Action aim () {
+        return new Aim();
+    }
+    public Action turn90right() { return new Turn90right(); }
+    public Action turn90left() { return new Turn90left(); }
     public Action targetBlue() { return new TargetBlue(); }
     public Action targetRed() { return new TargetRed(); }
 }
