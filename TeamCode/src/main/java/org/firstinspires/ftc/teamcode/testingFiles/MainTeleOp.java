@@ -70,7 +70,7 @@ public class MainTeleOp extends LinearOpMode {
     private double cameraHeading = robotHeading;
     public static double ServoPower = 0;
     public final int blueTag = 2;
-    public final int redTag = 0;
+    //public final int redTag = 0;
     public int ballFocused = 1;
     private CRServo swivel;
     private DcMotorEx intake1;
@@ -179,7 +179,7 @@ public class MainTeleOp extends LinearOpMode {
                 telemetry.update();
                 sleep(100);
                 limelight.start();
-                limelight.pipelineSwitch(redTag);
+                limelight.pipelineSwitch(0);
                 telemetry.addLine("limelight pipeline switched");
                 telemetry.update();
                 sleep(100);
@@ -190,7 +190,7 @@ public class MainTeleOp extends LinearOpMode {
                 telemetry.addLine("result");
                 telemetry.update();
                 sleep(100);
-                if (result != null && result.isValid() && !servoLocked) {
+                if (true) {
                     telemetry.addLine("in loop");
                     telemetry.update();
                     sleep(100);
@@ -198,15 +198,15 @@ public class MainTeleOp extends LinearOpMode {
                     double bearing = result.getTx(); // x offset in degrees from target (target x and bearing are the same thing i think)
 
                     // servo aiming/locking
-                    double bearingThreshold = 3;
-                    double servoSpeed = 1;
+                    double bearingThreshold = 1;
+                    double servoSpeed = 0.3;
 
                     if (bearing > bearingThreshold) {
-                        telemetry.addLine("adjusting swivel");
+                        telemetry.addLine("adjusting negative swivel");
                         telemetry.update();
                         ServoPower = -servoSpeed;
                     } else if (bearing < -bearingThreshold) {
-                        telemetry.addLine("adjusting swivel");
+                        telemetry.addLine("adjusting positive swivel");
                         telemetry.update();
                         ServoPower = servoSpeed;
                     } else {

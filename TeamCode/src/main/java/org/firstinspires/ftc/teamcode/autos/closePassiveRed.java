@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autos;
 
+
 // RR-specific imports
 import androidx.annotation.NonNull;
 
@@ -48,6 +49,7 @@ public class closePassiveRed extends LinearOpMode {
 
         public ShootThreeBalls() {
             sequence = new SequentialAction(
+                    index.index1(),
                     flywheel.shoot(),
                     new SleepAction(0.2),
                     push.PushBallDown(),
@@ -59,7 +61,7 @@ public class closePassiveRed extends LinearOpMode {
 
 
                     index.index2(),
-                    new SleepAction(1.5),
+                    new SleepAction(0.85),
                     push.PushBallUp(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
@@ -67,7 +69,48 @@ public class closePassiveRed extends LinearOpMode {
 
 
                     index.index3(),
+                    new SleepAction(0.65),
+                    push.PushBallUp(),
+                    new SleepAction(0.3),
+                    push.PushBallDown(),
                     new SleepAction(0.5),
+                    flywheel.shootStop(),
+                    new SleepAction(0.2),
+                    index.index1()
+            );
+        }
+    }
+
+    private class ShootThreeBallsCorner implements Action {
+        private final Action sequence;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            return sequence.run(packet);
+        }
+
+        public ShootThreeBallsCorner() {
+            sequence = new SequentialAction(
+                    index.index1(),
+                    new SleepAction(0.2),
+                    push.PushBallDown(),
+                    new SleepAction(0.5),
+                    push.PushBallUp(),
+                    new SleepAction(0.3),
+                    push.PushBallDown(),
+                    new SleepAction(0.5),
+
+
+                    index.index2(),
+                    new SleepAction(0.85),
+                    push.PushBallUp(),
+                    new SleepAction(0.3),
+                    push.PushBallDown(),
+                    new SleepAction(0.5),
+
+
+                    index.index3(),
+                    new SleepAction(0.75),
                     push.PushBallUp(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
@@ -98,33 +141,35 @@ public class closePassiveRed extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(-9.5,-30),Math.toRadians(270))
                 .afterTime(0.3, intake.IntakeBallReverse())
                 .stopAndAdd(index.index1())
-                .strafeTo(new Vector2d(-9.5, -33))
-                .waitSeconds(1.5)
+                .strafeTo(new Vector2d(-9.5, -34.5))
+                .waitSeconds(0.85)
                 .stopAndAdd(index.index2())
-                .strafeTo(new Vector2d(-9.5, -36))
-                .waitSeconds(1.5)
-                .stopAndAdd(index.index3())
                 .strafeTo(new Vector2d(-9.5, -39))
-                .waitSeconds(1.5)
+                .waitSeconds(0.85)
+                .stopAndAdd(index.index3())
+                .strafeTo(new Vector2d(-9.5, -43.5))
+                .waitSeconds(0.85)
                 .stopAndAdd(intake.IntakeBallStop())
-                .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(135))
-                .stopAndAdd(limelight.limelightRed())
-                .stopAndAdd(new ShootThreeBalls())
-                .waitSeconds(5)
+                .stopAndAdd(flywheel.shoot())
+                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(135))
+                .stopAndAdd(new ShootThreeBallsCorner())
                 .setTangent(45)
-                .splineToLinearHeading(new Pose2d(11, -31, Math.toRadians(270)), Math.toRadians(270))
-                .afterTime(0.3, intake.IntakeBallReverse())
-                .strafeTo(new Vector2d(11, -50))
-                .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(135))
-                .afterTime(0.3, intake.IntakeBallStop())
-                .stopAndAdd(limelight.limelightRed())
-                .stopAndAdd(new ShootThreeBalls())
-                .waitSeconds(5)
-                .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(14, -30, Math.toRadians(270)), Math.toRadians(270))
+                .stopAndAdd(intake.IntakeBallReverse())
+                .stopAndAdd(index.index1())
+                .strafeTo(new Vector2d(14, -35))
+                .waitSeconds(0.85)
+                .stopAndAdd(index.index2())
+                .strafeTo(new Vector2d(14, -39))
+                .waitSeconds(0.85)
+                .stopAndAdd(index.index3())
+                .strafeTo(new Vector2d(14, -43.5))
+                .waitSeconds(0.85)
+                .stopAndAdd(intake.IntakeBallStop())
                 .build();
 
         Action fullRoutine = new SequentialAction(closePassive);
-
+//hello
         Actions.runBlocking(fullRoutine);
     }
 }
