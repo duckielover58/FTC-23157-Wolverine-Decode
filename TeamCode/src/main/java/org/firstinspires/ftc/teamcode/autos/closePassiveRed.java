@@ -20,6 +20,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Push;
 import org.firstinspires.ftc.teamcode.subsystems.Swivel;
 
 // Non-RR imports
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -36,7 +38,13 @@ public class closePassiveRed extends LinearOpMode {
     private Intake intake;
     private Push push;
     private Swivel swivel;
-    private Limelight limelight;
+    private Limelight3A limelight;
+    int colorPipeline = 3;
+
+    //GGP 21
+    //PGP 22
+    //PPG 23
+
 
     public static final int RED_TAG_ID = 24;
 
@@ -122,7 +130,6 @@ public class closePassiveRed extends LinearOpMode {
             );
         }
     }
-
     private class ShootThreeBallsGPP implements Action {
         private final Action sequence;
 
@@ -244,7 +251,6 @@ public class closePassiveRed extends LinearOpMode {
             );
         }
     }
-
     private class ShootThreeBallsCornerGPP implements Action {
         private final Action sequence;
 
@@ -296,12 +302,35 @@ public class closePassiveRed extends LinearOpMode {
         intake = new Intake(hardwareMap);
         push = new Push(hardwareMap);
         swivel = new Swivel(hardwareMap);
-        limelight = new Limelight(hardwareMap);
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
         waitForStart();
 
-        Action closePassive = drive.actionBuilder(startPose)
+        limelight.start();
+        limelight.pipelineSwitch(colorPipeline);
+        LLResult results = limelight.getLatestResult();
+
+        if (!results.isValid()) {
+            colorPipeline = 4;
+            limelight.pipelineSwitch(colorPipeline);
+            if (!results.isValid()) {
+                colorPipeline = 5;
+            }
+        }
+
+        Action closePassivetab1PPG = drive.actionBuilder(startPose)
                 .stopAndAdd(new ShootThreeBallsPPG())
+                .build();
+
+        Action closePassivetab1PGP = drive.actionBuilder(startPose)
+                .stopAndAdd(new ShootThreeBallsPGP())
+                .build();
+
+        Action closePassivetab1GPP = drive.actionBuilder(startPose)
+                .stopAndAdd(new ShootThreeBallsGPP())
+                .build();
+
+        Action closePassivetab2 = drive.actionBuilder(startPose)
                 .strafeToLinearHeading(new Vector2d(-9.5,-30),Math.toRadians(270))
                 .afterTime(0.3, intake.IntakeBallReverse())
                 .stopAndAdd(index.index1())
@@ -332,8 +361,15 @@ public class closePassiveRed extends LinearOpMode {
                 .stopAndAdd(intake.IntakeBallStop())
                 .build();
 
-        Action fullRoutine = new SequentialAction(closePassive);
+        if (colorPipeline == 3) {
+            Actions.runBlocking(closePassivetab1PGP);
+        } else if (colorPipeline == 4) {
+            Actions.runBlocking(closePassivetab1PPG);
+        } else if (colorPipeline == 5) {
+            Actions.runBlocking(closePassivetab1GPP);
+        }
+//        Action fullRoutine = new SequentialAction(closePassive);
 //hello
-        Actions.runBlocking(fullRoutine);
+//        Actions.runBlocking(fullRoutine);
     }
 }
