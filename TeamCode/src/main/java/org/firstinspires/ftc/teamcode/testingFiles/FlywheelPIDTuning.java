@@ -19,7 +19,6 @@ public class FlywheelPIDTuning extends LinearOpMode {
     private double flywheelTicks;
     private double flywheelError;
     public double flywheelAllowedError = 100;
-    public boolean goalReached = false;
 
     @Override
     public void runOpMode() {
@@ -45,15 +44,13 @@ public class FlywheelPIDTuning extends LinearOpMode {
             telemetry.addData("Flywheel Ticks: ", flywheelTicks);
             telemetry.addData("Flywheel Target Ticks: ", flywheelTargetTicks);
             telemetry.addData("Flywheel Tick Difference: ", flywheelTargetTicks - flywheelTicks);
-            telemetry.addData("Goal Reached? ", goalReached);
 
-            if (flywheelTargetTicks <= flywheelTicks + flywheelAllowedError && flywheelTicks - flywheelAllowedError <= flywheelTargetTicks) {
-                flywheelPower += (powerMultiplier * flywheelError);
-                flywheelPower = Math.max(-1.0, Math.min(1.0, flywheelPower));
-                telemetry.update();
-                goalReached = false;
+            if (flywheelTargetTicks - flywheelAllowedError <= flywheelTicks && flywheelTicks <= flywheelTargetTicks + flywheelAllowedError) {
+                telemetry.addLine("Flywheel Chilling");
             } else {
-                goalReached = true;
+                flywheelPower += (powerMultiplier * flywheelError);
+                flywheelPower = Math.max(-1, 1);
+                telemetry.addData("Flywheel adjusted by: ", powerMultiplier * flywheelError);
             }
             telemetry.addData("Flywheel Ticks", flywheel.getCurrentPosition());
             telemetry.update();

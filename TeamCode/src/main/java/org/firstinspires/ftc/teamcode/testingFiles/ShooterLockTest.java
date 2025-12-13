@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.testingFiles;
 import android.util.Size;
 
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -19,6 +20,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.teamcode.subsystems.Swivel;
 import java.util.List;
 
+@Disabled
 @TeleOp public class ShooterLockTest extends LinearOpMode {
     private Position cameraPosition = new Position(DistanceUnit.INCH,
             0, 8.5, 1, 0);

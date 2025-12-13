@@ -4,7 +4,8 @@ package org.firstinspires.ftc.teamcode.testingFiles;
 import com.acmerobotics.roadrunner.ftc.Actions;
 
 // Non-RR imports
-        import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
         import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
         import org.firstinspires.ftc.teamcode.subsystems.Flywheel;
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Push;
 import org.firstinspires.ftc.teamcode.subsystems.Swivel;
 
+@Disabled
 @TeleOp
 public class TestingActions extends LinearOpMode {
     Intake intake;
