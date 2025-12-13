@@ -29,6 +29,7 @@ import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
 @Config
 @Autonomous(name = "closePassiveRedPPG", group = "Robot")
 public class closePassiveRedPPG extends LinearOpMode {
+    //
 
     private Flywheel flywheel;
     private Index index;
