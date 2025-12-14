@@ -69,7 +69,7 @@ public class MainTeleOp extends LinearOpMode {
     public static double flywheelV;
     public static double hoodPoss;
     public final int blueTag = 2;
-    public final int redTag = 0;
+    public final int redTag = 1;
     public int ballFocused = 1;
     private CRServo swivel;
     private DcMotorEx intake1;
@@ -85,6 +85,8 @@ public class MainTeleOp extends LinearOpMode {
     boolean rumble = false;
     double close = 690;
     double far = 840;
+    boolean starte = false;
+    boolean hasslept = false;
     DcMotorEx flywheel;
 
     @Override
@@ -117,7 +119,7 @@ public class MainTeleOp extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            sleep(20);
+            sleep(10);
 
             pG1.copy(cG1);
             pG2.copy(cG2);
@@ -209,31 +211,33 @@ public class MainTeleOp extends LinearOpMode {
             telemetry.addData("Servo Locked", servoLocked);
             telemetry.addData("detectionsExist", detectionsExist);
             telemetry.addData("flywheel vel", flywheelV);
+            telemetry.addData("has slept? ", hasslept);
             telemetry.update();
         }
     }
     void limelightInits() {
         servoLocked = false;
+        hasslept = false;
         telemetry.addLine("limelight started");
-        telemetry.update();
-        sleep(100);
-        limelight.start();
+        if (starte = false) {
+            limelight.start();
+        } else {
+            limelight.stop();
+        }
         limelight.pipelineSwitch(redTag);
         telemetry.addLine("limelight pipeline switched");
-        telemetry.update();
-        sleep(100);
     }
     void lodk () {
         if (!servoLocked) {
             LLResult result = limelight.getLatestResult();
             telemetry.addLine("result");
-            telemetry.update();
-            sleep(100);
-            if (!servoLocked) {
+            if (!hasslept) {
+                sleep(110);
+                hasslept = true;
+            }
+            if (result != null && result.isValid()) {
                 telemetry.addLine("in loop");
-                telemetry.update();
-                sleep(100);
-                Pose3D botpose = result.getBotpose(); // pose from Limelight
+
                 double bearing = result.getTx(); // x offset in degrees from target (target x and bearing are the same thing i think)
 
                 // servo aiming/locking
@@ -242,17 +246,14 @@ public class MainTeleOp extends LinearOpMode {
 
                 if (bearing > bearingThreshold) {
                     telemetry.addLine("adjusting swivel");
-                    telemetry.update();
                     ServoPower = -servoSpeed;
                 } else if (bearing < -bearingThreshold) {
                     telemetry.addLine("adjusting swivel");
-                    telemetry.update();
                     ServoPower = servoSpeed;
                 } else {
                     telemetry.addLine("stopping swivel");
-                    telemetry.update();
                     ServoPower = 0;
-                    limelight.stop();
+                    servoLocked = true;
                 }
 
                 swivel.setPower(ServoPower);
