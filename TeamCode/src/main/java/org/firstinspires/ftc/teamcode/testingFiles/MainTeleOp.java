@@ -215,57 +215,63 @@ public class MainTeleOp extends LinearOpMode {
             telemetry.update();
         }
     }
+
     void limelightInits() {
         servoLocked = false;
         hasslept = false;
-        telemetry.addLine("limelight started");
-        if (starte = false) {
+        telemetry.addLine("Limelight started");
+
+        if (!starte) {   // Corrected comparison
             limelight.start();
+            starte = true;
         } else {
             limelight.stop();
+            starte = false;
         }
+
         limelight.pipelineSwitch(redTag);
-        telemetry.addLine("limelight pipeline switched");
+        telemetry.addLine("Limelight pipeline switched");
     }
-    void lodk () {
-        if (!servoLocked) {
-            LLResult result = limelight.getLatestResult();
-            telemetry.addLine("result");
-            if (!hasslept) {
-                sleep(110);
-                hasslept = true;
-            }
-            if (result != null && result.isValid()) {
-                telemetry.addLine("in loop");
 
-                double bearing = result.getTx(); // x offset in degrees from target (target x and bearing are the same thing i think)
+    double lockStartTime = 0;
+    void lodk() {
+        if (servoLocked) return;
 
-                // servo aiming/locking
-                double bearingThreshold = 3;
-                double servoSpeed = 1;
+        LLResult result = limelight.getLatestResult();
+        if (result == null || !result.isValid()) {
+            swivel.setPower(0);
+            telemetry.addLine("No valid target");
+            return;
+        }
 
-                if (bearing > bearingThreshold) {
-                    telemetry.addLine("adjusting swivel");
-                    ServoPower = -servoSpeed;
-                } else if (bearing < -bearingThreshold) {
-                    telemetry.addLine("adjusting swivel");
-                    ServoPower = servoSpeed;
-                } else {
-                    telemetry.addLine("stopping swivel");
-                    ServoPower = 0;
-                    servoLocked = true;
-                }
+        double bearing = result.getTx();
+        double bearingThreshold = 3;
+        double servoSpeed = 0.35;
 
-                swivel.setPower(ServoPower);
 
-                // telemetry
-                telemetry.addData("Bearing", bearing);
-                telemetry.addData("Servo Power", ServoPower);
-                telemetry.addData("Servo Locked", servoLocked);
-                telemetry.addData("Target Valid", result.isValid());
+        if (bearing > bearingThreshold) {
+            ServoPower = -servoSpeed;
+            lockStartTime = 0;
+        } else if (bearing < -bearingThreshold) {
+            ServoPower = servoSpeed;
+            lockStartTime = 0;
+        } else {
+            if (lockStartTime == 0) lockStartTime = getRuntime();
+            if (getRuntime() - lockStartTime > 0.15) {
+                ServoPower = 0;
+                servoLocked = true;
             }
         }
+
+        swivel.setPower(ServoPower);
+
+        // Telemetry for debugging
+        telemetry.addData("Bearing", bearing);
+        telemetry.addData("Servo Power", ServoPower);
+        telemetry.addData("Servo Locked", servoLocked);
+        telemetry.addData("Target Valid", result.isValid());
     }
+
 
     void flywheelPID (double target) {
         previousTime = getRuntime();
