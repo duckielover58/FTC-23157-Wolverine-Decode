@@ -365,6 +365,7 @@ public class closePassiveBlue extends LinearOpMode {
                 .stopAndAdd(new ShootThreeBalls())
                 .afterTime(0.3, intake.IntakeBall())
                 .stopAndAdd(index.index1())
+                .strafeTo(new Vector2d(-9.5, -28))
                 .strafeTo(new Vector2d(-9.5, -32.5))
                 .stopAndAdd(index.index2())
                 .strafeTo(new Vector2d(-9.5, -37))
@@ -393,7 +394,7 @@ public class closePassiveBlue extends LinearOpMode {
                 .stopAndAdd(intake.IntakeBallStop())
                 .build();
 
-        Action fullRoutine = new SequentialAction(closePassive);
+        Action fullRoutine = new SequentialAction(closePassive, postIntake);
 
         Actions.runBlocking(fullRoutine);
     }
