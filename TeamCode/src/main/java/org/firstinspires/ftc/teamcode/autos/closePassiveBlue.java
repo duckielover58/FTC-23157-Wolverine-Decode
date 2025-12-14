@@ -50,9 +50,9 @@ public class closePassiveBlue extends LinearOpMode {
     double previousError = 0;
     double integralSum = 0;
     boolean rumble = false;
-    double kP = 0.02809;
-    double kI = 0.0;
-    double kD = 0.000032;
+    double kP = 0.35;
+    double kI = 0.000001;
+    double kD = 0.5;
 
     //GGP 21
     //PGP 22

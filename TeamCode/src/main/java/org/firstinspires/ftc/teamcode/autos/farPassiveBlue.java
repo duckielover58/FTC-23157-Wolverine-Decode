@@ -45,9 +45,9 @@ public class farPassiveBlue extends LinearOpMode {
     double previousError = 0;
     double integralSum = 0;
     boolean rumble = false;
-    double kP = 0.02809;
-    double kI = 0.0;
-    double kD = 0.000032;
+    double kP = 0.35;
+    double kI = 0.000001;
+    double kD = 0.5;
 
 
     private class ShootThreeBalls implements Action {
@@ -101,6 +101,7 @@ public class farPassiveBlue extends LinearOpMode {
 
         public ShootThreeBallsCorner() {
             sequence = new SequentialAction(
+                    new InstantAction(() -> flywheelPID(750)),
                     index.index3(),
                     new SleepAction(0.2),
                     push.PushBallDown(),
@@ -109,16 +110,12 @@ public class farPassiveBlue extends LinearOpMode {
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
-
-
                     index.index2(),
                     new SleepAction(0.85),
                     push.PushBallUp(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
-
-
                     index.index1(),
                     new SleepAction(0.75),
                     push.PushBallUp(),
@@ -200,7 +197,6 @@ public class farPassiveBlue extends LinearOpMode {
                 .waitSeconds(0.85)
                 .stopAndAdd(intake.IntakeBallStop())
                 .build();
-        flywheelPID(840);
         Action postIntake = drive.actionBuilder(endShootPose)
                 .strafeToLinearHeading(new Vector2d(59,-21),Math.toRadians(200))
                 .stopAndAdd(new ShootThreeBallsCorner())
@@ -218,7 +214,6 @@ public class farPassiveBlue extends LinearOpMode {
                 .build();
 
         Action fullRoutine = new SequentialAction(farPassive, postIntake);
-
         Actions.runBlocking(fullRoutine);
     }
 }
