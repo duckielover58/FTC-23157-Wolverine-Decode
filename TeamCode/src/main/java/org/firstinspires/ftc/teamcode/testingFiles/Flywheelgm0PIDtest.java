@@ -1,21 +1,26 @@
 package org.firstinspires.ftc.teamcode.testingFiles;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+@Config
 @Autonomous(name = "Flywheelgm0PIDTest")
 public class Flywheelgm0PIDtest extends LinearOpMode {
 
     // PID constants (START SMALL)
-    double kP = 0.0200;
-    double kI = 0.0;
-    double kD = 0.00003;
+    public static double kP = 0.05819;
+    public static double kI = 0.00002;
+    public static double kD = 0.010035;
 
-    double integralSum = 0;
-    double previousError = 0;
-    double previousTime = 0;
+    public static double integralSum = 0;
+    public static double previousError = 0;
+    public static double previousTime = 0;
+    public static double targetVelocity = 740;
 
     @Override
     public void runOpMode() {
@@ -24,6 +29,8 @@ public class Flywheelgm0PIDtest extends LinearOpMode {
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         flywheel.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        FtcDashboard Dashboard = FtcDashboard.getInstance();
+        telemetry = Dashboard.getTelemetry();
 
         telemetry.addLine("Ready");
         telemetry.update();
@@ -34,7 +41,7 @@ public class Flywheelgm0PIDtest extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            double targetVelocity = 740;
+
             double currentVelocity = flywheel.getVelocity();
             double currentTime = getRuntime();
             double dt = currentTime - previousTime;
