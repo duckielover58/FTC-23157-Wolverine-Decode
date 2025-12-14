@@ -72,22 +72,22 @@ public class MainTeleOp extends LinearOpMode {
     public static double ServoPos = 0;
     public static double flywheelV;
     public static double hoodPoss;
-    public final int blueTag = 2;
-    public final int redTag = 1;
+    public final int blueTag = 20;
+    public final int redTag = 24;
     public int ballFocused = 1;
     private CRServo swivel;
     private DcMotorEx intake1;
 //    private Limelight3A limelight;
     private boolean locking;
-    double kP = 0.02809;
-    double kI = 0.0;
-    double kD = 0.000032;
+    double kP = 0.35;
+    double kI = 0.000001;
+    double kD = 0.5;
 
     double integralSum = 0;
     double previousError = 0;
     double previousTime = 0;
     boolean rumble = false;
-    double close = 690;
+    double close = 710;
     double far = 840;
     boolean starte = false;
     boolean hasslept = false;
