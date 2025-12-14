@@ -294,7 +294,7 @@ public class closePassiveRed extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d startPose = new Pose2d(-61, -9, Math.toRadians(90));
+        Pose2d startPose = new Pose2d(-49, -49, Math.toRadians(55));
         Pose2d shootPose = new Pose2d(-12, 0, Math.toRadians(135));
         PinpointDrive drive = new PinpointDrive(hardwareMap, startPose);
 
@@ -335,11 +335,10 @@ public class closePassiveRed extends LinearOpMode {
                 .build();
 
         Action closePassivetab2 = drive.actionBuilder(startPose)
-                .strafeToLinearHeading(new Vector2d(-9.5,-30),Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(-9.5,-30, Math.toRadians(270)),Math.toRadians(270))
                 .afterTime(0.3, intake.IntakeBallReverse())
                 .stopAndAdd(index.index1())
                 .strafeTo(new Vector2d(-9.5, -34.5))
-                .waitSeconds(0.85)
                 .stopAndAdd(index.index2())
                 .strafeTo(new Vector2d(-9.5, -39))
                 .waitSeconds(0.85)
@@ -378,20 +377,33 @@ public class closePassiveRed extends LinearOpMode {
                 .build();
 
         if (colorPipeline == 3) {
-            Actions.runBlocking(closePassivetab1PPG);
-            Actions.runBlocking(closePassivetab3PPG);
+            Actions.runBlocking(
+                    new SequentialAction(
+                        closePassivetab1PPG,
+                        closePassivetab2,
+                        closePassivetab3GPP,
+                        closePassivetab4
+                    )
+            );
         } else if (colorPipeline == 4) {
-            Actions.runBlocking(closePassivetab1GPP);
-            Actions.runBlocking(closePassivetab3GPP);
+            Actions.runBlocking(
+                    new SequentialAction(
+                            closePassivetab1PPG,
+                            closePassivetab2,
+                            closePassivetab3GPP,
+                            closePassivetab4
+                    )
+            );
         } else if (colorPipeline == 5) {
-            Actions.runBlocking(closePassivetab1PGP);
-            Actions.runBlocking(closePassivetab3PGP);
+            Actions.runBlocking(
+                    new SequentialAction(
+                            closePassivetab1PPG,
+                            closePassivetab2,
+                            closePassivetab3GPP,
+                            closePassivetab4
+                    )
+            );
         }
 
-
-
-//        Action fullRoutine = new SequentialAction(closePassive);
-//hello
-//        Actions.runBlocking(fullRoutine);
     }
 }
