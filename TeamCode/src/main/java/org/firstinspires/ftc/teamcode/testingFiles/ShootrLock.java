@@ -66,6 +66,7 @@ import java.util.List;
         visionPortal.close();
     }
 
+    public static double bearing;
     private void initAprilTag() {
 
         // Create the AprilTag processor.
@@ -111,9 +112,6 @@ import java.util.List;
         ServoLocked = false;
 
     }
-
-    public static double bearing;
-
     private void telemetryAprilTag() {
         CRServo Swivel = hardwareMap.get(CRServo.class, "Swivel");
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
