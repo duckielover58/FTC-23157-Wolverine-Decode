@@ -20,8 +20,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Push;
 import org.firstinspires.ftc.teamcode.subsystems.Swivel;
 
 // Non-RR imports
-import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
+//import com.qualcomm.hardware.limelightvision.LLResult;
+//import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -40,7 +40,7 @@ public class closePassiveBlue extends LinearOpMode {
     private Intake intake;
     private Push push;
     private Swivel swivel;
-    private Limelight3A limelight;
+//    private Limelight3A limelight;
     private Hood hood;
     int colorPipeline = 3;
     boolean servoLocked = true;
@@ -113,6 +113,7 @@ public class closePassiveBlue extends LinearOpMode {
 
         public ShootThreeBallsCorner() {
             sequence = new SequentialAction(
+                    new InstantAction(() -> flywheelPID(750)),
                     index.index3(),
                     new SleepAction(0.2),
                     push.PushBallDown(),
@@ -121,16 +122,12 @@ public class closePassiveBlue extends LinearOpMode {
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
-
-
                     index.index2(),
                     new SleepAction(0.85),
                     push.PushBallUp(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
-
-
                     index.index1(),
                     new SleepAction(0.75),
                     push.PushBallUp(),
@@ -143,7 +140,7 @@ public class closePassiveBlue extends LinearOpMode {
             );
         }
     }
-
+/*
     void limelightInits() {
         servoLocked = false;
         telemetry.addLine("limelight ready");
@@ -188,6 +185,7 @@ public class closePassiveBlue extends LinearOpMode {
         telemetry.update();
     }
 
+ */
     void flywheelPID (double target) {
         previousTime = getRuntime();
 
@@ -234,15 +232,16 @@ public class closePassiveBlue extends LinearOpMode {
         intake = new Intake(hardwareMap);
         push = new Push(hardwareMap);
         swivel = new Swivel(hardwareMap);
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+//        limelight = hardwareMap.get(Limelight3A.class, "limelight");
         hood = new Hood(hardwareMap);
 
-        limelight.start();
+//        limelight.start();
         sleep(200);
 
         waitForStart();
         if (isStopRequested()) return;
 
+        /*
         limelight.pipelineSwitch(colorPipeline);
         sleep(100);
 
@@ -260,6 +259,9 @@ public class closePassiveBlue extends LinearOpMode {
                 sleep(100);
             }
         }
+
+         */
+
         /*
         limelightInits();
         limelight.pipelineSwitch(0);
@@ -397,7 +399,6 @@ public class closePassiveBlue extends LinearOpMode {
         Action fullRoutine = new SequentialAction(closePassive, postIntake);
 
         Actions.runBlocking(closePassive);
-        flywheelPID(750);
         Actions.runBlocking(postIntake);
     }
 }
