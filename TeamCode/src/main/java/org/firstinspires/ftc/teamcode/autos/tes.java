@@ -24,6 +24,7 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
 
@@ -32,41 +33,39 @@ import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
 @Autonomous(name = "tes", group = "Robot")
 public class tes extends LinearOpMode {
 
+    public long swivelWaitTime = 400;
+    public long skep = 100;
+
     @Override
     public void runOpMode() throws InterruptedException {
 
         Swivel swivel = new Swivel(hardwareMap);
 
-        long swivelWaitTime = 0;
-        double inv = 50;
-        long skep = 100;
+
         waitForStart();
+        Gamepad cG1 = new Gamepad();
+        Gamepad pG1 = new Gamepad();
 
         while (opModeIsActive()) {
+            pG1.copy(cG1);
+            cG1.copy(gamepad1);
 
-            if (gamepad1.dpad_up) {
-                swivelWaitTime += inv;
-                sleep(skep);
+            if (cG1.y && !pG1.y) {
+                swivelWaitTime += 100;
             }
-            if (gamepad1.dpad_down) {
-                swivelWaitTime -= inv;
-                sleep(skep);
+            if (cG1.a && !pG1.a) {
+                swivelWaitTime -= 100;
             }
 
-            if (gamepad1.a) {
-                Actions.runBlocking(new SequentialAction(swivel.turn90right()));
+            if (cG1.b && !pG1.b) {
+                Actions.runBlocking(new SequentialAction(swivel.turn90left()));
                 sleep(swivelWaitTime);
                 Actions.runBlocking(new SequentialAction(swivel.stop()));
                 sleep(skep);
             }
 
             telemetry.addData("wait time: ", swivelWaitTime);
-            for (double i = 0; i < 100; i++) {
-                telemetry.addData("looped: ", i);
-            }
-
             telemetry.update();
-            sleep(skep);
         }
     }
 
