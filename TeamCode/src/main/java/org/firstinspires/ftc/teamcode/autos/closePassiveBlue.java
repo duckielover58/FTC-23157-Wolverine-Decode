@@ -375,7 +375,7 @@ public class closePassiveBlue extends LinearOpMode {
                 .waitSeconds(0.85)
                 .stopAndAdd(intake.IntakeBallStop())
                 .build();
-        flywheelPID(750);
+
         Action postIntake = drive.actionBuilder(endShootPose)
                 .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(220))
                 .stopAndAdd(new ShootThreeBallsCorner())
@@ -396,6 +396,8 @@ public class closePassiveBlue extends LinearOpMode {
 
         Action fullRoutine = new SequentialAction(closePassive, postIntake);
 
-        Actions.runBlocking(fullRoutine);
+        Actions.runBlocking(closePassive);
+        flywheelPID(750);
+        Actions.runBlocking(postIntake);
     }
 }
