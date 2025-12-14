@@ -221,7 +221,7 @@ public class MainTeleOp extends LinearOpMode {
         hasslept = false;
         telemetry.addLine("Limelight started");
 
-        if (!starte) {   // Corrected comparison
+        if (!starte) {
             limelight.start();
             starte = true;
         } else {
@@ -265,7 +265,6 @@ public class MainTeleOp extends LinearOpMode {
 
         swivel.setPower(ServoPower);
 
-        // Telemetry for debugging
         telemetry.addData("Bearing", bearing);
         telemetry.addData("Servo Power", ServoPower);
         telemetry.addData("Servo Locked", servoLocked);
