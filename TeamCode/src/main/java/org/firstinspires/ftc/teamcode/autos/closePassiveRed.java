@@ -300,57 +300,48 @@ public class closePassiveRed extends LinearOpMode {
 
     void limelightInits() {
         servoLocked = false;
-        telemetry.addLine("limelight started");
+        telemetry.addLine("limelight ready");
         telemetry.update();
-        sleep(100);
-        limelight.start();
+
         limelight.pipelineSwitch(redTag);
-        telemetry.addLine("limelight pipeline switched");
-        telemetry.update();
         sleep(100);
     }
-    void lodk () {
-        if (!servoLocked) {
-            LLResult result = limelight.getLatestResult();
-            telemetry.addLine("result");
+
+    void lodk() {
+
+        if (servoLocked) return; //this is so if its alr locked it wont do naything
+
+        LLResult result = limelight.getLatestResult();
+
+        if (result == null || !result.isValid()) {
+            telemetry.addLine("No valid Limelight target");
             telemetry.update();
-            sleep(100);
-            if (!servoLocked) {
-                telemetry.addLine("in loop");
-                telemetry.update();
-                sleep(100);
-                Pose3D botpose = result.getBotpose(); // pose from Limelight
-                double bearing = result.getTx(); // x offset in degrees from target (target x and bearing are the same thing i think)
-
-                // servo aiming/locking
-                double bearingThreshold = 3;
-                double servoSpeed = 1;
-
-                if (bearing > bearingThreshold) {
-                    telemetry.addLine("adjusting swivel");
-                    telemetry.update();
-                    ServoPower = -servoSpeed;
-                } else if (bearing < -bearingThreshold) {
-                    telemetry.addLine("adjusting swivel");
-                    telemetry.update();
-                    ServoPower = servoSpeed;
-                } else {
-                    telemetry.addLine("stopping swivel");
-                    telemetry.update();
-                    ServoPower = 0;
-                    limelight.stop();
-                }
-
-                swivel.setPower(ServoPower);
-
-                // telemetry
-                telemetry.addData("Bearing", bearing);
-                telemetry.addData("Servo Power", ServoPower);
-                telemetry.addData("Servo Locked", servoLocked);
-                telemetry.addData("Target Valid", result.isValid());
-            }
+            return;
         }
+
+        double bearing = result.getTx();
+        double bearingThreshold = 3.0;
+        double servoSpeed = 1.0;
+
+        if (bearing > bearingThreshold) {
+            ServoPower = -servoSpeed;
+        } else if (bearing < -bearingThreshold) {
+            ServoPower = servoSpeed;
+        } else {
+            ServoPower = 0.0;
+            servoLocked = true;
+        }
+
+        swivel.setPower(ServoPower);
+
+        // Telemetry (clean + useful)
+        telemetry.addData("Limelight Bearing", bearing);
+        telemetry.addData("Servo Power", ServoPower);
+        telemetry.addData("Servo Locked", servoLocked);
+        telemetry.addData("Target Valid", result.isValid());
+        telemetry.update();
     }
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -365,20 +356,27 @@ public class closePassiveRed extends LinearOpMode {
         swivel = new Swivel(hardwareMap);
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
-        waitForStart();
-
         limelight.start();
+        sleep(200);
+
+        waitForStart();
+        if (isStopRequested()) return;
+
         limelight.pipelineSwitch(colorPipeline);
-        LLResult results = limelight.getLatestResult();
         sleep(100);
 
-        if (!results.isValid()) {
+        LLResult results = limelight.getLatestResult();
+
+        if (results == null || !results.isValid()) {
             colorPipeline = 4;
             limelight.pipelineSwitch(colorPipeline);
-            results = limelight.getLatestResult();
             sleep(100);
-            if (!results.isValid()) {
+            results = limelight.getLatestResult();
+
+            if (results == null || !results.isValid()) {
                 colorPipeline = 5;
+                limelight.pipelineSwitch(colorPipeline);
+                sleep(100);
             }
         }
         /*
@@ -477,7 +475,6 @@ public class closePassiveRed extends LinearOpMode {
 }
 
          */
-        waitForStart();
 
         Action closePassive = drive.actionBuilder(startPose)
                 .stopAndAdd(new ShootThreeBallsPPG())

@@ -69,21 +69,21 @@ public class MainTeleOp extends LinearOpMode {
     public static double flywheelV;
     public static double hoodPoss;
     public final int blueTag = 2;
-    public final int redTag = 0;
+    public final int redTag = 1;
     public int ballFocused = 1;
     private CRServo swivel;
     private DcMotorEx intake1;
     private Limelight3A limelight;
     private boolean locking;
-    public static double kP = 0.35;
-    public static double kI = 0.000001;
-    public static double kD = 0.5;
+    double kP = 0.02809;
+    double kI = 0.0;
+    double kD = 0.000032;
 
     double integralSum = 0;
     double previousError = 0;
     double previousTime = 0;
     boolean rumble = false;
-    double close = 710;
+    double close = 690;
     double far = 840;
     boolean starte = false;
     boolean hasslept = false;
@@ -219,7 +219,11 @@ public class MainTeleOp extends LinearOpMode {
         servoLocked = false;
         hasslept = false;
         telemetry.addLine("limelight started");
-        limelight.start();
+        if (starte = false) {
+            limelight.start();
+        } else {
+            limelight.stop();
+        }
         limelight.pipelineSwitch(redTag);
         telemetry.addLine("limelight pipeline switched");
     }
@@ -227,37 +231,38 @@ public class MainTeleOp extends LinearOpMode {
         if (!servoLocked) {
             LLResult result = limelight.getLatestResult();
             telemetry.addLine("result");
-            telemetry.addData("tx: ", result.getTx());
+            if (!hasslept) {
+                sleep(110);
+                hasslept = true;
+            }
             if (result != null && result.isValid()) {
                 telemetry.addLine("in loop");
 
-                    double bearing = result.getTx(); // x offset in degrees from target (target x and bearing are the same thing i think)
+                double bearing = result.getTx(); // x offset in degrees from target (target x and bearing are the same thing i think)
 
-                    // servo aiming/locking
-                    double bearingThreshold = 3;
-                    double servoSpeed = 0.1;
+                // servo aiming/locking
+                double bearingThreshold = 3;
+                double servoSpeed = 1;
 
-                    if (bearing > bearingThreshold) {
-                        telemetry.addLine("adjusting swivel");
-                        ServoPower = -servoSpeed;
-                    } else if (bearing < -bearingThreshold) {
-                        telemetry.addLine("adjusting swivel");
-                        ServoPower = servoSpeed;
-                    } else {
-                        telemetry.addLine("stopping swivel");
-                        ServoPower = 0;
-                        servoLocked = true;
-                    }
+                if (bearing > bearingThreshold) {
+                    telemetry.addLine("adjusting swivel");
+                    ServoPower = -servoSpeed;
+                } else if (bearing < -bearingThreshold) {
+                    telemetry.addLine("adjusting swivel");
+                    ServoPower = servoSpeed;
+                } else {
+                    telemetry.addLine("stopping swivel");
+                    ServoPower = 0;
+                    servoLocked = true;
+                }
 
+                swivel.setPower(ServoPower);
 
-                    swivel.setPower(ServoPower);
-
-                    // telemetry
-                    telemetry.addData("Bearing", bearing);
-                    telemetry.addData("Servo Power", ServoPower);
-                    telemetry.addData("Servo Locked", servoLocked);
-                    telemetry.addData("Target Valid", result.isValid());
-
+                // telemetry
+                telemetry.addData("Bearing", bearing);
+                telemetry.addData("Servo Power", ServoPower);
+                telemetry.addData("Servo Locked", servoLocked);
+                telemetry.addData("Target Valid", result.isValid());
             }
         }
     }
