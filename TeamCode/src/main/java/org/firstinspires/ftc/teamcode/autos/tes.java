@@ -58,6 +58,13 @@ public class tes extends LinearOpMode {
             }
 
             if (cG1.b && !pG1.b) {
+                Actions.runBlocking(new SequentialAction(swivel.turn90right()));
+                sleep(swivelWaitTime);
+                Actions.runBlocking(new SequentialAction(swivel.stop()));
+                sleep(skep);
+            }
+
+            if (cG1.x && !pG1.x) {
                 Actions.runBlocking(new SequentialAction(swivel.turn90left()));
                 sleep(swivelWaitTime);
                 Actions.runBlocking(new SequentialAction(swivel.stop()));
