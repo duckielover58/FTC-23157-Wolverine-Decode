@@ -14,7 +14,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 
 // Non-RR imports
-import com.qualcomm.hardware.limelightvision.Limelight3A;
+//import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -35,7 +35,7 @@ public class farPassiveBlue extends LinearOpMode {
     private Intake intake;
     private Push push;
     private Swivel swivel;
-    private Limelight3A limelight;
+//    private Limelight3A limelight;
     private Hood hood;
     int colorPipeline = 3;
     boolean servoLocked = true;
@@ -174,7 +174,7 @@ public class farPassiveBlue extends LinearOpMode {
         intake = new Intake(hardwareMap);
         push = new Push(hardwareMap);
         swivel = new Swivel(hardwareMap);
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+//        limelight = hardwareMap.get(Limelight3A.class, "limelight");
         hood = new Hood(hardwareMap);
 
 

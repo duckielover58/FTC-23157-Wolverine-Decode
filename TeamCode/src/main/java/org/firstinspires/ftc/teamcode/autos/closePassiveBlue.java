@@ -72,22 +72,22 @@ public class closePassiveBlue extends LinearOpMode {
         public ShootThreeBalls() {
             sequence = new SequentialAction(
                     index.index2(),
-                    new InstantAction(() -> flywheelPID(710)),
+                    new InstantAction(() -> flywheelPID(125)),
                     new SleepAction(0.2),
                     push.PushBallDown(),
-                    new SleepAction(2.75),
+                    new SleepAction(2.8),
                     push.PushBallUp(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
                     index.index3(),
-                    new SleepAction(0.85),
+                    new SleepAction(0.80),
                     push.PushBallUp(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
                     index.index1(),
-                    new SleepAction(1.0),
+                    new SleepAction(0.4),
                     push.PushBallUp(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
@@ -95,6 +95,22 @@ public class closePassiveBlue extends LinearOpMode {
                     new InstantAction(() -> flywheelPID(0)),
                     new SleepAction(0.2),
                     index.index1()
+            );
+        }
+    }
+
+    private class StartRev implements Action {
+
+        private final Action sequence;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            return sequence.run(packet);
+        }
+
+        public StartRev() {
+            sequence = new SequentialAction(
+                    new InstantAction(() -> flywheelPID(350))
             );
         }
     }
@@ -109,31 +125,42 @@ public class closePassiveBlue extends LinearOpMode {
 
         public ShootThreeBallsCorner() {
             sequence = new SequentialAction(
-                    new InstantAction(() -> flywheelPID(600)),
                     index.index3(),
                     new SleepAction(0.2),
                     push.PushBallDown(),
-                    new SleepAction(0.5),
+                    new SleepAction(1.9),
                     push.PushBallUp(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
-                    new SleepAction(0.5),
-                    index.index2(),
-                    new SleepAction(0.85),
-                    push.PushBallUp(),
                     new SleepAction(0.3),
-                    push.PushBallDown(),
-                    new SleepAction(0.5),
-                    index.index1(),
-                    new SleepAction(0.75),
-                    push.PushBallUp(),
-                    new SleepAction(0.3),
-                    push.PushBallDown(),
-                    new SleepAction(0.5),
-                    new InstantAction(() -> flywheelPID(0)),
-                    new SleepAction(0.2),
-                    index.index1()
+                    index.index2()
             );
+        }
+    }
+    private class ShootThreeBallsCornerTwo implements Action {
+        private final Action sequence;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            return sequence.run(packet);
+        }
+          public ShootThreeBallsCornerTwo() {        //hood
+                    sequence = new SequentialAction(
+                            new SleepAction(1.0),
+                            push.PushBallUp(),
+                            new SleepAction(0.3),
+                            push.PushBallDown(),
+                            new SleepAction(0.5),
+                            index.index1(),
+                            new SleepAction(0.6),
+                            push.PushBallUp(),
+                            new SleepAction(0.3),
+                            push.PushBallDown(),
+                            new SleepAction(0.5),
+                            new InstantAction(() -> flywheelPID(0)),
+                            new SleepAction(0.2),
+                            index.index1()
+                    );
         }
     }
 /*
@@ -358,46 +385,52 @@ public class closePassiveBlue extends LinearOpMode {
 
         Action closePassive = drive.actionBuilder(startPose)
                 // second option  .strafeToLinearHeading(new Vector2d(-30, -15), Math.toRadians(230))
-                .stopAndAdd(hood.hoodPosition())
-                .stopAndAdd(hood.hoodUp())
                 .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(230))
                 .stopAndAdd(new ShootThreeBalls())
                 .strafeToLinearHeading(new Vector2d(-9.5, -28), Math.toRadians(270))
                 .afterTime(0.3, intake.IntakeBall())
+                .strafeTo(new Vector2d(-9.5, -32))
+
                 .stopAndAdd(index.index1())
-                .strafeTo(new Vector2d(-9.5, -32.5))
+                .strafeTo(new Vector2d(-9.5, -37.5))
+
                 .stopAndAdd(index.index2())
-                .strafeTo(new Vector2d(-9.5, -37))
                 .waitSeconds(0.85)
-                .stopAndAdd(index.index3())
                 .strafeTo(new Vector2d(-9.5, -41.5))
+
+                .stopAndAdd(index.index3())
                 .waitSeconds(0.85)
                 .stopAndAdd(intake.IntakeBallStop())
                 .build();
 
         Action postIntake = drive.actionBuilder(endShootPose)
+                .stopAndAdd(new StartRev())
                 .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(220))
-                .stopAndAdd(hood.hoodDown())
-                .stopAndAdd(hood.hoodDown())
+                .build();
+        Action postIntake2 = drive.actionBuilder(new Pose2d(new Vector2d(-29.3, -30.3), Math.toRadians(220)))
                 .stopAndAdd(new ShootThreeBallsCorner())
+                .stopAndAdd(hood.hoodDown())
+                .stopAndAdd(new ShootThreeBallsCornerTwo())
                 .setTangent(45)
                 .splineToLinearHeading(new Pose2d(14, -28, Math.toRadians(270)), Math.toRadians(270))
                 .stopAndAdd(intake.IntakeBall())
+                .strafeTo(new Vector2d(14, -32)) // -35
                 .stopAndAdd(index.index1())
-                .strafeTo(new Vector2d(14, -32.5)) // -35
                 .waitSeconds(0.85)
+                .strafeTo(new Vector2d(14, -37.5))  // -39
                 .stopAndAdd(index.index2())
-                .strafeTo(new Vector2d(14, -37))  // -39
                 .waitSeconds(0.85)
-                .stopAndAdd(index.index3())
                 .strafeTo(new Vector2d(14, -41.5)) // -43.5
+                .stopAndAdd(index.index3())
                 .waitSeconds(0.85)
                 .stopAndAdd(intake.IntakeBallStop())
                 .build();
 
         Action fullRoutine = new SequentialAction(closePassive, postIntake);
-
+        Actions.runBlocking(new SequentialAction(hood.hoodPosition(), hood.hoodUp(), hood.hoodUp(), hood.hoodUp()));
         Actions.runBlocking(closePassive);
         Actions.runBlocking(postIntake);
+        Actions.runBlocking(new SequentialAction(hood.hoodDown(), hood.hoodDown()));
+        Actions.runBlocking(postIntake2);
     }
 }

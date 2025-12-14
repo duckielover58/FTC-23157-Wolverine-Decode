@@ -122,8 +122,15 @@ public class fakeRedAuto extends LinearOpMode {
                 .stopAndAdd(new ShootThreeBalls())
                 .build();
 
-        Action fullRoutine = new SequentialAction(closePassive);
+        Action forward = drive.actionBuilder(new Pose2d(0,0,0))
+                .lineToX(20)
+                .build();
 
-        Actions.runBlocking(fullRoutine);
+//        Action fullRoutine = new SequentialAction(closePassive);
+
+//        Actions.runBlocking(fullRoutine);
+//        Actions.runBlocking(new SequentialAction());
+
+        Actions.runBlocking(forward);
     }
 }

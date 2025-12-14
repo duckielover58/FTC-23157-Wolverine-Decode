@@ -25,6 +25,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Swivel;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Hood;
@@ -41,7 +42,6 @@ public class closePassiveRed extends LinearOpMode {
     private Push push;
     private Swivel swivel;
     //    private Limelight3A limelight;
-    private Hood hood;
     int colorPipeline = 3;
     boolean servoLocked = true;
     double ServoPower = 1.0;
@@ -72,26 +72,22 @@ public class closePassiveRed extends LinearOpMode {
         public ShootThreeBalls() {
             sequence = new SequentialAction(
                     index.index2(),
-                    new InstantAction(() -> flywheelPID(710)),
+                    new InstantAction(() -> flywheelPID(125)),
                     new SleepAction(0.2),
                     push.PushBallDown(),
-                    new SleepAction(2.75),
+                    new SleepAction(2.8),
                     push.PushBallUp(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
-
-
                     index.index3(),
-                    new SleepAction(0.85),
+                    new SleepAction(0.80),
                     push.PushBallUp(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
-
-
                     index.index1(),
-                    new SleepAction(1.0),
+                    new SleepAction(0.4),
                     push.PushBallUp(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
@@ -99,6 +95,22 @@ public class closePassiveRed extends LinearOpMode {
                     new InstantAction(() -> flywheelPID(0)),
                     new SleepAction(0.2),
                     index.index1()
+            );
+        }
+    }
+
+    private class StartRev implements Action {
+
+        private final Action sequence;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            return sequence.run(packet);
+        }
+
+        public StartRev() {
+            sequence = new SequentialAction(
+                    new InstantAction(() -> flywheelPID(350))
             );
         }
     }
@@ -113,23 +125,34 @@ public class closePassiveRed extends LinearOpMode {
 
         public ShootThreeBallsCorner() {
             sequence = new SequentialAction(
-                    new InstantAction(() -> flywheelPID(600)),
                     index.index3(),
                     new SleepAction(0.2),
                     push.PushBallDown(),
-                    new SleepAction(0.5),
+                    new SleepAction(1.9),
                     push.PushBallUp(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
-                    new SleepAction(0.5),
-                    index.index2(),
-                    new SleepAction(0.85),
+                    new SleepAction(0.3),
+                    index.index2()
+            );
+        }
+    }
+    private class ShootThreeBallsCornerTwo implements Action {
+        private final Action sequence;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            return sequence.run(packet);
+        }
+        public ShootThreeBallsCornerTwo() {        //hood
+            sequence = new SequentialAction(
+                    new SleepAction(1.0),
                     push.PushBallUp(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
                     index.index1(),
-                    new SleepAction(0.75),
+                    new SleepAction(0.6),
                     push.PushBallUp(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
@@ -140,6 +163,7 @@ public class closePassiveRed extends LinearOpMode {
             );
         }
     }
+
     /*
         void limelightInits() {
             servoLocked = false;
@@ -182,7 +206,7 @@ public class closePassiveRed extends LinearOpMode {
             telemetry.addData("Servo Power", ServoPower);
             telemetry.addData("Servo Locked", servoLocked);
             telemetry.addData("Target Valid", result.isValid());
-            telemetry.update();
+            telemetry.update();'/
         }
 
      */
@@ -223,9 +247,10 @@ public class closePassiveRed extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel");
+        flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         Pose2d startPose = new Pose2d(-49, 49, Math.toRadians(130));
         Pose2d shootPose = new Pose2d(-12, 0, Math.toRadians(135));
-        Pose2d endShootPose = new Pose2d(-9.5, 41.5, Math.toRadians(130));
+        Pose2d endShootPose = new Pose2d(-9.5, 41.5, Math.toRadians(90));
         PinpointDrive drive = new PinpointDrive(hardwareMap, startPose);
 
         index = new Index(hardwareMap);
@@ -233,7 +258,7 @@ public class closePassiveRed extends LinearOpMode {
         push = new Push(hardwareMap);
         swivel = new Swivel(hardwareMap);
 //        limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        hood = new Hood(hardwareMap);
+        Hood hood = new Hood(hardwareMap);
 
 //        limelight.start();
         sleep(200);
@@ -360,48 +385,53 @@ public class closePassiveRed extends LinearOpMode {
          */
 
         Action closePassive = drive.actionBuilder(startPose)
-                .stopAndAdd(hood.hoodPosition())
-                .stopAndAdd(hood.hoodUp())
                 // second option  .strafeToLinearHeading(new Vector2d(-30, -15), Math.toRadians(230))
                 .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(130))
                 .stopAndAdd(new ShootThreeBalls())
                 .strafeToLinearHeading(new Vector2d(-9.5, 28), Math.toRadians(90))
                 .afterTime(0.3, intake.IntakeBall())
+                .strafeTo(new Vector2d(-9.5, 32))
+
                 .stopAndAdd(index.index1())
-                .strafeTo(new Vector2d(-9.5, 32.5))
+                .strafeTo(new Vector2d(-9.5, 37.5))
+
                 .stopAndAdd(index.index2())
-                .strafeTo(new Vector2d(-9.5, 37))
                 .waitSeconds(0.85)
-                .stopAndAdd(index.index3())
                 .strafeTo(new Vector2d(-9.5, 41.5))
+
+                .stopAndAdd(index.index3())
                 .waitSeconds(0.85)
                 .stopAndAdd(intake.IntakeBallStop())
                 .build();
 
         Action postIntake = drive.actionBuilder(endShootPose)
-                .strafeToLinearHeading(new Vector2d(-29.3, 30.3), Math.toRadians(140))
-                .stopAndAdd(hood.hoodDown())
-                .stopAndAdd(hood.hoodDown())
+                .stopAndAdd(new StartRev())
+                .strafeToLinearHeading(new Vector2d(-29.3, 30.3), Math.toRadians(220))
+                .build();
+        Action postIntake2 = drive.actionBuilder(new Pose2d(new Vector2d(-29.3, 30.3), Math.toRadians(220)))
                 .stopAndAdd(new ShootThreeBallsCorner())
+                .stopAndAdd(hood.hoodDown())
+                .stopAndAdd(new ShootThreeBallsCornerTwo())
                 .setTangent(270)
                 .splineToLinearHeading(new Pose2d(14, 28, Math.toRadians(90)), Math.toRadians(90))
                 .stopAndAdd(intake.IntakeBall())
+                .strafeTo(new Vector2d(14, 32)) // -35
                 .stopAndAdd(index.index1())
-                .strafeTo(new Vector2d(14, 32.5)) // 35
                 .waitSeconds(0.85)
+                .strafeTo(new Vector2d(14, 37.5))  // -39
                 .stopAndAdd(index.index2())
-                .strafeTo(new Vector2d(14, 37))  // 39
                 .waitSeconds(0.85)
+                .strafeTo(new Vector2d(14, 41.5)) // -43.5
                 .stopAndAdd(index.index3())
-                .strafeTo(new Vector2d(14, 41.5)) //43.5
                 .waitSeconds(0.85)
                 .stopAndAdd(intake.IntakeBallStop())
                 .build();
 
         Action fullRoutine = new SequentialAction(closePassive, postIntake);
-
+        Actions.runBlocking(new SequentialAction(hood.hoodPosition(), hood.hoodUp(), hood.hoodUp(), hood.hoodUp()));
         Actions.runBlocking(closePassive);
         Actions.runBlocking(postIntake);
-
+        Actions.runBlocking(new SequentialAction(hood.hoodDown(), hood.hoodDown()));
+        Actions.runBlocking(postIntake2);
     }
 }

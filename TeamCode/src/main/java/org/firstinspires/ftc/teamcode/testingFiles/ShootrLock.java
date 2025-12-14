@@ -19,6 +19,10 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.teamcode.subsystems.Swivel;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 
 @TeleOp public class ShootrLock extends LinearOpMode {
     private Position cameraPosition = new Position(DistanceUnit.INCH,
@@ -40,12 +44,33 @@ import java.util.List;
     private double cameraHeading = robotHeading;
     public static double ServoPower = 0;
     public boolean ServoLocked = false;
+    ExposureControl exposureControl;
+    private int     myExposure  = 1420;
+    private int     minExposure ;
+    private int     maxExposure ;
+    private int     myGain    =   30;
+    private int     minGain ;
+    private int     maxGain ;
+
+    boolean thisExpUp = false;
+    boolean thisExpDn = false;
+    boolean thisGainUp = false;
+    boolean thisGainDn = false;
+
+    boolean lastExpUp = false;
+    boolean lastExpDn = false;
+    boolean lastGainUp = false;
+    boolean lastGainDn = false;
 
 
     @Override
     public void runOpMode() {
         CRServo Swivel = hardwareMap.get(CRServo.class, "Swivel");
         initAprilTag();
+
+        getCameraSetting();
+        setManualExposure(myExposure, myGain);
+
 
         waitForStart();
         while (opModeIsActive()) {
@@ -87,6 +112,7 @@ import java.util.List;
                 // ... these parameters are fx, fy, cx, cy.
                 .build();
 
+
         //Cam fps
         // Adjust Image Decimation to trade-off detection-range for detection-rate.
         // eg: Some typical detection data using a Logitech C920 WebCam
@@ -118,7 +144,6 @@ import java.util.List;
         telemetry.addData("# AprilTags Detected", currentDetections.size());
 
         // Step through the list of detections and display info for each one.
-        boolean isCameraWithinBearing = false;
         for (AprilTagDetection detection : currentDetections) {
                 if (detection.id != 0) {
                     double sped = 0.1;
@@ -157,6 +182,75 @@ import java.util.List;
                 sleep(20);
         }
     }
+    private boolean    setManualExposure(int exposureMS, int gain) {
+        // Ensure Vision Portal has been setup.
+        if (visionPortal == null) {
+            return false;
+        }
+
+        // Wait for the camera to be open
+        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
+            telemetry.addData("Camera", "Waiting");
+            telemetry.update();
+            while (!isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
+                sleep(20);
+            }
+            telemetry.addData("Camera", "Ready");
+            telemetry.update();
+        }
+
+        // Set camera controls unless we are stopping.
+        if (!isStopRequested())
+        {
+            // Set exposure.  Make sure we are in Manual Mode for these values to take effect.
+            ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
+            if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
+                exposureControl.setMode(ExposureControl.Mode.Manual);
+                sleep(50);
+            }
+            exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
+            sleep(20);
+
+            // Set Gain.
+            GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
+            gainControl.setGain(gain);
+            sleep(20);
+            return (true);
+        } else {
+            return (false);
+        }
+    }
+
+    private void getCameraSetting() {
+        // Ensure Vision Portal has been setup.
+        if (visionPortal == null) {
+            return;
+        }
+
+        // Wait for the camera to be open
+        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
+            telemetry.addData("Camera", "Waiting");
+            telemetry.update();
+            while (!isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
+                sleep(20);
+            }
+            telemetry.addData("Camera", "Ready");
+            telemetry.update();
+        }
+
+        // Get camera control values unless we are stopping.
+        if (!isStopRequested()) {
+            ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
+            minExposure = (int)exposureControl.getMinExposure(TimeUnit.MILLISECONDS) + 1;
+            maxExposure = (int)exposureControl.getMaxExposure(TimeUnit.MILLISECONDS);
+
+            GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
+            minGain = gainControl.getMinGain();
+            maxGain = gainControl.getMaxGain();
+        }
+    }
+
+
 
 
 /*
