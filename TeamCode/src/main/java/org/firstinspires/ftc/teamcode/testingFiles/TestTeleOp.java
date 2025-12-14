@@ -61,7 +61,7 @@ public class TestTeleOp extends OpMode {
     }
 
 
-    private class ShootThreeBalls implements Action {
+    private class ShootThreeBallsPPG implements Action {
         private final Action sequence;
 
         @Override
@@ -69,20 +69,13 @@ public class TestTeleOp extends OpMode {
             return sequence.run(packet);
         }
 
-        public ShootThreeBalls() {
+        public ShootThreeBallsPPG() {
             sequence = new SequentialAction(
+                    index.index2(),
                     flywheel.shoot(),
                     new SleepAction(0.2),
                     push.PushBallDown(),
-                    new SleepAction(3.5),
-                    push.PushBallUp(),
-                    new SleepAction(0.3),
-                    push.PushBallDown(),
-                    new SleepAction(0.5),
-
-
-                    index.index2(),
-                    new SleepAction(0.5),
+                    new SleepAction(4.0),
                     push.PushBallUp(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
@@ -90,7 +83,15 @@ public class TestTeleOp extends OpMode {
 
 
                     index.index3(),
+                    new SleepAction(0.85),
+                    push.PushBallUp(),
+                    new SleepAction(0.3),
+                    push.PushBallDown(),
                     new SleepAction(0.5),
+
+
+                    index.index1(),
+                    new SleepAction(1.0),
                     push.PushBallUp(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
@@ -101,7 +102,7 @@ public class TestTeleOp extends OpMode {
             );
         }
     }
-
+//hood angle at 2
     //hello
 
     @Override
@@ -160,11 +161,10 @@ public class TestTeleOp extends OpMode {
             Actions.runBlocking(index.index3());
         }
         if (gamepad1.dpad_right) {
-            Actions.runBlocking(swivel.aim());
+            Actions.runBlocking(new ShootThreeBallsPPG());
         }
         if (gamepad2.right_bumper) {
-            Actions.runBlocking(index.index1());
-            Actions.runBlocking(new ShootThreeBalls());
+            Actions.runBlocking(swivel.aim());
         }
     }
 }
