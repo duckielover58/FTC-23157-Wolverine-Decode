@@ -249,7 +249,7 @@ public class closePassiveRed extends LinearOpMode {
         flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel");
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         Pose2d startPose = new Pose2d(-49, 49, Math.toRadians(130));
-        Pose2d shootPose = new Pose2d(-12, 0, Math.toRadians(135));
+        Pose2d shootPose = new Pose2d(-12, 0, Math.toRadians(360-135));
         Pose2d endShootPose = new Pose2d(-9.5, 41.5, Math.toRadians(90));
         PinpointDrive drive = new PinpointDrive(hardwareMap, startPose);
 

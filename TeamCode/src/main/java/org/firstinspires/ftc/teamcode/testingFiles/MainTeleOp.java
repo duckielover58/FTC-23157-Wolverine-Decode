@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.testingFiles;
 
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.previousTime;
+import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kD;
+import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kI;
+import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kP;
+
 import android.util.Size;
 
 import androidx.annotation.NonNull;
@@ -41,6 +46,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Push;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.firstinspires.ftc.teamcode.subsystems.GlobalVariable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,18 +110,10 @@ public class MainTeleOp extends LinearOpMode {
     private DcMotorEx intake1;
 //    private Limelight3A limelight;
     private boolean locking;
-    public static double kP =  01.3;
-    public static double kI = 0.000001;
-    public static double kD = 0.0035;
-
-    double integralSum = 0;
-    double previousError = 0;
-    double previousTime = 0;
-    boolean rumble = false;
-    double close = 810;
-    double far = 840;
     boolean starte = false;
     boolean hasslept = false;
+    double previousError = GlobalVariable.previousError;
+    double integralSum = GlobalVariable.integralSum;
     DcMotorEx flywheel;
 
 
@@ -235,10 +233,10 @@ public class MainTeleOp extends LinearOpMode {
                 Actions.runBlocking(push.PushBallDown());
             }
             if (cG2.right_trigger >= 0.1) {
-                flywheelPID(close);
+                flywheelPID(GlobalVariable.close);
             }
             if (cG2.left_trigger >= 0.1) {
-                flywheelPID(far);
+                flywheelPID(GlobalVariable.far);
             }
             if (cG2.right_trigger <= 0.1 && cG2.left_trigger <= 0.1) {
                 flywheelPID(0);
@@ -283,9 +281,6 @@ public class MainTeleOp extends LinearOpMode {
             }
             if (cG1.x && !pG1.x) {
                 runningActions.add(new ShootThreeBalls());
-            }
-            if (rumble) {
-                cG2.rumble(500);
             }
 //            lodk();
 
@@ -356,14 +351,13 @@ public class MainTeleOp extends LinearOpMode {
 
 
     void flywheelPID (double target) {
-        previousTime = getRuntime();
 
         double currentVelocity = flywheel.getVelocity();
         double currentTime = getRuntime();
         double dt = currentTime - previousTime;
         double error = target - currentVelocity;
 
-        integralSum += error * dt;
+        integralSum += (error * dt);
         double derivative = (error - previousError) / dt;
 
         double output = (kP * error) + (kI * integralSum) + (kD * derivative);
