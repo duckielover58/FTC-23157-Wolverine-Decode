@@ -25,8 +25,10 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.acmerobotics.roadrunner.SleepAction;
 
 import org.firstinspires.ftc.teamcode.subsystems.GlobalVariable;
 
@@ -74,13 +76,15 @@ public class nearSideBlue extends LinearOpMode{
                 //Shoot
 
                 //Intake 1st spike mark
-                .stopAndAdd(new SequentialAction(intake.IntakeBall()))
+                .stopAndAdd(intake.IntakeBall())
                 .setTangent(-20)
                 .splineToLinearHeading(new Pose2d(Intake1X, Intake1Y, IntakeH), Math.toRadians(270))
-                .afterTime(.2, new SequentialAction(index.turnRight()))
-                .afterTime(.2, new SequentialAction(index.turnRight()))
-                .afterTime(.2, new SequentialAction(index.turnRight()))
-                .stopAndAdd(new SequentialAction(intake.IntakeBallStop()))
+                .afterTime(.2, index.index1())
+                .stopAndAdd(new SleepAction(.2))
+                .afterTime(.2, index.index2())
+                .stopAndAdd(new SleepAction(.2))
+                .afterTime(.2, index.index3())
+                .stopAndAdd(intake.IntakeBallStop())
 
                 //Shoot short
                 .strafeToLinearHeading(new Vector2d(shootShortX, shootShortY), shootH)
@@ -88,28 +92,31 @@ public class nearSideBlue extends LinearOpMode{
 
 
                 //Intake 2nd spike mark
-                .stopAndAdd(new SequentialAction(intake.IntakeBall()))
+                .stopAndAdd(intake.IntakeBall())
                 .setTangent(0)
                 .splineToSplineHeading(new Pose2d(Intake2X, Intake2Y, IntakeH), Math.toRadians(270))
-                .afterDisp(3, new SequentialAction(index.turnRight()))
-                .afterDisp(3, new SequentialAction(index.turnRight()))
-                .afterDisp(3, new SequentialAction(index.turnRight()))
-                .stopAndAdd(new SequentialAction(intake.IntakeBallStop()))
+                .afterTime(.2, index.index1())
+                .afterTime(.2, index.index2())
+                .afterTime(.2, index.index3())
+                .stopAndAdd(intake.IntakeBallStop())
 
                 //Shoot short
                 .setTangent(90)
                 .strafeToLinearHeading(new Vector2d(shootShortX, shootShortY), shootH)
                 //Shoot
 
-                .stopAndAdd(new SequentialAction(intake.IntakeBall()))
+                .stopAndAdd(intake.IntakeBall())
                 .setTangent(0)
                 .splineToSplineHeading(new Pose2d(Intake3X, Intake3Y, IntakeH), Math.toRadians(0))
                 .strafeTo(new Vector2d(IntakeEnd3X, IntakeEnd3Y))
-                .afterDisp(3, new SequentialAction(index.turnRight()))
-                .afterDisp(3, new SequentialAction(index.turnRight()))
-                .afterDisp(3, new SequentialAction(index.turnRight()))
-                .stopAndAdd(new SequentialAction(intake.IntakeBallStop()))
+                .afterTime(.2, index.index1())
+                .afterTime(.2, index.index2())
+                .afterTime(.2, index.index3())
+                .stopAndAdd(intake.IntakeBallStop())
+
+                //Shoot short
                 .strafeToLinearHeading(new Vector2d(shootShortX, shootShortY), shootH)
+                //shoot
                 .build();
 
         Actions.runBlocking(tab1);
