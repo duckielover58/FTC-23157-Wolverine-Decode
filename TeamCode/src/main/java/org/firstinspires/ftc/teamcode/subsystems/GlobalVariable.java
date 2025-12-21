@@ -13,6 +13,9 @@ public class GlobalVariable {
     public static double close = 700;
     public static double far = 840;
 
+    //
+    public static double velHoodPos = -100;
+
     //nearBlue
     public static class nearBlue {
         public static double startX = -49;
