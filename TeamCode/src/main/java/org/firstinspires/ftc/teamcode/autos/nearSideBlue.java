@@ -5,9 +5,10 @@ import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.startX;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.startY;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.previousTime;
-import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kD;
-import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kI;
 import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kP;
+import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kF;
+import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kP;
+import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.targetVelocity;
 
 import androidx.annotation.NonNull;
 
@@ -58,25 +59,15 @@ public class nearSideBlue extends LinearOpMode{
     void flywheelPID (double target) {
 
         double currentVelocity = flywheel.getVelocity();
-        double currentTime = getRuntime();
-        double dt = currentTime - previousTime;
-        double error = target - currentVelocity;
+        double error = targetVelocity - currentVelocity;
 
-        integralSum += (error * dt);
-        double derivative = (error - previousError) / dt;
+        double ff = kF * targetVelocity;
 
-        double output = (kP * error) + (kI * integralSum) + (kD * derivative);
-        output = Math.max(-1.0, Math.min(1.0, output));
+        double output = ff + (kP * error);
+
+        output = Math.max(0.0, Math.min(1.0, output));
 
         flywheel.setPower(output);
-
-        telemetry.addData("Target Velocity: ", target);
-        telemetry.addData("Current Velocity: ", currentVelocity);
-        telemetry.addData("Error: ", error);
-        telemetry.addData("Power: ", output);
-
-        previousError = error;
-        previousTime = currentTime;
     }
 }
 
