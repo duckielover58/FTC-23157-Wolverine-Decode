@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.testingFiles;
 
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.previousTime;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.velHoodPos;
 import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kP;
 import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kF;
 import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kP;
@@ -235,9 +235,13 @@ public class MainTeleOp extends LinearOpMode {
             }
             if (cG2.right_trigger >= 0.1) {
                 flywheelPID(GlobalVariable.close);
+                velHoodPos = flywheel.getVelocity() * (0.5/700);
+                runningActions.add(new SequentialAction(hood.setHoodPos()));
             }
             if (cG2.left_trigger >= 0.1) {
                 flywheelPID(GlobalVariable.far);
+                velHoodPos = flywheel.getVelocity() * (0.5/700);
+                runningActions.add(new SequentialAction(hood.setHoodPos()));
             }
             if (cG2.right_trigger <= 0.1 && cG2.left_trigger <= 0.1) {
                 flywheelPID(0);

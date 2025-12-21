@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.velHoodPos;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -52,6 +54,15 @@ public class Hood {
         }
     }
 
+    public class SetHoodPos implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (velHoodPos != -100) {
+                hood.setPosition(velHoodPos);
+            }
+            return false;
+        }
+    }
     public Action hoodPosition() {
         return new HoodPosition();
     }
@@ -61,7 +72,7 @@ public class Hood {
     public Action hoodUp() {
         return new HoodUp();
     }
-
+    public Action setHoodPos() { return new SetHoodPos(); }
     public Action hoodPos() {
         return new HoodPos();
     }
