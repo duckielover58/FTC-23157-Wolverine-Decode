@@ -426,7 +426,24 @@ public class closePassiveBlue extends LinearOpMode {
                 .stopAndAdd(intake.IntakeBallStop())
                 .build();
 
+        Action tab1 = drive.actionBuilder(startPose)
+                .lineToX(-15)
+                .setTangent(-20)
+                .splineToLinearHeading(new Pose2d(-12, -43, Math.toRadians(270)), Math.toRadians(270))
+                .strafeTo(new Vector2d(-12, -43))
+                .strafeToLinearHeading(new Vector2d(-18.5, -18.5), Math.toRadians(225))
+                .setTangent(0)
+                .splineToSplineHeading(new Pose2d(12, -43, Math.toRadians(270)), Math.toRadians(270))
+                .setTangent(90)
+                .strafeToLinearHeading(new Vector2d(-18.5, -18.5), Math.toRadians(225))
+                .setTangent(0)
+                .splineToSplineHeading(new Pose2d(36, -30, Math.toRadians(270)), Math.toRadians(0))
+                .strafeTo(new Vector2d(36, -48))
+                .strafeToLinearHeading(new Vector2d(-18.5, -18.5), Math.toRadians(225))
+                .build();
+
         Action fullRoutine = new SequentialAction(closePassive, postIntake);
+        Actions.runBlocking(tab1);
         Actions.runBlocking(new SequentialAction(hood.hoodPosition(), hood.hoodUp(), hood.hoodUp(), hood.hoodUp()));
         Actions.runBlocking(closePassive);
         Actions.runBlocking(postIntake);
