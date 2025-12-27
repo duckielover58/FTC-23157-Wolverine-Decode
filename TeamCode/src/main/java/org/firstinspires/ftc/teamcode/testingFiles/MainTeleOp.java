@@ -1,5 +1,15 @@
 package org.firstinspires.ftc.teamcode.testingFiles;
 
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.bearing;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.close;
+//import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.hoodMultClose;
+//import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.hoodMultFar;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.lockSpeed;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.mainTag;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.maxBearingErr;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.bearingErr;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.targetHoodClose;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.targetHoodFar;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.velHoodPos;
 import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kP;
 import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kF;
@@ -109,7 +119,7 @@ public class MainTeleOp extends LinearOpMode {
     public int ballFocused = 1;
     private CRServo swivel;
     private DcMotorEx intake1;
-//    private Limelight3A limelight;
+    private Limelight3A limelight;
     private boolean locking;
     boolean starte = false;
     boolean hasslept = false;
@@ -125,68 +135,33 @@ public class MainTeleOp extends LinearOpMode {
 
         PinpointDrive drive = new PinpointDrive(hardwareMap, new Pose2d(0,0,0));
 
-        Intake intake = new Intake(hardwareMap);
-        intake1 = hardwareMap.get(DcMotorEx.class, "Intake");
         Push push = new Push(hardwareMap);
+        Hood hood = new Hood(hardwareMap);
+        Index index = new Index(hardwareMap);
+
+        intake1 = hardwareMap.get(DcMotorEx.class, "Intake");
         flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel");
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         flywheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        Hood hood = new Hood(hardwareMap);
+
+        FtcDashboard dash = FtcDashboard.getInstance();
+        List<Action> runningActions = new ArrayList<>();
+
+        //TODO switch tag
+        mainTag = redTag;
+        swivel = hardwareMap.get(CRServo.class, "Swivel");
+
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        telemetry.addLine("Initialized");
+        telemetry.update();
+
+        Actions.runBlocking(new SequentialAction(index.indexHome(), push.PushBallDown(), hood.hoodPosition()));
+
         Gamepad cG1 = new Gamepad();
         Gamepad cG2 = new Gamepad();
         Gamepad pG1 = new Gamepad();
         Gamepad pG2 = new Gamepad();
-        FtcDashboard dash = FtcDashboard.getInstance();
-        List<Action> runningActions = new ArrayList<>();
-        swivel = hardwareMap.get(CRServo.class, "Swivel");
-        Index index = new Index(hardwareMap);
-//        limelight = hardwareMap.get(Limelight3A.class, "limelight");
-
-        telemetry.addLine("Initialized");
-        telemetry.update();
-
-        class ShootThreeBalls implements Action {
-            private final Action sequence;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                return sequence.run(packet);
-            }
-
-            public ShootThreeBalls() {
-                sequence = new SequentialAction(
-                        index.index2(),
-                        new InstantAction(() -> flywheelPID(700)),
-                        new SleepAction(0.2),
-                        push.PushBallDown(),
-                        new SleepAction(2.5),
-                        push.PushBallUp(),
-                        new SleepAction(0.3),
-                        push.PushBallDown(),
-                        new SleepAction(0.5),
-                        index.index3(),
-                        new SleepAction(0.80),
-                        push.PushBallUp(),
-                        new SleepAction(0.3),
-                        push.PushBallDown(),
-                        new SleepAction(0.5),
-                        index.index1(),
-                        new SleepAction(0.7),
-                        push.PushBallUp(),
-                        new SleepAction(0.3),
-                        push.PushBallDown(),
-                        new SleepAction(0.5),
-                        new InstantAction(() -> flywheelPID(0)),
-                        new SleepAction(0.2),
-                        index.index1()
-                );
-            }
-        }
-
-
-
-        Actions.runBlocking(new SequentialAction(index.indexHome(), push.PushBallDown(), hood.hoodPosition()));
 
         waitForStart();
 
@@ -234,24 +209,36 @@ public class MainTeleOp extends LinearOpMode {
                 Actions.runBlocking(push.PushBallDown());
             }
             if (cG2.right_trigger >= 0.1) {
-                flywheelPID(GlobalVariable.close);
-                velHoodPos = flywheel.getVelocity() * (0.5/700);
+                lodk(mainTag);
+                flywheelPID(close);
+                velHoodPos = (flywheel.getVelocity() * (targetHoodClose/close)); // -0.1 * result.getDistance();
+                telemetry.addData("Vel Hood Pos: ", velHoodPos);
                 runningActions.add(new SequentialAction(hood.setHoodPos()));
             }
             if (cG2.left_trigger >= 0.1) {
+                lodk(mainTag);
                 flywheelPID(GlobalVariable.far);
-                velHoodPos = flywheel.getVelocity() * (0.5/700);
+                velHoodPos = flywheel.getVelocity() * (targetHoodFar/close);
+                telemetry.addData("Vel Hood Pos: ", velHoodPos);
                 runningActions.add(new SequentialAction(hood.setHoodPos()));
             }
             if (cG2.right_trigger <= 0.1 && cG2.left_trigger <= 0.1) {
                 flywheelPID(0);
             }
             if (cG2.right_bumper && !pG2.right_bumper) {
-                runningActions.add(new SequentialAction(hood.hoodUp()));
+                if (cG2.right_trigger >= 0.1) {
+                    targetHoodClose += 0.1;
+                } else if (cG2.left_trigger >= 0.1) {
+                    targetHoodFar += 0.1;
+                } else runningActions.add(new SequentialAction(hood.hoodUp()));
                 runningActions.add(new SequentialAction(hood.hoodPos()));
             }
             if (cG2.left_bumper && !pG2.left_bumper) {
-                runningActions.add(new SequentialAction(hood.hoodDown()));
+                if (cG2.right_trigger >= 0.1) {
+                    targetHoodClose -= 0.1;
+                } else if (cG2.left_trigger >= 0.1) {
+                    targetHoodFar -= 0.1;
+                } else runningActions.add(new SequentialAction(hood.hoodDown()));
                 runningActions.add(new SequentialAction(hood.hoodPos()));
             }
             if (!cG2.y && pG2.y) {
@@ -279,17 +266,9 @@ public class MainTeleOp extends LinearOpMode {
                     ballFocused = 1;
                 }
             }
-            if (cG1.a && !pG1.a) {
-                //limelightInits();
-//                servoLocked = false;
-//                lock(redTag, blueTag);
-            }
-            if (cG1.x && !pG1.x) {
-                runningActions.add(new ShootThreeBalls());
-            }
-//            lodk();
 
             telemetry.addData("Hood Position", hoodPoss);
+            telemetry.addData("Target Hood Position", targetHoodClose);
             telemetry.addData("Servo Locked", servoLocked);
             telemetry.addData("detectionsExist", detectionsExist);
             telemetry.addData("flywheel vel", flywheelV);
@@ -297,63 +276,33 @@ public class MainTeleOp extends LinearOpMode {
             telemetry.update();
         }
     }
-    /*
 
-    void limelightInits() {
-        servoLocked = false;
-        hasslept = false;
-        telemetry.addLine("limelight started");
-        if (starte = false) {
-            limelight.start();
-        } else {
-            limelight.stop();
-        }
-        limelight.pipelineSwitch(redTag);
-        telemetry.addLine("limelight pipeline switched");
-    }
-    void lodk () {
-        if (!servoLocked) {
-            LLResult result = limelight.getLatestResult();
-            telemetry.addLine("result");
-            if (!hasslept) {
-                sleep(110);
-                hasslept = true;
-            }
-            if (result != null && result.isValid()) {
-                telemetry.addLine("in loop");
-
-                double bearing = result.getTx(); // x offset in degrees from target (target x and bearing are the same thing i think)
-
-                // servo aiming/locking
-                double bearingThreshold = 3;
-                double servoSpeed = 1;
-
-                if (bearing > bearingThreshold) {
-                    telemetry.addLine("adjusting swivel");
-                    ServoPower = -servoSpeed;
-                } else if (bearing < -bearingThreshold) {
-                    telemetry.addLine("adjusting swivel");
-                    ServoPower = servoSpeed;
+    void lodk (int tag) {
+        limelight.start();
+        telemetry.addLine("Started");
+        telemetry.addData("Started? ", limelight.getStatus());
+        limelight.pipelineSwitch(tag);
+        LLResult result = limelight.getLatestResult();
+        telemetry.addLine("Result?");
+        if (result != null) {
+            if (result.isValid()) {
+                telemetry.addLine("In Loop");
+                bearing = result.getTx();
+                telemetry.addData("Bearing: ", bearing);
+                bearingErr = bearing - maxBearingErr;
+                lockSpeed = 0.1 * bearingErr;
+                lockSpeed = Math.max(-1, Math.min((lockSpeed), 1));
+                if (bearing > maxBearingErr) {
+                    swivel.setPower(-lockSpeed);
+                } else if (bearing < -maxBearingErr) {
+                    swivel.setPower(lockSpeed);
                 } else {
-                    telemetry.addLine("stopping swivel");
-                    ServoPower = 0;
-                    servoLocked = true;
+                    swivel.setPower(0);
                 }
-
-                swivel.setPower(ServoPower);
-
-                // telemetry
-                telemetry.addData("Bearing", bearing);
-                telemetry.addData("Servo Power", ServoPower);
-                telemetry.addData("Servo Locked", servoLocked);
-                telemetry.addData("Target Valid", result.isValid());
+                limelight.stop();
             }
         }
     }
-
-     */
-
-
 
     void flywheelPID (double target) {
 
@@ -367,171 +316,6 @@ public class MainTeleOp extends LinearOpMode {
         output = Math.max(0.0, Math.min(1.0, output));
 
         flywheel.setPower(output);
-    }
-
-    private void lock(int tag1, int tag2) {
-        initAprilTag();
-        getCameraSetting();
-        setManualExposure(myExposure, myGain);
-        telemetryAprilTag(tag1, tag2);
-        while (!servoLocked) {
-            telemetryAprilTag(tag1, tag2);
-            telemetry.update();
-            sleep(20);
-        }
-
-        if (servoLocked || !detectionsExist) {
-            ServoPower = 0;
-            swivel.setPower(ServoPower);
-        }
-
-        detectionsExist = true;
-
-        visionPortal.close();
-    }
-    private void initAprilTag() {
-
-        // Create the AprilTag processor.
-        aprilTag = new AprilTagProcessor.Builder()
-
-                .setTagLibrary(AprilTagGameDatabaseEditable.getCurrentGameTagLibrary())
-                .setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
-                .setCameraPose(cameraPosition, cameraOrientation)
-
-                .build();
-
-        VisionPortal.Builder builder = new VisionPortal.Builder();
-        builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
-        builder.setCameraResolution(new Size(640, 480));
-        builder.enableLiveView(true);
-        builder.setStreamFormat(VisionPortal.StreamFormat.MJPEG);
-        builder.setAutoStopLiveView(false);
-
-        builder.addProcessor(aprilTag);
-        visionPortal = builder.build();
-
-        visionPortal.setProcessorEnabled(aprilTag, true);
-
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        sleep(100);
-        telemetry.addData("On Init: # AprilTags Detected", currentDetections.size());
-        if (currentDetections.isEmpty()) {
-            detectionsExist = false;
-        } else {
-            detectionsExist = true;
-        }
-    }
-    public double bearing;
-    private void telemetryAprilTag(int tag1, int tag2) {
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        sleep(100);
-        telemetry.addData("# AprilTags Detected", currentDetections.size());
-
-        // Step through the list of detections and display info for each one.
-        for (AprilTagDetection detection : currentDetections) {
-            if (detection.id == tag1 || detection.id == tag2) {
-                double sped = 0.1;
-                if (detection.ftcPose.bearing > 1) {
-                    ServoPower = -sped;
-                    telemetry.addData("Bearing", bearing);
-                    swivel.setPower(ServoPower);
-
-                } else if (detection.ftcPose.bearing < -1) {
-                    ServoPower = sped;
-                    telemetry.addData("Bearing", bearing);
-                    swivel.setPower(ServoPower);
-
-                } else {
-                    ServoPower = 0;
-                    telemetry.addData("Bearing", bearing);
-                    swivel.setPower(ServoPower);
-                    telemetry.addData("Bearing reached within limit", bearing);
-                    servoLocked = true;
-                }
-
-                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
-                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
-                telemetry.addData("Servo Power:", ServoPower);
-                telemetry.addData("Bearing:", detection.ftcPose.bearing);
-
-            }
-
-            // Add "key" information to telemetry
-            telemetry.addData("Servo Power:", ServoPower);
-            telemetry.addData("Bearing:", bearing);
-            telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
-            telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
-
-            sleep(20);
-        }
-    }
-    private boolean setManualExposure (int exposureMS, int gain) {
-        // Ensure Vision Portal has been setup.
-        if (visionPortal == null) {
-            return false;
-        }
-
-        // Wait for the camera to be open
-        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
-            telemetry.addData("Camera", "Waiting");
-            telemetry.update();
-            while (!isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
-                sleep(20);
-            }
-            telemetry.addData("Camera", "Ready");
-            telemetry.update();
-        }
-
-        // Set camera controls unless we are stopping.
-        if (!isStopRequested())
-        {
-            // Set exposure.  Make sure we are in Manual Mode for these values to take effect.
-            ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
-            if (exposureControl.getMode() != ExposureControl.Mode.Manual) {
-                exposureControl.setMode(ExposureControl.Mode.Manual);
-                sleep(50);
-            }
-            exposureControl.setExposure((long)exposureMS, TimeUnit.MILLISECONDS);
-            sleep(20);
-
-            // Set Gain.
-            GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
-            gainControl.setGain(gain);
-            sleep(20);
-            return (true);
-        } else {
-            return (false);
-        }
-    }
-
-    private void getCameraSetting() {
-        // Ensure Vision Portal has been setup.
-        if (visionPortal == null) {
-            return;
-        }
-
-        // Wait for the camera to be open
-        if (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
-            telemetry.addData("Camera", "Waiting");
-            telemetry.update();
-            while (!isStopRequested() && (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING)) {
-                sleep(20);
-            }
-            telemetry.addData("Camera", "Ready");
-            telemetry.update();
-        }
-
-        // Get camera control values unless we are stopping.
-        if (!isStopRequested()) {
-            ExposureControl exposureControl = visionPortal.getCameraControl(ExposureControl.class);
-            minExposure = (int)exposureControl.getMinExposure(TimeUnit.MILLISECONDS) + 1;
-            maxExposure = (int)exposureControl.getMaxExposure(TimeUnit.MILLISECONDS);
-
-            GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
-            minGain = gainControl.getMinGain();
-            maxGain = gainControl.getMaxGain();
-        }
     }
 }
 
