@@ -24,6 +24,7 @@ public class GlobalVariable {
     public static double redTag = 0;
     public static double blueTag = 2;
     public static int mainTag;
+    public static boolean LLstart = false;
 
     //nearBlue
     public static class nearBlue {

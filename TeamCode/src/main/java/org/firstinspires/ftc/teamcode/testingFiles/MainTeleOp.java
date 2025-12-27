@@ -1,13 +1,17 @@
 package org.firstinspires.ftc.teamcode.testingFiles;
 
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.LLstart;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.bearing;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.close;
 //import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.hoodMultClose;
 //import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.hoodMultFar;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.far;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.lockSpeed;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.mainTag;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.maxBearingErr;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.bearingErr;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.IntakeEnd3X;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.IntakeEnd3Y;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.targetHoodClose;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.targetHoodFar;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.velHoodPos;
@@ -114,8 +118,8 @@ public class MainTeleOp extends LinearOpMode {
     public static double ServoPos = 0;
     public static double flywheelV;
     public static double hoodPoss;
-    public final int blueTag = 20;
-    public final int redTag = 24;
+    public final int blueTag = 2;
+    public final int redTag = 0;
     public int ballFocused = 1;
     private CRServo swivel;
     private DcMotorEx intake1;
@@ -133,7 +137,8 @@ public class MainTeleOp extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        PinpointDrive drive = new PinpointDrive(hardwareMap, new Pose2d(0,0,0));
+        //TODO change end positions near blue/near red
+        PinpointDrive drive = new PinpointDrive(hardwareMap, new Pose2d(GlobalVariable.nearBlue.IntakeEnd3X, GlobalVariable.nearBlue.IntakeEnd3Y, Math.toRadians(0)));
 
         Push push = new Push(hardwareMap);
         Hood hood = new Hood(hardwareMap);
@@ -193,6 +198,8 @@ public class MainTeleOp extends LinearOpMode {
 
             drive.setDrivePowers(new PoseVelocity2d(new Vector2d(-gamepad1.left_stick_y, -gamepad1.left_stick_x), -gamepad1.right_stick_x));
 
+            double y = drive.pose.position.y;
+
             drive.updatePoseEstimate();
 
             if (cG1.right_trigger >= 0.1) {
@@ -209,18 +216,18 @@ public class MainTeleOp extends LinearOpMode {
                 Actions.runBlocking(push.PushBallDown());
             }
             if (cG2.right_trigger >= 0.1) {
-                lodk(mainTag);
-                flywheelPID(close);
-                velHoodPos = (flywheel.getVelocity() * (targetHoodClose/close)); // -0.1 * result.getDistance();
-                telemetry.addData("Vel Hood Pos: ", velHoodPos);
+                close -= y * (200/38);
+                shoot(close);
+                velHoodPos -=  y * 0.1;
                 runningActions.add(new SequentialAction(hood.setHoodPos()));
-            }
-            if (cG2.left_trigger >= 0.1) {
-                lodk(mainTag);
-                flywheelPID(GlobalVariable.far);
-                velHoodPos = flywheel.getVelocity() * (targetHoodFar/close);
-                telemetry.addData("Vel Hood Pos: ", velHoodPos);
+            } else if (cG2.left_trigger >= 0.1) {
+                shoot(far);
                 runningActions.add(new SequentialAction(hood.setHoodPos()));
+            } else {
+                if (LLstart) {
+                    limelight.stop();
+                    LLstart = false;
+                }
             }
             if (cG2.right_trigger <= 0.1 && cG2.left_trigger <= 0.1) {
                 flywheelPID(0);
@@ -274,13 +281,17 @@ public class MainTeleOp extends LinearOpMode {
             telemetry.addData("flywheel vel", flywheelV);
             telemetry.addData("has slept? ", hasslept);
             telemetry.update();
+
+            drive.updatePoseEstimate();
         }
     }
 
     void lodk (int tag) {
-        limelight.start();
+        if (!LLstart) {
+            limelight.start();
+            LLstart = true;
+        }
         telemetry.addLine("Started");
-        telemetry.addData("Started? ", limelight.getStatus());
         limelight.pipelineSwitch(tag);
         LLResult result = limelight.getLatestResult();
         telemetry.addLine("Result?");
@@ -299,7 +310,6 @@ public class MainTeleOp extends LinearOpMode {
                 } else {
                     swivel.setPower(0);
                 }
-                limelight.stop();
             }
         }
     }
@@ -316,6 +326,15 @@ public class MainTeleOp extends LinearOpMode {
         output = Math.max(0.0, Math.min(1.0, output));
 
         flywheel.setPower(output);
+    }
+
+    void shoot (double distance) {
+        close = 600;
+        far = 840;
+        lodk(mainTag);
+        flywheelPID(distance);
+        velHoodPos = (flywheel.getVelocity() * (targetHoodClose/distance)); // -0.1 * result.getDistance();
+        telemetry.addData("Vel Hood Pos: ", velHoodPos);
     }
 }
 
