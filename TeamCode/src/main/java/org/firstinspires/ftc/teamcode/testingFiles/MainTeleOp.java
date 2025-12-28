@@ -138,7 +138,8 @@ public class MainTeleOp extends LinearOpMode {
     public void runOpMode() {
 
         //TODO change end positions near blue/near red
-        PinpointDrive drive = new PinpointDrive(hardwareMap, new Pose2d(GlobalVariable.nearBlue.IntakeEnd3X, GlobalVariable.nearBlue.IntakeEnd3Y, Math.toRadians(0)));
+//        PinpointDrive drive = new PinpointDrive(hardwareMap, new Pose2d(GlobalVariable.nearBlue.IntakeEnd3X, GlobalVariable.nearBlue.IntakeEnd3Y, Math.toRadians(0)));
+        PinpointDrive drive = new PinpointDrive(hardwareMap, new Pose2d(0, 0, Math.toRadians(0)));
 
         Push push = new Push(hardwareMap);
         Hood hood = new Hood(hardwareMap);
@@ -216,12 +217,16 @@ public class MainTeleOp extends LinearOpMode {
                 Actions.runBlocking(push.PushBallDown());
             }
             if (cG2.right_trigger >= 0.1) {
-                close -= y * (200/38);
-                shoot(close);
-                velHoodPos -=  y * 0.1;
+                lodk(mainTag);
+                flywheelPID(close);
+                velHoodPos = (flywheel.getVelocity() * (targetHoodClose/close)); // -0.1 * result.getDistance();
+                telemetry.addData("Vel Hood Pos: ", velHoodPos);
                 runningActions.add(new SequentialAction(hood.setHoodPos()));
             } else if (cG2.left_trigger >= 0.1) {
-                shoot(far);
+                lodk(mainTag);
+                flywheelPID(GlobalVariable.far);
+                velHoodPos = flywheel.getVelocity() * (targetHoodFar/close);
+                telemetry.addData("Vel Hood Pos: ", velHoodPos);
                 runningActions.add(new SequentialAction(hood.setHoodPos()));
             } else {
                 if (LLstart) {
@@ -280,6 +285,8 @@ public class MainTeleOp extends LinearOpMode {
             telemetry.addData("detectionsExist", detectionsExist);
             telemetry.addData("flywheel vel", flywheelV);
             telemetry.addData("has slept? ", hasslept);
+            telemetry.addData("Lock Speed", lockSpeed);
+            telemetry.addData("Bearing", bearing);
             telemetry.update();
 
             drive.updatePoseEstimate();
@@ -299,19 +306,20 @@ public class MainTeleOp extends LinearOpMode {
             if (result.isValid()) {
                 telemetry.addLine("In Loop");
                 bearing = result.getTx();
-                telemetry.addData("Bearing: ", bearing);
                 bearingErr = bearing - maxBearingErr;
                 lockSpeed = 0.1 * bearingErr;
-                lockSpeed = Math.max(-1, Math.min((lockSpeed), 1));
+                lockSpeed = Math.max(-0.3, Math.min((lockSpeed), 0.3));
                 if (bearing > maxBearingErr) {
+                    swivel.setDirection(CRServo.Direction.FORWARD);
                     swivel.setPower(-lockSpeed);
                 } else if (bearing < -maxBearingErr) {
+                    swivel.setDirection(CRServo.Direction.REVERSE);
                     swivel.setPower(lockSpeed);
                 } else {
                     swivel.setPower(0);
                 }
-            }
-        }
+            } else swivel.setPower(0);
+        } else swivel.setPower(0);
     }
 
     void flywheelPID (double target) {
@@ -328,13 +336,5 @@ public class MainTeleOp extends LinearOpMode {
         flywheel.setPower(output);
     }
 
-    void shoot (double distance) {
-        close = 600;
-        far = 840;
-        lodk(mainTag);
-        flywheelPID(distance);
-        velHoodPos = (flywheel.getVelocity() * (targetHoodClose/distance)); // -0.1 * result.getDistance();
-        telemetry.addData("Vel Hood Pos: ", velHoodPos);
-    }
 }
 
