@@ -428,7 +428,7 @@ public class closePassiveRed extends LinearOpMode {
                 .build();
 
         Action fullRoutine = new SequentialAction(closePassive, postIntake);
-        Actions.runBlocking(new SequentialAction(hood.hoodPosition(), hood.hoodUp(), hood.hoodUp(), hood.hoodUp()));
+        Actions.runBlocking(new SequentialAction(hood.hoodPositionInit(), hood.hoodUp(), hood.hoodUp(), hood.hoodUp()));
         Actions.runBlocking(closePassive);
         Actions.runBlocking(postIntake);
         Actions.runBlocking(new SequentialAction(hood.hoodDown(), hood.hoodDown()));

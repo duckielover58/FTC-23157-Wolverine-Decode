@@ -4,13 +4,10 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.sun.tools.javac.Main;
 
-import org.firstinspires.ftc.teamcode.testingFiles.MainTeleOp;
+import org.firstinspires.ftc.teamcode.MainTeleOp;
 public class Flywheel {
     private DcMotorEx flywheel;
 

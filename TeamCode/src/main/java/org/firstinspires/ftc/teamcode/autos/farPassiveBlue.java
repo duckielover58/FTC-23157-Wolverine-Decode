@@ -181,7 +181,7 @@ public class farPassiveBlue extends LinearOpMode {
         waitForStart();
 //840
         Action farPassive = drive.actionBuilder(startPose)
-                .stopAndAdd(hood.hoodPosition())
+                .stopAndAdd(hood.hoodPositionInit())
                 .stopAndAdd(hood.hoodUp())
                 .strafeToLinearHeading(new Vector2d(59,-21),Math.toRadians(200))
                 .stopAndAdd(new ShootThreeBalls())

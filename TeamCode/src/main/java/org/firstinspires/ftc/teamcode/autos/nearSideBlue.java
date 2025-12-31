@@ -7,7 +7,6 @@ import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootH;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootShortX;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootShortY;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootLongX;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.startH;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.IntakeH;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.Intake1X;
@@ -16,19 +15,14 @@ import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.Intake2Y;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.startX;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.startY;
-import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kF;
-import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kP;
-import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.targetVelocity;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
-import com.acmerobotics.roadrunner.SleepAction;
 
 import org.firstinspires.ftc.teamcode.subsystems.GlobalVariable;
 
@@ -54,27 +48,32 @@ public class nearSideBlue extends LinearOpMode{
     double integralSum = GlobalVariable.integralSum;
     double previousError = GlobalVariable.previousError;
     DcMotorEx flywheel;
+    Intake intake = new Intake(hardwareMap);
+    Hood hood = new Hood(hardwareMap);
+    Index index = new Index(hardwareMap);
+    Push push = new Push(hardwareMap);
+    Swivel swivel = new Swivel(hardwareMap);
 
     @Override
     public void runOpMode() throws InterruptedException {
         flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel");
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
-        Intake intake = new Intake(hardwareMap);
-        Hood hood = new Hood(hardwareMap);
-        Index index = new Index(hardwareMap);
-        Push push = new Push(hardwareMap);
-        Swivel swivel = new Swivel(hardwareMap);
         Pose2d startingPose = new Pose2d(startX, startY, startH);
 
         PinpointDrive drive = new PinpointDrive(hardwareMap, startingPose);
 
-        waitForStart();
+        Action inits = drive.actionBuilder(startingPose)
+            .stopAndAdd(new SequentialAction(
+                    push.PushBallDown(),
+                    index.index1(),
+                    hood.hoodPositionInit()
+            ))
+            .build();
 
         Action tab1 = drive.actionBuilder(startingPose)
-
-                .lineToX(shootLongX)
                 //Shoot
-
+                .build();
+        Action tab2 = drive.actionBuilder(drive.pose)
                 //Intake 1st spike mark
                 .stopAndAdd(intake.IntakeBall())
                 .setTangent(-20)
@@ -119,24 +118,14 @@ public class nearSideBlue extends LinearOpMode{
                 //shoot
                 .build();
 
-        Actions.runBlocking(tab1);
+        Actions.runBlocking(inits);
+
+        waitForStart();
+
+        Actions.runBlocking(new SequentialAction(tab1, tab2));
     }
 
 //    DcMotorEx flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel");
 
-
-    void flywheelPID (double target) {
-
-        double currentVelocity = flywheel.getVelocity();
-        double error = targetVelocity - currentVelocity;
-
-        double ff = kF * targetVelocity;
-
-        double output = ff + (kP * error);
-
-        output = Math.max(0.0, Math.min(1.0, output));
-
-        flywheel.setPower(output);
-    }
 }
 

@@ -9,7 +9,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.testingFiles.MainTeleOp;
+import org.firstinspires.ftc.teamcode.MainTeleOp;
 
 public class Hood {
     private Servo hood;
@@ -63,22 +63,16 @@ public class Hood {
             return false;
         }
     }
-    public Action hoodPosition() {
+    public Action hoodPositionInit() {
         return new HoodPosition();
     }
-    public Action hoodDown() {
-        return new HoodDown();
-    }
-    public Action hoodUp() {
-        return new HoodUp();
-    }
-    public Action setHoodPos() { return new SetHoodPos(); }
-    public Action hoodPos() {
-        return new HoodPos();
-    }
+    public Action hoodDown() { return new HoodDown(); }
+    public Action hoodUp() { return new HoodUp(); }
+    public Action setHoodPosShoot() { return new SetHoodPos(); }
+    public Action hoodPosTelemetry() { return new HoodPos(); }
 
     /*
-    public Action hoodPos() {
+    public Action hoodPosTelemetry() {
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {

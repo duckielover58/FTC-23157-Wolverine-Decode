@@ -2,6 +2,18 @@ package org.firstinspires.ftc.teamcode.autos;
 
 
 // RR-specific imports
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.Intake1X;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.Intake1Y;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.IntakeH;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootH;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootShortX;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootShortY;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.startH;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.startX;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.startY;
+import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kF;
+import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kP;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -60,7 +72,6 @@ public class closePassiveBlue extends LinearOpMode {
 
 
     public static final int RED_TAG_ID = 24;
-
     private class ShootThreeBalls implements Action {
         private final Action sequence;
 
@@ -98,7 +109,6 @@ public class closePassiveBlue extends LinearOpMode {
             );
         }
     }
-
     private class StartRev implements Action {
 
         private final Action sequence;
@@ -114,7 +124,6 @@ public class closePassiveBlue extends LinearOpMode {
             );
         }
     }
-
     private class ShootThreeBallsCorner implements Action {
         private final Action sequence;
 
@@ -210,45 +219,26 @@ public class closePassiveBlue extends LinearOpMode {
 
  */
     void flywheelPID (double target) {
-        previousTime = getRuntime();
 
-        double targetVelocity = target;
-        double currentVelocity = flywheel.getVelocity();
-        double currentTime = getRuntime();
-        double dt = currentTime - previousTime;
-        double error = targetVelocity - currentVelocity;
+    double currentVelocity = flywheel.getVelocity();
+    double error = target - currentVelocity;
 
-        integralSum += error * dt;
-        double derivative = (error - previousError) / dt;
+    double ff = kF * target;
 
-        double output = (kP * error) + (kI * integralSum) + (kD * derivative);
-        output = Math.max(-1.0, Math.min(1.0, output));
+    double output = ff + (kP * error);
 
-        flywheel.setPower(output);
+    output = Math.max(0.0, Math.min(1.0, output));
 
-        telemetry.addData("Target Velocity: ", targetVelocity);
-        telemetry.addData("Current Velocity: ", currentVelocity);
-        telemetry.addData("Error: ", error);
-        telemetry.addData("Power: ", output);
-
-        previousError = error;
-        previousTime = currentTime;
-
-        if (error <= 40) {
-            rumble = true;
-        } else {
-            rumble = false;
-        }
-    }
-
+    flywheel.setPower(output);
+}
 
     @Override
     public void runOpMode() throws InterruptedException {
 
         flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel");
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
-        Pose2d startPose = new Pose2d(-49, -49, Math.toRadians(230));
-        Pose2d shootPose = new Pose2d(-12, 0, Math.toRadians(135));
+        Pose2d startPose = new Pose2d(startX, startY, startH);
+//        Pose2d shootPose = new Pose2d(-12, 0, Math.toRadians(135));
         Pose2d endShootPose = new Pose2d(-9.5, -41.5, Math.toRadians(230));
         PinpointDrive drive = new PinpointDrive(hardwareMap, startPose);
 
@@ -284,9 +274,9 @@ public class closePassiveBlue extends LinearOpMode {
             }
         }
 
-         */
 
-        /*
+
+
         limelightInits();
         limelight.pipelineSwitch(0);
         lodk();
@@ -385,22 +375,15 @@ public class closePassiveBlue extends LinearOpMode {
 
         Action closePassive = drive.actionBuilder(startPose)
                 // second option  .strafeToLinearHeading(new Vector2d(-30, -15), Math.toRadians(230))
-                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(230))
+                .strafeToLinearHeading(new Vector2d(shootShortX, shootShortY), shootH)
                 .stopAndAdd(new ShootThreeBalls())
-                .strafeToLinearHeading(new Vector2d(-9.5, -28), Math.toRadians(270))
-                .afterTime(0.3, intake.IntakeBall())
-                .strafeTo(new Vector2d(-9.5, -32))
-
-                .stopAndAdd(index.index1())
-                .strafeTo(new Vector2d(-9.5, -37.5))
-
-                .stopAndAdd(index.index2())
-                .waitSeconds(0.85)
-                .strafeTo(new Vector2d(-9.5, -41.5))
-
-                .stopAndAdd(index.index3())
-                .waitSeconds(0.85)
-                .stopAndAdd(intake.IntakeBallStop())
+                .setTangent(-20)
+                .splineToLinearHeading(new Pose2d(Intake1X, Intake1Y, IntakeH), Math.toRadians(270))
+                .afterTime(0.3, new SequentialAction(intake.IntakeBall(), index.index1()))
+                .afterTime(0.4, index.index2())
+                .afterTime(0.5, index.index3())
+                .afterTime(0.6, index.index3())
+                .afterTime(1, intake.IntakeBallStop())
                 .build();
 
         Action postIntake = drive.actionBuilder(endShootPose)
@@ -442,9 +425,9 @@ public class closePassiveBlue extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(-18.5, -18.5), Math.toRadians(225))
                 .build();
 
-        Action fullRoutine = new SequentialAction(closePassive, postIntake);
+        Actions.runBlocking(closePassive);
         Actions.runBlocking(tab1);
-        Actions.runBlocking(new SequentialAction(hood.hoodPosition(), hood.hoodUp(), hood.hoodUp(), hood.hoodUp()));
+        Actions.runBlocking(new SequentialAction(hood.hoodPositionInit(), hood.hoodUp(), hood.hoodUp(), hood.hoodUp()));
         Actions.runBlocking(closePassive);
         Actions.runBlocking(postIntake);
         Actions.runBlocking(new SequentialAction(hood.hoodDown(), hood.hoodDown()));
