@@ -1,37 +1,26 @@
-package org.firstinspires.ftc.teamcode.testingFiles;
+package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.LLstart;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.bearing;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.close;
 //import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.hoodMultClose;
 //import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.hoodMultFar;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.far;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.lockSpeed;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.mainTag;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.maxBearingErr;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.bearingErr;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.IntakeEnd3X;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.IntakeEnd3Y;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.targetHoodClose;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.targetHoodFar;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.velHoodPos;
 import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kP;
 import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kF;
-import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kP;
-import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.targetVelocity;
-
-import android.util.Size;
-
-import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -43,29 +32,22 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Hood;
 import org.firstinspires.ftc.teamcode.subsystems.Index;
-import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Push;
 import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.teamcode.subsystems.GlobalVariable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @TeleOp(name = "MainTeleOp")
 public class MainTeleOp extends LinearOpMode {
@@ -162,7 +144,7 @@ public class MainTeleOp extends LinearOpMode {
         telemetry.addLine("Initialized");
         telemetry.update();
 
-        Actions.runBlocking(new SequentialAction(index.indexHome(), push.PushBallDown(), hood.hoodPosition()));
+        Actions.runBlocking(new SequentialAction(index.indexHome(), push.PushBallDown(), hood.hoodPositionInit()));
 
         Gamepad cG1 = new Gamepad();
         Gamepad cG2 = new Gamepad();
@@ -221,13 +203,13 @@ public class MainTeleOp extends LinearOpMode {
                 flywheelPID(close);
                 velHoodPos = (flywheel.getVelocity() * (targetHoodClose/close)); // -0.1 * result.getDistance();
                 telemetry.addData("Vel Hood Pos: ", velHoodPos);
-                runningActions.add(new SequentialAction(hood.setHoodPos()));
+                runningActions.add(new SequentialAction(hood.setHoodPosShoot()));
             } else if (cG2.left_trigger >= 0.1) {
                 lodk(mainTag);
                 flywheelPID(GlobalVariable.far);
                 velHoodPos = flywheel.getVelocity() * (targetHoodFar/close);
                 telemetry.addData("Vel Hood Pos: ", velHoodPos);
-                runningActions.add(new SequentialAction(hood.setHoodPos()));
+                runningActions.add(new SequentialAction(hood.setHoodPosShoot()));
             } else {
                 if (LLstart) {
                     limelight.stop();
@@ -243,7 +225,7 @@ public class MainTeleOp extends LinearOpMode {
                 } else if (cG2.left_trigger >= 0.1) {
                     targetHoodFar += 0.1;
                 } else runningActions.add(new SequentialAction(hood.hoodUp()));
-                runningActions.add(new SequentialAction(hood.hoodPos()));
+                runningActions.add(new SequentialAction(hood.hoodPosTelemetry()));
             }
             if (cG2.left_bumper && !pG2.left_bumper) {
                 if (cG2.right_trigger >= 0.1) {
@@ -251,7 +233,7 @@ public class MainTeleOp extends LinearOpMode {
                 } else if (cG2.left_trigger >= 0.1) {
                     targetHoodFar -= 0.1;
                 } else runningActions.add(new SequentialAction(hood.hoodDown()));
-                runningActions.add(new SequentialAction(hood.hoodPos()));
+                runningActions.add(new SequentialAction(hood.hoodPosTelemetry()));
             }
             if (!cG2.y && pG2.y) {
                 if (ballFocused == 1) {
