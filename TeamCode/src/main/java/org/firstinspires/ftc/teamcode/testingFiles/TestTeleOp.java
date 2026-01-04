@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -36,6 +37,7 @@ public class TestTeleOp extends OpMode {
     Flywheel flywheel;
     Swivel swivel;
     Index index;
+    Limelight3A limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
 
     @Override
@@ -167,6 +169,9 @@ public class TestTeleOp extends OpMode {
         }
         if (gamepad2.right_bumper) {
             Actions.runBlocking(swivel.aim());
+        }
+        if (gamepad2.a) {
+            limelight.stop();
         }
     }
 }

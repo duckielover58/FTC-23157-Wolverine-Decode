@@ -38,6 +38,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Hood;
@@ -52,6 +53,8 @@ public class closePassiveBlue extends LinearOpMode {
     private Index index;
     private Intake intake;
     private Push push;
+    private Hood hood;
+    private Servo hood1 = hardwareMap.get(Servo.class, "hood");
     private Swivel swivel;
 //    private Limelight3A limelight;
     int colorPipeline = 3;
@@ -82,29 +85,35 @@ public class closePassiveBlue extends LinearOpMode {
 
         public ShootThreeBalls() {
             sequence = new SequentialAction(
+                    //first
                     index.index2(),
-                    new InstantAction(() -> flywheelPID(125)),
                     new SleepAction(0.2),
                     push.PushBallDown(),
-                    new SleepAction(2.8),
+                    new SleepAction(1.3),
                     push.PushBallUp(),
+
+                    //second ball
+                    new InstantAction(() -> hood1.setPosition(0.7)),
                     new SleepAction(0.3),
                     push.PushBallDown(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.45),
                     index.index3(),
-                    new SleepAction(0.80),
+                    new SleepAction(0.25),
                     push.PushBallUp(),
+
+                    //third ball
+                    new InstantAction(() -> hood1.setPosition(0.6)),
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
                     index.index1(),
-                    new SleepAction(0.4),
-                    push.PushBallUp(),
                     new SleepAction(0.3),
-                    push.PushBallDown(),
-                    new SleepAction(0.5),
+                    push.PushBallUp(),
+
+                    //wrap up
+                    new SleepAction(0.3),
                     new InstantAction(() -> flywheelPID(0)),
-                    new SleepAction(0.2),
+                    push.PushBallDown(),
                     index.index1()
             );
         }
@@ -246,8 +255,8 @@ public class closePassiveBlue extends LinearOpMode {
         intake = new Intake(hardwareMap);
         push = new Push(hardwareMap);
         swivel = new Swivel(hardwareMap);
+        hood = new Hood(hardwareMap);
 //        limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        Hood hood = new Hood(hardwareMap);
 
 //        limelight.start();
         sleep(200);
@@ -375,7 +384,10 @@ public class closePassiveBlue extends LinearOpMode {
 
         Action closePassive = drive.actionBuilder(startPose)
                 // second option  .strafeToLinearHeading(new Vector2d(-30, -15), Math.toRadians(230))
-                .strafeToLinearHeading(new Vector2d(shootShortX, shootShortY), shootH)
+                .stopAndAdd(() -> flywheelPID(125))
+//                .stopAndAdd(() -> flywheel.setPower(0.7))
+                .splineToLinearHeading(new Pose2d(shootShortX, shootShortY, shootH), shootH)
+                .stopAndAdd(hood.shortHoodPos())
                 .stopAndAdd(new ShootThreeBalls())
                 .setTangent(-20)
                 .splineToLinearHeading(new Pose2d(Intake1X, Intake1Y, IntakeH), Math.toRadians(270))
@@ -426,11 +438,11 @@ public class closePassiveBlue extends LinearOpMode {
                 .build();
 
         Actions.runBlocking(closePassive);
-        Actions.runBlocking(tab1);
-        Actions.runBlocking(new SequentialAction(hood.hoodPositionInit(), hood.hoodUp(), hood.hoodUp(), hood.hoodUp()));
-        Actions.runBlocking(closePassive);
-        Actions.runBlocking(postIntake);
-        Actions.runBlocking(new SequentialAction(hood.hoodDown(), hood.hoodDown()));
-        Actions.runBlocking(postIntake2);
+//        Actions.runBlocking(tab1);
+//        Actions.runBlocking(new SequentialAction(hood.hoodPositionInit(), hood.hoodUp(), hood.hoodUp(), hood.hoodUp()));
+//        Actions.runBlocking(closePassive);
+//        Actions.runBlocking(postIntake);
+//        Actions.runBlocking(new SequentialAction(hood.hoodDown(), hood.hoodDown()));
+//        Actions.runBlocking(postIntake2);
     }
 }

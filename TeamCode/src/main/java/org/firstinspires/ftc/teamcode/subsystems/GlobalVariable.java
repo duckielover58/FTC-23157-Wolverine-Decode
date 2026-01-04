@@ -25,12 +25,13 @@ public class GlobalVariable {
     public static double blueTag = 2;
     public static int mainTag;
     public static boolean LLstart = false;
+    public static double shortHoodPos = 0.9;
 
     //nearBlue
     public static class nearBlue {
         public static double startX = -49;
         public static double startY = -49;
-        public static double startH = Math.toRadians(230);
+        public static double startH = Math.toRadians(225);
         public static double shootLongX = -15;
         public static double shootShortX = -18.5;
         public static double shootShortY = -18.5;

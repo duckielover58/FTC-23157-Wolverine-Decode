@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.shortHoodPos;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.velHoodPos;
 
 import androidx.annotation.NonNull;
@@ -63,19 +64,108 @@ public class Hood {
             return false;
         }
     }
-    public Action hoodPositionInit() {
-        return new HoodPosition();
+
+    public class HoodPosShortShoot implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            hood.setPosition(shortHoodPos);
+            return false;
+        }
     }
+
+    public class one implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            hood.setPosition(0.1);
+            return false;
+        }
+    }
+
+    public class two implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            hood.setPosition(0.2);
+            return false;
+        }
+    }
+
+    public class three implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            hood.setPosition(0.3);
+            return false;
+        }
+    }
+
+    public class four implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            hood.setPosition(0.4);
+            return false;
+        }
+    }
+
+    public class five implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            hood.setPosition(0.5);
+            return false;
+        }
+    }
+
+    public class six implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            hood.setPosition(0.6);
+            return false;
+        }
+    }
+
+    public class seven implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            hood.setPosition(0.7);
+            return false;
+        }
+    }
+
+    public class eight implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            hood.setPosition(0.8);
+            return false;
+        }
+    }
+
+    public class nine implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            hood.setPosition(0.9);
+            return false;
+        }
+    }
+
+    public class ten implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            hood.setPosition(1);
+            return false;
+        }
+    }
+
+
+    public Action hoodPositionInit() { return new HoodPosition(); }
     public Action hoodDown() { return new HoodDown(); }
     public Action hoodUp() { return new HoodUp(); }
     public Action setHoodPosShoot() { return new SetHoodPos(); }
     public Action hoodPosTelemetry() { return new HoodPos(); }
+    public Action shortHoodPos() { return new HoodPosShortShoot(); }
 
     /*
     public Action hoodPosTelemetry() {
         return new Action() {
             @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 hood.setPosition(0.5);
                 return false;
             }
