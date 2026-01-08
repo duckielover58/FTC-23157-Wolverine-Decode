@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode.testingFiles;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Disabled
 @TeleOp(name = "IntakePushIndex")
 public class IntakePushIndex extends LinearOpMode {
 
@@ -30,7 +31,7 @@ public class IntakePushIndex extends LinearOpMode {
         double indexPos = 0.5;
         double pushMax = 0.35;
         double pushMin = 0;
-        double step = 0.1;
+        double step = 0.01;
         double lastPushPos = pushPos;
         double lastIndexPos = indexPos;
         long slep = 150;
@@ -38,11 +39,15 @@ public class IntakePushIndex extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            FtcDashboard Dashboard = FtcDashboard.getInstance();
+            telemetry = Dashboard.getTelemetry();
+            TelemetryPacket packet = new TelemetryPacket();
 
             telemetry.addLine("Intake - Right/Left Bumper");
             telemetry.addLine("Push - a");
             telemetry.addLine("Index - b");
             telemetry.addLine("Increase/Decrease Servo Positions - Dpad up/down");
+            packet.put("Index Pos: ", indexPos);
 
 
             // Intake motor control - right bumper powers, left bumper turns off

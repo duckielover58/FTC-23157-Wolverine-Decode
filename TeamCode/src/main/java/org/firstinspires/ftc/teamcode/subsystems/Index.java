@@ -12,9 +12,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Index {
 
     private Servo index;
-    private double ball1 = 0.01; //0.05
-    private double ball2 = 0.38; //0.40
-    private double ball3 = 0.75; //0.75
+    private double ball1 = 0.18; //between 0.15-0.2
+    private double ball2 = 0.55; //0.40
+    private double ball3 = 0.86; //between 0.85 - 0.9
 
     public Index (HardwareMap hardwareMap) {
         index = hardwareMap.get(Servo.class, "Index");
