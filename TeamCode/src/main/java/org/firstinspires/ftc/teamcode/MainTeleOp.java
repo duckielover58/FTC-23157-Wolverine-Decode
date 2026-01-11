@@ -112,6 +112,7 @@ public class MainTeleOp extends LinearOpMode {
     double previousError = GlobalVariable.previousError;
     double integralSum = GlobalVariable.integralSum;
     DcMotorEx flywheel;
+    DcMotorEx flywheel2;
 
 
 
@@ -132,6 +133,9 @@ public class MainTeleOp extends LinearOpMode {
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         flywheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flywheel2 = hardwareMap.get(DcMotorEx.class, "Flywheel2");
+        flywheel2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        flywheel2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         FtcDashboard dash = FtcDashboard.getInstance();
         List<Action> runningActions = new ArrayList<>();
@@ -305,7 +309,6 @@ public class MainTeleOp extends LinearOpMode {
     }
 
     void flywheelPID (double target) {
-
         double currentVelocity = flywheel.getVelocity();
         double error = target - currentVelocity;
 
@@ -316,6 +319,22 @@ public class MainTeleOp extends LinearOpMode {
         output = Math.max(0.0, Math.min(1.0, output));
 
         flywheel.setPower(output);
+
+        flywheelPID2(target);
+    }
+
+    void flywheelPID2 (double target) {
+
+        double currentVelocity = flywheel2.getVelocity();
+        double error = target - currentVelocity;
+
+        double ff = kF * target;
+
+        double output = ff + (kP * error);
+
+        output = Math.max(0.0, Math.min(1.0, output));
+
+        flywheel2.setPower(output);
     }
 
 }

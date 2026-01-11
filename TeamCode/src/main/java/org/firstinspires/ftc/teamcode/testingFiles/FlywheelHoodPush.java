@@ -5,13 +5,14 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Disabled
 @TeleOp(name = "FlywheelHoodSwivel")
 public class FlywheelHoodPush extends LinearOpMode {
 
     private DcMotorEx flywheel;
+    private DcMotorEx flywheel2;
     private Servo hood;
     private Servo push;
     private boolean onPush = true;
@@ -21,10 +22,13 @@ public class FlywheelHoodPush extends LinearOpMode {
     @Override
     public void runOpMode() {
         flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel");
+        flywheel2 = hardwareMap.get(DcMotorEx.class, "Flywheel2");
         hood   = hardwareMap.get(Servo.class, "Hood");
         push  = hardwareMap.get(Servo.class, "Push");
 
-        flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        flywheel2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        flywheel2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         double flywheelPower = 10/13.29;
         double hoodPos  = 0.5;
@@ -40,6 +44,8 @@ public class FlywheelHoodPush extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+            flywheel.setPower(1);
+            flywheel2.setPower(1);
             telemetry.addLine("Flywheel - Right/Left Bumper");
             telemetry.addLine("Hood - a");
             telemetry.addLine("Push - b");
