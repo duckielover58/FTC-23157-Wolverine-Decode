@@ -50,7 +50,7 @@ repositories {
 
 dependencies {
     implementation project(':FtcRobotController')
-//    implementation "com.acmerobotics.slothboard:dashboard:0.2.4+0.4.17"
+    implementation "com.acmerobotics.slothboard:dashboard:0.2.4+0.4.17"
     implementation ("com.acmerobotics.roadrunner:core:1.0.1") {
         exclude group: "com.acmerobotics.dashboard"
     }
