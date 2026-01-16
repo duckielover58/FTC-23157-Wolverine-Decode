@@ -54,7 +54,6 @@ public class closePassiveBlue extends LinearOpMode {
     private Intake intake;
     private Push push;
     private Hood hood;
-    private Servo hood1 = hardwareMap.get(Servo.class, "hood");
     private Swivel swivel;
 //    private Limelight3A limelight;
     int colorPipeline = 3;
@@ -82,6 +81,15 @@ public class closePassiveBlue extends LinearOpMode {
         public boolean run(@NonNull TelemetryPacket packet) {
             return sequence.run(packet);
         }
+/*
+        public IntakeThreeBalls() {
+            sequence = new SequentialAction(
+
+            )
+        }
+
+ */
+
 
         public ShootThreeBalls() {
             sequence = new SequentialAction(
@@ -92,8 +100,9 @@ public class closePassiveBlue extends LinearOpMode {
                     new SleepAction(1.3),
                     push.PushBallUp(),
 
+
                     //second ball
-                    new InstantAction(() -> hood1.setPosition(0.7)),
+                    hood.seven(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.45),
@@ -102,13 +111,14 @@ public class closePassiveBlue extends LinearOpMode {
                     push.PushBallUp(),
 
                     //third ball
-                    new InstantAction(() -> hood1.setPosition(0.6)),
+                    hood.six(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
                     index.index1(),
                     new SleepAction(0.3),
                     push.PushBallUp(),
+
 
                     //wrap up
                     new SleepAction(0.3),

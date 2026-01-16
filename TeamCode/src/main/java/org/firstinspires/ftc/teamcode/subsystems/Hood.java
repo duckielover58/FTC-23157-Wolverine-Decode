@@ -160,7 +160,8 @@ public class Hood {
     public Action setHoodPosShoot() { return new SetHoodPos(); }
     public Action hoodPosTelemetry() { return new HoodPos(); }
     public Action shortHoodPos() { return new HoodPosShortShoot(); }
-
+    public Action seven() { return new seven();}
+    public Action six() { return new six();}
     /*
     public Action hoodPosTelemetry() {
         return new Action() {
