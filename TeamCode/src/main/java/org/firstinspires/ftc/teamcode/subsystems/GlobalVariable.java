@@ -26,7 +26,11 @@ public class GlobalVariable {
     public static int mainTag;
     public static boolean LLstart = false;
     public static double shortHoodPos = 0.9;
-
+    public static float seeyuhHSV[]  = {};
+    public static int currentBallPos;
+    public static int ball1Color; // 0 -> Green, 1 -> Purple
+    public static int ball2Color;
+    public static int ball3Color;
     //nearBlue
     public static class nearBlue {
         public static double startX = -49;
@@ -45,6 +49,8 @@ public class GlobalVariable {
         public static double Intake3Y = -23;
         public static double IntakeEnd3X = 36;
         public static double IntakeEnd3Y = -48;
+        public static double shootHalfTargetSpeed = 500;
+        public static double shootShortTargetSpeed = 490;
 
     }
     public static class nearRed {
