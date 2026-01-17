@@ -6,13 +6,13 @@ import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.Intake1Y;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.IntakeH;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootH;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootHalfTargetSpeed;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootShortX;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootShortY;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.startH;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.startX;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.startY;
 import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kF;
-import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kP;
 
 import androidx.annotation.NonNull;
 
@@ -38,7 +38,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Hood;
@@ -81,16 +80,6 @@ public class closePassiveBlue extends LinearOpMode {
         public boolean run(@NonNull TelemetryPacket packet) {
             return sequence.run(packet);
         }
-/*
-        public IntakeThreeBalls() {
-            sequence = new SequentialAction(
-
-
-            )
-        }
-
- */
-
 
         public ShootThreeBalls() {
             sequence = new SequentialAction(
@@ -129,7 +118,7 @@ public class closePassiveBlue extends LinearOpMode {
             );
         }
     }
-    private class StartRev implements Action {
+    private class StartRevShort implements Action {
 
         private final Action sequence;
 
@@ -138,11 +127,50 @@ public class closePassiveBlue extends LinearOpMode {
             return sequence.run(packet);
         }
 
-        public StartRev() {
+        public StartRevShort() {
             sequence = new SequentialAction(
-                    new InstantAction(() -> flywheelPID(350))
+                    new InstantAction(() -> flywheelPID(500))
             );
         }
+
+    }
+
+    private class StartRevHalf implements Action {
+
+        private final Action sequence;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            return sequence.run(packet);
+        }
+
+        public StartRevHalf() {
+            sequence = new SequentialAction(
+                    new InstantAction(() -> flywheelPID(shootHalfTargetSpeed))
+            );
+        }
+
+    }
+    private class IntakeRoutine implements Action {
+
+        private final Action sequence;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            return sequence.run(packet);
+        }
+
+        public IntakeRoutine() {
+            sequence = new SequentialAction(
+                    intake.IntakeBall(),
+                    index.turnRight(),
+                    index.turnRight(),
+                    index.turnRight(),
+                    index.turnRight()
+                    //once we figure out how many times it actually has to turn we can add/remove turns respectively
+            );
+        }
+
     }
     private class ShootThreeBallsCorner implements Action {
         private final Action sequence;
@@ -410,7 +438,7 @@ public class closePassiveBlue extends LinearOpMode {
                 .build();
 
         Action postIntake = drive.actionBuilder(endShootPose)
-                .stopAndAdd(new StartRev())
+                .stopAndAdd(new StartRevShort())
                 .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(220))
                 .build();
         Action postIntake2 = drive.actionBuilder(new Pose2d(new Vector2d(-29.3, -30.3), Math.toRadians(220)))
