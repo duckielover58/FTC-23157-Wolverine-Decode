@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.currentBallPos;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -24,6 +26,7 @@ public class Index {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             index.setPosition(ball1);
+            currentBallPos = 1;
             return false;
         }
     }
@@ -32,6 +35,7 @@ public class Index2 implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             index.setPosition(ball2);
+            currentBallPos = 2;
             return false;
         }
     }
@@ -40,6 +44,7 @@ public class Index3 implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             index.setPosition(ball3);
+            currentBallPos = 3;
             return false;
         }
     }
@@ -47,6 +52,7 @@ public class Index3 implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             index.setPosition(0);
+            currentBallPos = 0;
             return false;
         }
     }
@@ -56,12 +62,15 @@ public class Index3 implements Action {
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if (index.getPosition() == ball1 || index.getPosition() == 0) {
                 index.setPosition(ball2);
+                currentBallPos = 2;
             }
             if (index.getPosition() == ball2) {
                 index.setPosition(ball3);
+                currentBallPos = 3;
             }
             if (index.getPosition() == ball3) {
                 index.setPosition(ball1);
+                currentBallPos = 1;
             }
             return false;
         }
@@ -72,12 +81,15 @@ public class Index3 implements Action {
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             if (index.getPosition() == ball3) {
                 index.setPosition(ball2);
+                currentBallPos = 2;
             }
             if (index.getPosition() == ball2) {
                 index.setPosition(ball1);
+                currentBallPos = 1;
             }
             if (index.getPosition() == ball1 || index.getPosition() == 0) {
                 index.setPosition(ball3);
+                currentBallPos = 3;
             }
             return false;
         }
