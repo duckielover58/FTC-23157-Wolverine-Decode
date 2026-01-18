@@ -15,9 +15,15 @@ import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.Intake2Y;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.startX;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.startY;
+import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kF;
+import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kP;
+
+import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
@@ -53,6 +59,140 @@ public class nearSideBlue extends LinearOpMode{
     Index index = new Index(hardwareMap);
     Push push = new Push(hardwareMap);
     Swivel swivel = new Swivel(hardwareMap);
+
+    public static final int RED_TAG_ID = 24;
+    private class ShootThreeBalls implements Action {
+        private final Action sequence;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            return sequence.run(packet);
+        }
+/*
+        public IntakeThreeBalls() {
+            sequence = new SequentialAction(
+
+
+            )
+        }
+
+ */
+
+
+        public ShootThreeBalls() {
+            sequence = new SequentialAction(
+                    //first
+                    index.index2(),
+                    new SleepAction(0.2),
+                    push.PushBallDown(),
+                    new SleepAction(1.3),
+                    push.PushBallUp(),
+
+
+                    //second ball
+                    hood.seven(),
+                    new SleepAction(0.3),
+                    push.PushBallDown(),
+                    new SleepAction(0.45),
+                    index.index3(),
+                    new SleepAction(0.25),
+                    push.PushBallUp(),
+
+                    //third ball
+                    hood.six(),
+                    new SleepAction(0.3),
+                    push.PushBallDown(),
+                    new SleepAction(0.5),
+                    index.index1(),
+                    new SleepAction(0.3),
+                    push.PushBallUp(),
+
+
+                    //wrap up
+                    new SleepAction(0.3),
+                    new InstantAction(() -> flywheelPID(0)),
+                    push.PushBallDown(),
+                    index.index1()
+            );
+        }
+    }
+    private class StartRev implements Action {
+
+        private final Action sequence;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            return sequence.run(packet);
+        }
+
+        public StartRev() {
+            sequence = new SequentialAction(
+                    new InstantAction(() -> flywheelPID(350))
+            );
+        }
+    }
+    private class ShootThreeBallsCorner implements Action {
+        private final Action sequence;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            return sequence.run(packet);
+        }
+
+        public ShootThreeBallsCorner() {
+            sequence = new SequentialAction(
+                    index.index3(),
+                    new SleepAction(0.2),
+                    push.PushBallDown(),
+                    new SleepAction(1.9),
+                    push.PushBallUp(),
+                    new SleepAction(0.3),
+                    push.PushBallDown(),
+                    new SleepAction(0.3),
+                    index.index2()
+            );
+        }
+    }
+    private class ShootThreeBallsCornerTwo implements Action {
+        private final Action sequence;
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            return sequence.run(packet);
+        }
+        public ShootThreeBallsCornerTwo() {        //hood
+            sequence = new SequentialAction(
+                    new SleepAction(1.0),
+                    push.PushBallUp(),
+                    new SleepAction(0.3),
+                    push.PushBallDown(),
+                    new SleepAction(0.5),
+                    index.index1(),
+                    new SleepAction(0.6),
+                    push.PushBallUp(),
+                    new SleepAction(0.3),
+                    push.PushBallDown(),
+                    new SleepAction(0.5),
+                    new InstantAction(() -> flywheelPID(0)),
+                    new SleepAction(0.2),
+                    index.index1()
+            );
+        }
+    }
+    void flywheelPID (double target) {
+
+        double currentVelocity = flywheel.getVelocity();
+        double error = target - currentVelocity;
+
+        double ff = kF * target;
+
+        double output = ff + (kP * error);
+
+        output = Math.max(0.0, Math.min(1.0, output));
+
+        flywheel.setPower(output);
+    }
+
 
     @Override
     public void runOpMode() throws InterruptedException {
