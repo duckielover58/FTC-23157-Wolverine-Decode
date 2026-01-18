@@ -134,6 +134,7 @@ public class MainTeleOp extends LinearOpMode {
         flywheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         flywheel2 = hardwareMap.get(DcMotorEx.class, "Flywheel2");
+        flywheel2.setDirection(DcMotorSimple.Direction.REVERSE);
         flywheel2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         flywheel2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -207,6 +208,7 @@ public class MainTeleOp extends LinearOpMode {
                 flywheelPID(close);
                 velHoodPos = (flywheel.getVelocity() * (targetHoodClose/close)); // -0.1 * result.getDistance();
                 telemetry.addData("Vel Hood Pos: ", velHoodPos);
+                telemetry.addData("Velocity: ", flywheel.getVelocity());
                 runningActions.add(new SequentialAction(hood.setHoodPosShoot()));
             } else if (cG2.left_trigger >= 0.1) {
                 lodk(mainTag);

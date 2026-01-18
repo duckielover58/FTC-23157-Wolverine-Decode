@@ -36,8 +36,11 @@ public class GlobalVariable {
         public static double shootShortX = -18.5;
         public static double shootShortY = -18.5;
         public static double shootH = Math.toRadians(225);
-        public static double Intake1X = -12;
-        public static double Intake1Y = -43;
+        public static double PreIntake1X = -9.5;
+        public static double PreIntake1Y = -32;
+        public static double PreIntakeH = Math.toRadians(270);
+        public static double Intake1X = -9.5;
+        public static double Intake1Y = -42;
         public static double IntakeH = Math.toRadians(270);
         public static double Intake2X = 12;
         public static double Intake2Y = -43;

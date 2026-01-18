@@ -5,6 +5,9 @@ package org.firstinspires.ftc.teamcode.autos;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.Intake1X;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.Intake1Y;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.IntakeH;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.PreIntake1X;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.PreIntake1Y;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.PreIntakeH;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootH;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootShortX;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootShortY;
@@ -95,6 +98,7 @@ public class closePassiveBlue extends LinearOpMode {
         public ShootThreeBalls() {
             sequence = new SequentialAction(
                     //first
+                    new SleepAction(3.5),
                     index.index2(),
                     new SleepAction(0.2),
                     push.PushBallDown(),
@@ -395,18 +399,19 @@ public class closePassiveBlue extends LinearOpMode {
 
         Action closePassive = drive.actionBuilder(startPose)
                 // second option  .strafeToLinearHeading(new Vector2d(-30, -15), Math.toRadians(230))
-                .stopAndAdd(() -> flywheelPID(125))
-//                .stopAndAdd(() -> flywheel.setPower(0.7))
+        //        .stopAndAdd(() -> flywheelPID(1250))
+               .stopAndAdd(() -> flywheel.setPower(1.0))
                 .splineToLinearHeading(new Pose2d(shootShortX, shootShortY, shootH), shootH)
                 .stopAndAdd(hood.shortHoodPos())
                 .stopAndAdd(new ShootThreeBalls())
                 .setTangent(-20)
-                .splineToLinearHeading(new Pose2d(Intake1X, Intake1Y, IntakeH), Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(PreIntake1X, PreIntake1Y, PreIntakeH), Math.toRadians(270))
                 .afterTime(0.3, new SequentialAction(intake.IntakeBall(), index.index1()))
+                .strafeToLinearHeading(new Vector2d(Intake1X, Intake1Y), IntakeH)
+                .afterTime(0.1, index.index1())
                 .afterTime(0.4, index.index2())
-                .afterTime(0.5, index.index3())
-                .afterTime(0.6, index.index3())
-                .afterTime(1, intake.IntakeBallStop())
+                .afterTime(0.7, index.index3())
+                .afterTime(1.0, intake.IntakeBallStop())
                 .build();
 
         Action postIntake = drive.actionBuilder(endShootPose)
