@@ -78,6 +78,8 @@ public class MainTeleOp extends LinearOpMode {
 
     public boolean servoLocked = true;
     public boolean detectionsExist = true;
+    public boolean onIntakeIndex = true;
+    public boolean onOuttakeIndex = false;
     private Position cameraPosition = new Position(DistanceUnit.INCH,
             0, 8.5, 3, 0);
     //TODO Measure with tape
@@ -226,45 +228,65 @@ public class MainTeleOp extends LinearOpMode {
                 flywheelPID(0);
             }
             if (cG2.right_bumper && !pG2.right_bumper) {
-                if (cG2.right_trigger >= 0.1) {
-                    targetHoodClose += 0.1;
-                } else if (cG2.left_trigger >= 0.1) {
-                    targetHoodFar += 0.1;
-                } else runningActions.add(new SequentialAction(hood.hoodUp()));
-                runningActions.add(new SequentialAction(hood.hoodPosTelemetry()));
+                onOuttakeIndex = true;
+                onIntakeIndex = false;
             }
             if (cG2.left_bumper && !pG2.left_bumper) {
-                if (cG2.right_trigger >= 0.1) {
-                    targetHoodClose -= 0.1;
-                } else if (cG2.left_trigger >= 0.1) {
-                    targetHoodFar -= 0.1;
-                } else runningActions.add(new SequentialAction(hood.hoodDown()));
-                runningActions.add(new SequentialAction(hood.hoodPosTelemetry()));
+                onOuttakeIndex = false;
+                onIntakeIndex = true;
             }
             if (!cG2.y && pG2.y) {
+                if (onIntakeIndex == true && onOuttakeIndex == false) {
                 if (ballFocused == 1) {
-                    Actions.runBlocking(index.index2());
+                    Actions.runBlocking(index.intakeIndex2());
                     ballFocused = 2;
                 } else if (ballFocused == 2) {
-                    Actions.runBlocking(index.index3());
+                    Actions.runBlocking(index.intakeIndex3());
                     ballFocused = 3;
                 } else {
-                    Actions.runBlocking(index.index1());
+                    Actions.runBlocking(index.intakeIndex1());
                     ballFocused = 1;
-
+                }
+                }
+                else if (onIntakeIndex == false && onOuttakeIndex == true) {
+                    if (ballFocused == 1) {
+                        Actions.runBlocking(index.outtakeIndex2());
+                        ballFocused = 2;
+                    } else if (ballFocused == 2) {
+                        Actions.runBlocking(index.outtakeIndex3());
+                        ballFocused = 3;
+                    } else {
+                        Actions.runBlocking(index.outtakeIndex1());
+                        ballFocused = 1;
+                    }
                 }
             }
             if (!cG2.b && pG2.b) {
-                if (ballFocused == 3) {
-                    runningActions.add(new SequentialAction(index.index2()));
-                    ballFocused = 2;
-                } else if (ballFocused == 1) {
-                    runningActions.add(new SequentialAction(index.index3()));
-                    ballFocused = 3;
-                } else {
-                    runningActions.add(new SequentialAction(index.index1()));
-                    ballFocused = 1;
+                if (onIntakeIndex == true && onOuttakeIndex == false) {
+                    if (ballFocused == 3) {
+                        runningActions.add(new SequentialAction(index.intakeIndex2()));
+                        ballFocused = 2;
+                    } else if (ballFocused == 1) {
+                        runningActions.add(new SequentialAction(index.intakeIndex3()));
+                        ballFocused = 3;
+                    } else {
+                        runningActions.add(new SequentialAction(index.intakeIndex1()));
+                        ballFocused = 1;
+                    }
                 }
+                else if (onIntakeIndex == false && onOuttakeIndex == true) {
+                    if (ballFocused == 3) {
+                        runningActions.add(new SequentialAction(index.outtakeIndex2()));
+                        ballFocused = 2;
+                    } else if (ballFocused == 2) {
+                        runningActions.add(new SequentialAction(index.outtakeIndex1()));
+                        ballFocused = 1;
+                    } else {
+                        runningActions.add(new SequentialAction(index.outtakeIndex3()));
+                        ballFocused = 3;
+                    }
+                }
+
             }
 
             telemetry.addData("Hood Position", hoodPoss);

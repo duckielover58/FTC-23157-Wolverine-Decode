@@ -9,6 +9,7 @@ import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.PreIntake1Y;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.PreIntakeH;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootH;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.targetVelocity;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootHalfTargetSpeed;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootShortX;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootShortY;
@@ -23,6 +24,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
@@ -87,8 +89,8 @@ public class closePassiveBlue extends LinearOpMode {
         public ShootThreeBalls() {
             sequence = new SequentialAction(
                     //first
-                    new SleepAction(3.5),
-                    index.index2(),
+                    new SleepAction(6.5),
+                    index.intakeIndex2(),
                     new SleepAction(0.2),
                     push.PushBallDown(),
                     new SleepAction(1.3),
@@ -100,7 +102,7 @@ public class closePassiveBlue extends LinearOpMode {
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.45),
-                    index.index3(),
+                    index.intakeIndex3(),
                     new SleepAction(0.25),
                     push.PushBallUp(),
 
@@ -109,7 +111,7 @@ public class closePassiveBlue extends LinearOpMode {
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
-                    index.index1(),
+                    index.intakeIndex1(),
                     new SleepAction(0.3),
                     push.PushBallUp(),
 
@@ -118,7 +120,7 @@ public class closePassiveBlue extends LinearOpMode {
                     new SleepAction(0.3),
                     new InstantAction(() -> flywheelPID(0)),
                     push.PushBallDown(),
-                    index.index1()
+                    index.intakeIndex1()
             );
         }
     }
@@ -155,6 +157,34 @@ public class closePassiveBlue extends LinearOpMode {
         }
 
     }
+
+    private class FlywheelPIDAction implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            if (targetVelocity > 0) {
+                targetVelocity = 840;
+                flywheelPID(targetVelocity);
+                return true;   // keep running every loop
+            } else if (targetVelocity == 0) {
+                flywheel.setPower(0);
+                return false;
+            }
+            else {
+                flywheel.setPower(0);
+                return false;
+            }
+        }
+    }
+
+    public class StopFlywheelAction implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            targetVelocity = 0;
+            return false;
+        }
+    }
     private class IntakeRoutine implements Action {
 
         private final Action sequence;
@@ -167,10 +197,10 @@ public class closePassiveBlue extends LinearOpMode {
         public IntakeRoutine() {
             sequence = new SequentialAction(
                     intake.IntakeBall(),
-                    index.turnRight(),
-                    index.turnRight(),
-                    index.turnRight(),
-                    index.turnRight()
+                    index.intakeTurnRight(),
+                    index.intakeTurnRight(),
+                    index.intakeTurnRight(),
+                    index.intakeTurnRight()
                     //once we figure out how many times it actually has to turn we can add/remove turns respectively
             );
         }
@@ -186,7 +216,7 @@ public class closePassiveBlue extends LinearOpMode {
 
         public ShootThreeBallsCorner() {
             sequence = new SequentialAction(
-                    index.index3(),
+                    index.intakeIndex3(),
                     new SleepAction(0.2),
                     push.PushBallDown(),
                     new SleepAction(1.9),
@@ -194,7 +224,7 @@ public class closePassiveBlue extends LinearOpMode {
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.3),
-                    index.index2()
+                    index.intakeIndex2()
             );
         }
     }
@@ -212,7 +242,7 @@ public class closePassiveBlue extends LinearOpMode {
                             new SleepAction(0.3),
                             push.PushBallDown(),
                             new SleepAction(0.5),
-                            index.index1(),
+                            index.intakeIndex1(),
                             new SleepAction(0.6),
                             push.PushBallUp(),
                             new SleepAction(0.3),
@@ -220,7 +250,7 @@ public class closePassiveBlue extends LinearOpMode {
                             new SleepAction(0.5),
                             new InstantAction(() -> flywheelPID(0)),
                             new SleepAction(0.2),
-                            index.index1()
+                            index.intakeIndex1()
                     );
         }
     }
@@ -425,22 +455,25 @@ public class closePassiveBlue extends LinearOpMode {
 
          */
 
-        Action closePassive = drive.actionBuilder(startPose)
-                // second option  .strafeToLinearHeading(new Vector2d(-30, -15), Math.toRadians(230))
-        //        .stopAndAdd(() -> flywheelPID(1250))
-               .stopAndAdd(() -> flywheel.setPower(1.0))
-                .splineToLinearHeading(new Pose2d(shootShortX, shootShortY, shootH), shootH)
-                .stopAndAdd(hood.shortHoodPos())
-                .stopAndAdd(new ShootThreeBalls())
-                .setTangent(-20)
-                .splineToLinearHeading(new Pose2d(PreIntake1X, PreIntake1Y, PreIntakeH), Math.toRadians(270))
-                .afterTime(0.3, new SequentialAction(intake.IntakeBall(), index.index1()))
-                .strafeToLinearHeading(new Vector2d(Intake1X, Intake1Y), IntakeH)
-                .afterTime(0.1, index.index1())
-                .afterTime(0.4, index.index2())
-                .afterTime(0.7, index.index3())
-                .afterTime(1.0, intake.IntakeBallStop())
-                .build();
+            Action closePassive = drive.actionBuilder(startPose)
+                    // second option  .strafeToLinearHeading(new Vector2d(-30, -15), Math.toRadians(230))
+                    .stopAndAdd(new ParallelAction(
+                            new FlywheelPIDAction(),
+                            drive.actionBuilder(startPose)
+                                    .splineToLinearHeading(new Pose2d(shootShortX, shootShortY, shootH), shootH)
+                                    .stopAndAdd(hood.shortHoodPos())
+                                    .stopAndAdd(new ShootThreeBalls())
+                                    .build()
+                            )
+                    )
+                    .stopAndAdd(new StopFlywheelAction())
+
+                    .setTangent(-20)
+                    .splineToLinearHeading(new Pose2d(PreIntake1X, PreIntake1Y, PreIntakeH), Math.toRadians(270))
+                    .afterTime(0.3, new SequentialAction(intake.IntakeBall(), index.intakeIndex1()))
+                    .strafeToLinearHeading(new Vector2d(Intake1X, Intake1Y), IntakeH)
+                    .stopAndAdd(new IntakeRoutine())
+                    .build();
 
         Action postIntake = drive.actionBuilder(endShootPose)
                 .stopAndAdd(new StartRevShort())
@@ -454,13 +487,13 @@ public class closePassiveBlue extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(14, -28, Math.toRadians(270)), Math.toRadians(270))
                 .stopAndAdd(intake.IntakeBall())
                 .strafeTo(new Vector2d(14, -32)) // -35
-                .stopAndAdd(index.index1())
+                .stopAndAdd(index.intakeIndex1())
                 .waitSeconds(0.85)
                 .strafeTo(new Vector2d(14, -37.5))  // -39
-                .stopAndAdd(index.index2())
+                .stopAndAdd(index.intakeIndex2())
                 .waitSeconds(0.85)
                 .strafeTo(new Vector2d(14, -41.5)) // -43.5
-                .stopAndAdd(index.index3())
+                .stopAndAdd(index.intakeIndex3())
                 .waitSeconds(0.85)
                 .stopAndAdd(intake.IntakeBallStop())
                 .build();

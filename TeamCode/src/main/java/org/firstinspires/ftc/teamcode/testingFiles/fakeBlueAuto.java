@@ -58,13 +58,13 @@ public class fakeBlueAuto extends LinearOpMode {
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
-                    index.index2(),
+                    index.intakeIndex2(),
                     new SleepAction(1.5),
                     push.PushBallUp(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
-                    index.index3(),
+                    index.intakeIndex3(),
                     new SleepAction(0.5),
                     push.PushBallUp(),
                     new SleepAction(0.3),
@@ -72,7 +72,7 @@ public class fakeBlueAuto extends LinearOpMode {
                     new SleepAction(0.5),
                     flywheel.shootStop(),
                     new SleepAction(0.2),
-                    index.index1()
+                    index.intakeIndex1()
             );
         }
     }
@@ -95,13 +95,13 @@ public class fakeBlueAuto extends LinearOpMode {
                 .stopAndAdd(new ShootThreeBalls())
                 .strafeToLinearHeading(new Vector2d(-9.5,30),Math.toRadians(270-180))
                 .afterTime(0.3, intake.IntakeBall())
-                .stopAndAdd(index.index1())
+                .stopAndAdd(index.intakeIndex1())
                 .strafeTo(new Vector2d(-9.5, 33))
                 .waitSeconds(.85)
-                .stopAndAdd(index.index2())
+                .stopAndAdd(index.intakeIndex2())
                 .strafeTo(new Vector2d(-9.5, 36))
                 .waitSeconds(.85)
-                .stopAndAdd(index.index3())
+                .stopAndAdd(index.intakeIndex3())
                 .strafeTo(new Vector2d(-9.5, 41))
                 .waitSeconds(.85)
                 .stopAndAdd(intake.IntakeBallStop())

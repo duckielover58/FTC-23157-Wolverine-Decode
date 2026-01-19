@@ -75,7 +75,7 @@ public class TestTeleOp extends OpMode {
 
         public ShootThreeBallsPPG() {
             sequence = new SequentialAction(
-                    index.index2(),
+                    index.intakeIndex2(),
                     flywheel.shoot(),
                     new SleepAction(0.2),
                     push.PushBallDown(),
@@ -86,7 +86,7 @@ public class TestTeleOp extends OpMode {
                     new SleepAction(0.5),
 
 
-                    index.index3(),
+                    index.intakeIndex3(),
                     new SleepAction(0.85),
                     push.PushBallUp(),
                     new SleepAction(0.3),
@@ -94,7 +94,7 @@ public class TestTeleOp extends OpMode {
                     new SleepAction(0.5),
 
 
-                    index.index1(),
+                    index.intakeIndex1(),
                     new SleepAction(1.0),
                     push.PushBallUp(),
                     new SleepAction(0.3),
@@ -102,7 +102,7 @@ public class TestTeleOp extends OpMode {
                     new SleepAction(0.5),
                     flywheel.shootStop(),
                     new SleepAction(0.2),
-                    index.index1()
+                    index.intakeIndex1()
             );
         }
     }
@@ -156,13 +156,13 @@ public class TestTeleOp extends OpMode {
             Actions.runBlocking(flywheel.shootStop());
         }
         if (gamepad1.x) {
-            Actions.runBlocking(index.index1());
+            Actions.runBlocking(index.intakeIndex1());
         }
         if (gamepad1.dpad_up) {
-            Actions.runBlocking(index.index2());
+            Actions.runBlocking(index.intakeIndex2());
         }
         if (gamepad1.dpad_left) {
-            Actions.runBlocking(index.index3());
+            Actions.runBlocking(index.intakeIndex3());
         }
         if (gamepad1.dpad_right) {
             Actions.runBlocking(new ShootThreeBallsPPG());

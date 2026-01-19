@@ -60,7 +60,7 @@ public class farPassiveBlue extends LinearOpMode {
 
         public ShootThreeBalls() {
             sequence = new SequentialAction(
-                    index.index2(),
+                    index.intakeIndex2(),
                     new InstantAction(() -> flywheelPID(840)),
                     new SleepAction(0.2),
                     push.PushBallDown(),
@@ -71,7 +71,7 @@ public class farPassiveBlue extends LinearOpMode {
                     new SleepAction(0.5),
 
 
-                    index.index3(),
+                    index.intakeIndex3(),
                     new SleepAction(0.85),
                     push.PushBallUp(),
                     new SleepAction(0.3),
@@ -79,7 +79,7 @@ public class farPassiveBlue extends LinearOpMode {
                     new SleepAction(0.5),
 
 
-                    index.index1(),
+                    index.intakeIndex1(),
                     new SleepAction(1.0),
                     push.PushBallUp(),
                     new SleepAction(0.3),
@@ -87,7 +87,7 @@ public class farPassiveBlue extends LinearOpMode {
                     new SleepAction(0.5),
                     new InstantAction(() -> flywheelPID(0)),
                     new SleepAction(0.2),
-                    index.index1()
+                    index.intakeIndex1()
             );
         }
     }
@@ -102,7 +102,7 @@ public class farPassiveBlue extends LinearOpMode {
         public ShootThreeBallsCorner() {
             sequence = new SequentialAction(
                     new InstantAction(() -> flywheelPID(750)),
-                    index.index3(),
+                    index.intakeIndex3(),
                     new SleepAction(0.2),
                     push.PushBallDown(),
                     new SleepAction(0.5),
@@ -110,13 +110,13 @@ public class farPassiveBlue extends LinearOpMode {
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
-                    index.index2(),
+                    index.intakeIndex2(),
                     new SleepAction(0.85),
                     push.PushBallUp(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
-                    index.index1(),
+                    index.intakeIndex1(),
                     new SleepAction(0.75),
                     push.PushBallUp(),
                     new SleepAction(0.3),
@@ -124,7 +124,7 @@ public class farPassiveBlue extends LinearOpMode {
                     new SleepAction(0.5),
                     new InstantAction(() -> flywheelPID(0)),
                     new SleepAction(0.2),
-                    index.index1()
+                    index.intakeIndex1()
             );
         }
     }
@@ -187,12 +187,12 @@ public class farPassiveBlue extends LinearOpMode {
                 .stopAndAdd(new ShootThreeBalls())
                 .strafeToLinearHeading(new Vector2d(34, -28), Math.toRadians(270))
                 .afterTime(0.3, intake.IntakeBall())
-                .stopAndAdd(index.index1())
+                .stopAndAdd(index.intakeIndex1())
                 .strafeTo(new Vector2d(-9.5, -32.5))
-                .stopAndAdd(index.index2())
+                .stopAndAdd(index.intakeIndex2())
                 .strafeTo(new Vector2d(-9.5, -37))
                 .waitSeconds(0.85)
-                .stopAndAdd(index.index3())
+                .stopAndAdd(index.intakeIndex3())
                 .strafeTo(new Vector2d(-9.5, -41.5))
                 .waitSeconds(0.85)
                 .stopAndAdd(intake.IntakeBallStop())
@@ -202,12 +202,12 @@ public class farPassiveBlue extends LinearOpMode {
                 .stopAndAdd(new ShootThreeBallsCorner())
                 .strafeToLinearHeading(new Vector2d(11, -28),Math.toRadians(270))
                 .afterTime(0.3, intake.IntakeBall())
-                .stopAndAdd(index.index1())
+                .stopAndAdd(index.intakeIndex1())
                 .strafeTo(new Vector2d(-9.5, -32.5))
-                .stopAndAdd(index.index2())
+                .stopAndAdd(index.intakeIndex2())
                 .strafeTo(new Vector2d(-9.5, -37))
                 .waitSeconds(0.85)
-                .stopAndAdd(index.index3())
+                .stopAndAdd(index.intakeIndex3())
                 .strafeTo(new Vector2d(-9.5, -41.5))
                 .waitSeconds(0.85)
                 .stopAndAdd(intake.IntakeBallStop())

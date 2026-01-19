@@ -71,7 +71,7 @@ public class closePassiveRed extends LinearOpMode {
 
         public ShootThreeBalls() {
             sequence = new SequentialAction(
-                    index.index2(),
+                    index.intakeIndex2(),
                     new InstantAction(() -> flywheelPID(125)),
                     new SleepAction(0.2),
                     push.PushBallDown(),
@@ -80,13 +80,13 @@ public class closePassiveRed extends LinearOpMode {
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
-                    index.index3(),
+                    index.intakeIndex3(),
                     new SleepAction(0.80),
                     push.PushBallUp(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
-                    index.index1(),
+                    index.intakeIndex1(),
                     new SleepAction(0.4),
                     push.PushBallUp(),
                     new SleepAction(0.3),
@@ -94,7 +94,7 @@ public class closePassiveRed extends LinearOpMode {
                     new SleepAction(0.5),
                     new InstantAction(() -> flywheelPID(0)),
                     new SleepAction(0.2),
-                    index.index1()
+                    index.intakeIndex1()
             );
         }
     }
@@ -125,7 +125,7 @@ public class closePassiveRed extends LinearOpMode {
 
         public ShootThreeBallsCorner() {
             sequence = new SequentialAction(
-                    index.index3(),
+                    index.intakeIndex3(),
                     new SleepAction(0.2),
                     push.PushBallDown(),
                     new SleepAction(1.9),
@@ -133,7 +133,7 @@ public class closePassiveRed extends LinearOpMode {
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.3),
-                    index.index2()
+                    index.intakeIndex2()
             );
         }
     }
@@ -151,7 +151,7 @@ public class closePassiveRed extends LinearOpMode {
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
-                    index.index1(),
+                    index.intakeIndex1(),
                     new SleepAction(0.6),
                     push.PushBallUp(),
                     new SleepAction(0.3),
@@ -159,7 +159,7 @@ public class closePassiveRed extends LinearOpMode {
                     new SleepAction(0.5),
                     new InstantAction(() -> flywheelPID(0)),
                     new SleepAction(0.2),
-                    index.index1()
+                    index.intakeIndex1()
             );
         }
     }
@@ -392,14 +392,14 @@ public class closePassiveRed extends LinearOpMode {
                 .afterTime(0.3, intake.IntakeBall())
                 .strafeTo(new Vector2d(-9.5, 32))
 
-                .stopAndAdd(index.index1())
+                .stopAndAdd(index.intakeIndex1())
                 .strafeTo(new Vector2d(-9.5, 37.5))
 
-                .stopAndAdd(index.index2())
+                .stopAndAdd(index.intakeIndex2())
                 .waitSeconds(0.85)
                 .strafeTo(new Vector2d(-9.5, 41.5))
 
-                .stopAndAdd(index.index3())
+                .stopAndAdd(index.intakeIndex3())
                 .waitSeconds(0.85)
                 .stopAndAdd(intake.IntakeBallStop())
                 .build();
@@ -416,13 +416,13 @@ public class closePassiveRed extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(14, 28, Math.toRadians(90)), Math.toRadians(90))
                 .stopAndAdd(intake.IntakeBall())
                 .strafeTo(new Vector2d(14, 32)) // -35
-                .stopAndAdd(index.index1())
+                .stopAndAdd(index.intakeIndex1())
                 .waitSeconds(0.85)
                 .strafeTo(new Vector2d(14, 37.5))  // -39
-                .stopAndAdd(index.index2())
+                .stopAndAdd(index.intakeIndex2())
                 .waitSeconds(0.85)
                 .strafeTo(new Vector2d(14, 41.5)) // -43.5
-                .stopAndAdd(index.index3())
+                .stopAndAdd(index.intakeIndex3())
                 .waitSeconds(0.85)
                 .stopAndAdd(intake.IntakeBallStop())
                 .build();

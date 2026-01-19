@@ -14,41 +14,69 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Index {
 
     private Servo index;
-    private double ball1 = 0.18; //between 0.15-0.2
-    private double ball2 = 0.55; //0.40
-    private double ball3 = 0.86; //between 0.85 - 0.9
+    private double intakeBall1 = 0.18; //between 0.15-0.2
+    private double intakeBall2 = 0.55; //0.40
+    private double intakeBall3 = 0.86; //between 0.85 - 0.9
+    private double outtakeBall1 = 0.00;
+    private double outtakeBall2 = 0.37;
+    private double outtakeBall3 = 0.68;
 
     public Index (HardwareMap hardwareMap) {
         index = hardwareMap.get(Servo.class, "Index");
     }
 
-    public class Index1 implements Action {
+    public class intakeIndex1 implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            index.setPosition(ball1);
+            index.setPosition(intakeBall1);
+            currentBallPos = 1;
+            return false;
+        }
+    }
+    public class outtakeIndex1 implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            index.setPosition(outtakeBall1);
             currentBallPos = 1;
             return false;
         }
     }
 
-public class Index2 implements Action {
+public class intakeIndex2 implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            index.setPosition(ball2);
+            index.setPosition(intakeBall2);
+            currentBallPos = 2;
+            return false;
+        }
+    }
+    public class outtakeIndex2 implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            index.setPosition(outtakeBall2);
             currentBallPos = 2;
             return false;
         }
     }
 
-public class Index3 implements Action {
+public class intakeIndex3 implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            index.setPosition(ball3);
+            index.setPosition(intakeBall3);
             currentBallPos = 3;
             return false;
         }
     }
-    public class IndexHome implements Action {
+
+    public class outtakeIndex3 implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            index.setPosition(outtakeBall3);
+            currentBallPos = 3;
+            return false;
+        }
+    }
+    public class intakeIndexHome implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             index.setPosition(0);
@@ -57,49 +85,92 @@ public class Index3 implements Action {
         }
     }
 
-    public class TurnRight implements Action {
+    public class intakeTurnRight implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (index.getPosition() == ball1 || index.getPosition() == 0) {
-                index.setPosition(ball2);
+            if (index.getPosition() == intakeBall1 || index.getPosition() == 0) {
+                index.setPosition(intakeBall2);
                 currentBallPos = 2;
             }
-            if (index.getPosition() == ball2) {
-                index.setPosition(ball3);
+            if (index.getPosition() == intakeBall2) {
+                index.setPosition(intakeBall3);
                 currentBallPos = 3;
             }
-            if (index.getPosition() == ball3) {
-                index.setPosition(ball1);
+            if (index.getPosition() == intakeBall3) {
+                index.setPosition(intakeBall1);
                 currentBallPos = 1;
             }
             return false;
         }
     }
 
-    public class TurnLeft implements Action {
+    public class outtakeTurnRight implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (index.getPosition() == ball3) {
-                index.setPosition(ball2);
+            if (index.getPosition() == outtakeBall1 || index.getPosition() == 0) {
+                index.setPosition(outtakeBall2);
                 currentBallPos = 2;
             }
-            if (index.getPosition() == ball2) {
-                index.setPosition(ball1);
+            if (index.getPosition() == outtakeBall2) {
+                index.setPosition(outtakeBall3);
+                currentBallPos = 3;
+            }
+            if (index.getPosition() == outtakeBall3) {
+                index.setPosition(outtakeBall1);
                 currentBallPos = 1;
             }
-            if (index.getPosition() == ball1 || index.getPosition() == 0) {
-                index.setPosition(ball3);
+            return false;
+        }
+    }
+
+    public class intakeTurnLeft implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (index.getPosition() == intakeBall3) {
+                index.setPosition(intakeBall2);
+                currentBallPos = 2;
+            }
+            if (index.getPosition() == intakeBall2) {
+                index.setPosition(intakeBall1);
+                currentBallPos = 1;
+            }
+            if (index.getPosition() == intakeBall1 || index.getPosition() == 0) {
+                index.setPosition(intakeBall3);
                 currentBallPos = 3;
             }
             return false;
         }
     }
 
-    public Action index1() { return new Index.Index1(); }
-    public Action index2() { return new Index.Index2(); }
-    public Action index3() { return new Index.Index3(); }
-    public Action indexHome() { return new Index.IndexHome(); }
-    public Action turnRight() { return new Index.TurnRight(); }
-    public Action turnLeft() { return new Index.TurnLeft(); }
+    public class outtakeTurnLeft implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (index.getPosition() == outtakeBall3) {
+                index.setPosition(outtakeBall2);
+                currentBallPos = 2;
+            }
+            if (index.getPosition() == outtakeBall2) {
+                index.setPosition(outtakeBall1);
+                currentBallPos = 1;
+            }
+            if (index.getPosition() == outtakeBall1 || index.getPosition() == 0) {
+                index.setPosition(outtakeBall3);
+                currentBallPos = 3;
+            }
+            return false;
+        }
+    }
+
+    public Action intakeIndex1() { return new Index.intakeIndex1(); }
+    public Action outtakeIndex1() { return new Index.outtakeIndex1(); }
+    public Action intakeIndex2() { return new Index.intakeIndex2(); }
+    public Action outtakeIndex2() { return new Index.outtakeIndex2(); }
+    public Action intakeIndex3() { return new Index.intakeIndex3(); }
+    public Action outtakeIndex3() { return new Index.outtakeIndex3(); }
+    public Action indexHome() { return new Index.intakeIndexHome(); }
+    public Action intakeTurnRight() { return new Index.intakeTurnRight(); }
+    public Action outtakeTurnRight() { return new Index.outtakeTurnRight(); }
+    public Action intakeTurnLeft() { return new Index.intakeTurnLeft(); }
+    public Action outtakeTurnLeft() { return new Index.outtakeTurnLeft(); }
 
 }

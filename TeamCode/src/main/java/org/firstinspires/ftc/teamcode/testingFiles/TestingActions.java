@@ -51,13 +51,13 @@ public class TestingActions extends LinearOpMode {
                 Actions.runBlocking(flywheel.shoot());
             }
             if (gamepad1.x) {
-                Actions.runBlocking(index.index1());
+                Actions.runBlocking(index.intakeIndex1());
             }
             if (gamepad1.dpad_up) {
-                Actions.runBlocking(index.index2());
+                Actions.runBlocking(index.intakeIndex2());
             }
             if (gamepad1.dpad_left) {
-                Actions.runBlocking(index.index3());
+                Actions.runBlocking(index.intakeIndex3());
             }
             if (gamepad1.dpad_right) {
                 Actions.runBlocking(swivel.aim());

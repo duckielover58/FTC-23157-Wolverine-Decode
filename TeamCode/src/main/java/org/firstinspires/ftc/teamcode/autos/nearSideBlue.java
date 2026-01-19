@@ -82,7 +82,7 @@ public class nearSideBlue extends LinearOpMode{
         public ShootThreeBalls() {
             sequence = new SequentialAction(
                     //first
-                    index.index2(),
+                    index.intakeIndex2(),
                     new SleepAction(0.2),
                     push.PushBallDown(),
                     new SleepAction(1.3),
@@ -94,7 +94,7 @@ public class nearSideBlue extends LinearOpMode{
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.45),
-                    index.index3(),
+                    index.intakeIndex3(),
                     new SleepAction(0.25),
                     push.PushBallUp(),
 
@@ -103,7 +103,7 @@ public class nearSideBlue extends LinearOpMode{
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
-                    index.index1(),
+                    index.intakeIndex1(),
                     new SleepAction(0.3),
                     push.PushBallUp(),
 
@@ -112,7 +112,7 @@ public class nearSideBlue extends LinearOpMode{
                     new SleepAction(0.3),
                     new InstantAction(() -> flywheelPID(0)),
                     push.PushBallDown(),
-                    index.index1()
+                    index.intakeIndex1()
             );
         }
     }
@@ -141,7 +141,7 @@ public class nearSideBlue extends LinearOpMode{
 
         public ShootThreeBallsCorner() {
             sequence = new SequentialAction(
-                    index.index3(),
+                    index.intakeIndex3(),
                     new SleepAction(0.2),
                     push.PushBallDown(),
                     new SleepAction(1.9),
@@ -149,7 +149,7 @@ public class nearSideBlue extends LinearOpMode{
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.3),
-                    index.index2()
+                    index.intakeIndex2()
             );
         }
     }
@@ -167,7 +167,7 @@ public class nearSideBlue extends LinearOpMode{
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
-                    index.index1(),
+                    index.intakeIndex1(),
                     new SleepAction(0.6),
                     push.PushBallUp(),
                     new SleepAction(0.3),
@@ -175,7 +175,7 @@ public class nearSideBlue extends LinearOpMode{
                     new SleepAction(0.5),
                     new InstantAction(() -> flywheelPID(0)),
                     new SleepAction(0.2),
-                    index.index1()
+                    index.intakeIndex1()
             );
         }
     }
@@ -205,7 +205,7 @@ public class nearSideBlue extends LinearOpMode{
         Action inits = drive.actionBuilder(startingPose)
             .stopAndAdd(new SequentialAction(
                     push.PushBallDown(),
-                    index.index1(),
+                    index.intakeIndex1(),
                     hood.hoodPositionInit()
             ))
             .build();
@@ -218,11 +218,11 @@ public class nearSideBlue extends LinearOpMode{
                 .stopAndAdd(intake.IntakeBall())
                 .setTangent(-20)
                 .splineToLinearHeading(new Pose2d(Intake1X, Intake1Y, IntakeH), Math.toRadians(270))
-                .afterTime(.2, index.index1())
+                .afterTime(.2, index.intakeIndex1())
                 .stopAndAdd(new SleepAction(.2))
-                .afterTime(.2, index.index2())
+                .afterTime(.2, index.intakeIndex2())
                 .stopAndAdd(new SleepAction(.2))
-                .afterTime(.2, index.index3())
+                .afterTime(.2, index.intakeIndex3())
                 .stopAndAdd(intake.IntakeBallStop())
 
                 //Shoot short
@@ -234,9 +234,9 @@ public class nearSideBlue extends LinearOpMode{
                 .stopAndAdd(intake.IntakeBall())
                 .setTangent(0)
                 .splineToSplineHeading(new Pose2d(Intake2X, Intake2Y, IntakeH), Math.toRadians(270))
-                .afterTime(.2, index.index1())
-                .afterTime(.2, index.index2())
-                .afterTime(.2, index.index3())
+                .afterTime(.2, index.intakeIndex1())
+                .afterTime(.2, index.intakeIndex2())
+                .afterTime(.2, index.intakeIndex3())
                 .stopAndAdd(intake.IntakeBallStop())
 
                 //Shoot short
@@ -248,9 +248,9 @@ public class nearSideBlue extends LinearOpMode{
                 .setTangent(0)
                 .splineToSplineHeading(new Pose2d(Intake3X, Intake3Y, IntakeH), Math.toRadians(0))
                 .strafeTo(new Vector2d(IntakeEnd3X, IntakeEnd3Y))
-                .afterTime(.2, index.index1())
-                .afterTime(.2, index.index2())
-                .afterTime(.2, index.index3())
+                .afterTime(.2, index.intakeIndex1())
+                .afterTime(.2, index.intakeIndex2())
+                .afterTime(.2, index.intakeIndex3())
                 .stopAndAdd(intake.IntakeBallStop())
 
                 //Shoot short
