@@ -79,7 +79,7 @@ public class MainTeleOp extends LinearOpMode {
     public boolean servoLocked = true;
     public boolean detectionsExist = true;
     public boolean onIntakeIndex = true;
-    public boolean onOuttakeIndex = false;
+    public boolean onShootIndex = false;
     private Position cameraPosition = new Position(DistanceUnit.INCH,
             0, 8.5, 3, 0);
     //TODO Measure with tape
@@ -206,6 +206,7 @@ public class MainTeleOp extends LinearOpMode {
                 Actions.runBlocking(push.PushBallDown());
             }
             if (cG2.right_trigger >= 0.1) {
+                onShootIndex = true;
                 lodk(mainTag);
                 flywheelPID(close);
                 velHoodPos = (flywheel.getVelocity() * (targetHoodClose/close)); // -0.1 * result.getDistance();
@@ -213,12 +214,14 @@ public class MainTeleOp extends LinearOpMode {
                 telemetry.addData("Velocity: ", flywheel.getVelocity());
                 runningActions.add(new SequentialAction(hood.setHoodPosShoot()));
             } else if (cG2.left_trigger >= 0.1) {
+                onShootIndex = true;
                 lodk(mainTag);
                 flywheelPID(GlobalVariable.far);
                 velHoodPos = flywheel.getVelocity() * (targetHoodFar/close);
                 telemetry.addData("Vel Hood Pos: ", velHoodPos);
                 runningActions.add(new SequentialAction(hood.setHoodPosShoot()));
             } else {
+                onShootIndex = false;
                 if (LLstart) {
                     limelight.stop();
                     LLstart = false;
@@ -227,28 +230,37 @@ public class MainTeleOp extends LinearOpMode {
             if (cG2.right_trigger <= 0.1 && cG2.left_trigger <= 0.1) {
                 flywheelPID(0);
             }
+
             if (cG2.right_bumper && !pG2.right_bumper) {
-                onOuttakeIndex = true;
-                onIntakeIndex = false;
+                if (cG2.right_trigger >= 0.1) {
+                    targetHoodClose += 0.1;
+                } else if (cG2.left_trigger >= 0.1) {
+                    targetHoodFar += 0.1;
+                } else runningActions.add(new SequentialAction(hood.hoodUp()));
+                runningActions.add(new SequentialAction(hood.hoodPosTelemetry()));
             }
             if (cG2.left_bumper && !pG2.left_bumper) {
-                onOuttakeIndex = false;
-                onIntakeIndex = true;
+                if (cG2.right_trigger >= 0.1) {
+                    targetHoodClose -= 0.1;
+                } else if (cG2.left_trigger >= 0.1) {
+                    targetHoodFar -= 0.1;
+                } else runningActions.add(new SequentialAction(hood.hoodDown()));
+                runningActions.add(new SequentialAction(hood.hoodPosTelemetry()));
             }
             if (!cG2.y && pG2.y) {
-                if (onIntakeIndex == true && onOuttakeIndex == false) {
-                if (ballFocused == 1) {
-                    Actions.runBlocking(index.intakeIndex2());
-                    ballFocused = 2;
-                } else if (ballFocused == 2) {
-                    Actions.runBlocking(index.intakeIndex3());
-                    ballFocused = 3;
-                } else {
-                    Actions.runBlocking(index.intakeIndex1());
-                    ballFocused = 1;
+                if (!onShootIndex) {
+                    if (ballFocused == 1) {
+                        Actions.runBlocking(index.intakeIndex2());
+                        ballFocused = 2;
+                    } else if (ballFocused == 2) {
+                        Actions.runBlocking(index.intakeIndex3());
+                        ballFocused = 3;
+                    } else {
+                        Actions.runBlocking(index.intakeIndex1());
+                        ballFocused = 1;
+                    }
                 }
-                }
-                else if (onIntakeIndex == false && onOuttakeIndex == true) {
+                else {
                     if (ballFocused == 1) {
                         Actions.runBlocking(index.outtakeIndex2());
                         ballFocused = 2;
@@ -262,7 +274,7 @@ public class MainTeleOp extends LinearOpMode {
                 }
             }
             if (!cG2.b && pG2.b) {
-                if (onIntakeIndex == true && onOuttakeIndex == false) {
+                if (!onShootIndex) {
                     if (ballFocused == 3) {
                         runningActions.add(new SequentialAction(index.intakeIndex2()));
                         ballFocused = 2;
@@ -274,7 +286,7 @@ public class MainTeleOp extends LinearOpMode {
                         ballFocused = 1;
                     }
                 }
-                else if (onIntakeIndex == false && onOuttakeIndex == true) {
+                else {
                     if (ballFocused == 3) {
                         runningActions.add(new SequentialAction(index.outtakeIndex2()));
                         ballFocused = 2;
