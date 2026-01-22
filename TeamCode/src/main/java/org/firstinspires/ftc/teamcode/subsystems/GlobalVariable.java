@@ -5,7 +5,7 @@ public class GlobalVariable {
     //PIDF constants
     public static double kF = 0.00042;
     public static double kP = 0.00009;
-    public static double targetVelocity = 840;
+    public static double targetVelocity = 600;
     public static double integralSum = 0;
     public static double previousError = 0;
     public static double previousTime = 0;

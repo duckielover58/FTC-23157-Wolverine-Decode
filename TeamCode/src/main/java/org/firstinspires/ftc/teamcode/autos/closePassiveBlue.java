@@ -2,21 +2,9 @@ package org.firstinspires.ftc.teamcode.autos;
 
 
 // RR-specific imports
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.Intake1X;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.Intake1Y;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.IntakeH;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.PreIntake1X;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.PreIntake1Y;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.PreIntakeH;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootH;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.kF;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.*;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.targetVelocity;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootHalfTargetSpeed;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootShortX;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.shootShortY;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.startH;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.startX;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.startY;
-import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kF;
 
 import androidx.annotation.NonNull;
 
