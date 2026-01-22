@@ -25,14 +25,15 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
 
 
-@Disabled
+
 @Config
-@Autonomous(name = "tes", group = "Robot")
+@TeleOp(name = "tes", group = "Robot")
 public class tes extends LinearOpMode {
 
     public long swivelWaitTime = 400;
