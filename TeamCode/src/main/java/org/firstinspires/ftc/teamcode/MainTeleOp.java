@@ -202,7 +202,7 @@ public class MainTeleOp extends LinearOpMode {
             }
             if (!cG2.dpad_up && pG2.dpad_up) {
                 Actions.runBlocking(push.PushBallUp());
-                sleep(300);
+                sleep(200);
                 Actions.runBlocking(push.PushBallDown());
             }
             if (cG2.right_trigger >= 0.1) {
