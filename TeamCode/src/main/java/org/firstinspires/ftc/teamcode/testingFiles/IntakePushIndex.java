@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.testingFiles;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -8,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+@Config
 @TeleOp(name = "IntakePushIndex")
 public class IntakePushIndex extends LinearOpMode {
 
@@ -20,8 +22,8 @@ public class IntakePushIndex extends LinearOpMode {
     public void runOpMode() {
         intake = hardwareMap.get(DcMotor.class, "Intake");
         flywheel = hardwareMap.get(DcMotor.class, "Flywheel");
-        push   = hardwareMap.get(Servo.class, "Push");
-        index  = hardwareMap.get(Servo.class, "Index");
+        push = hardwareMap.get(Servo.class, "Push");
+        index = hardwareMap.get(Servo.class, "Index");
 
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         flywheel.setDirection(DcMotor.Direction.REVERSE);
@@ -39,15 +41,11 @@ public class IntakePushIndex extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            FtcDashboard Dashboard = FtcDashboard.getInstance();
-            telemetry = Dashboard.getTelemetry();
-            TelemetryPacket packet = new TelemetryPacket();
 
             telemetry.addLine("Intake - Right/Left Bumper");
             telemetry.addLine("Push - a");
             telemetry.addLine("Index - b");
             telemetry.addLine("Increase/Decrease Servo Positions - Dpad up/down");
-            packet.put("Index Pos: ", indexPos);
 
 
             // Intake motor control - right bumper powers, left bumper turns off
@@ -57,14 +55,13 @@ public class IntakePushIndex extends LinearOpMode {
                 telemetry.addLine("Intake powered");
                 telemetry.update();
             }
-//hello
+
             else if (gamepad1.left_bumper) {
                 intake.setPower(0.0);
                 sleep(slep);
                 telemetry.addLine("Intake turned off");
                 telemetry.update();
             }
-// very cool comment for pushing
 
             if (gamepad1.a) {
                 onPush = true;
