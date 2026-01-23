@@ -42,14 +42,15 @@ public class closePassiveRed extends LinearOpMode {
         public ShootThreeBalls() {
             sequence = new SequentialAction(
                     new InstantAction(() -> flywheel.setPower(1)),
-                    new SleepAction(2),
+                    new SleepAction(0.4),
+                    hood.ten(),
                     index.outtakeIndex1(),
-                    new SleepAction(0.2),
+                    new SleepAction(0.3),
                     push.PushBallDown(),
-                    new SleepAction(1.3),
+                    new SleepAction(0.8),
                     push.PushBallUp(),
 
-                    hood.seven(),
+                    hood.ten(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.45),
@@ -57,7 +58,7 @@ public class closePassiveRed extends LinearOpMode {
                     new SleepAction(0.25),
                     push.PushBallUp(),
 
-                    hood.six(),
+                    hood.ten(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
@@ -154,7 +155,7 @@ public class closePassiveRed extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel");
+        flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel2");
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
         Pose2d startPose = new Pose2d(startX, startY, startH);
