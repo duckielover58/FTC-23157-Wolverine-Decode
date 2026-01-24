@@ -185,7 +185,7 @@ public class farPassiveRed extends LinearOpMode {
                 .stopAndAdd(hood.hoodUp())
                 .strafeToLinearHeading(new Vector2d(59,21),Math.toRadians(160))
                 .stopAndAdd(new ShootThreeBalls())
-                .strafeToLinearHeading(new Vector2d(34, 128), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(34, 12), Math.toRadians(90))
                 .afterTime(0.3, intake.IntakeBall())
                 .stopAndAdd(index.intakeIndex1())
                 .strafeTo(new Vector2d(-9.5, 32.5))
