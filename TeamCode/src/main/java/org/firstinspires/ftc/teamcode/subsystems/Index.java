@@ -14,12 +14,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Index {
 
     private Servo index;
-    private double intakeBall1 = 0.18; //between 0.15-0.2
-    private double intakeBall2 = 0.55; //0.40
-    private double intakeBall3 = 0.86; //between 0.85 - 0.9
-    private double outtakeBall1 = 0.00;
-    private double outtakeBall2 = 0.37;
-    private double outtakeBall3 = 0.68;
+    private double outtakeBall1 = 0.15; //between 0.15-0.2
+    private double outtakeBall2 = 0.52; //0.40
+    private double outtakeBall3 = 0.89; //between 0.85 - 0.9
+    private double intakeBall1 = 0.00;
+    private double intakeBall2 = 0.37;
+    private double intakeBall3 = 0.74;
 
     public Index (HardwareMap hardwareMap) {
         index = hardwareMap.get(Servo.class, "Index");

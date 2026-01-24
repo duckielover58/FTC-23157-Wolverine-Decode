@@ -10,13 +10,13 @@ public class GlobalVariable {
     public static double previousError = 0;
     public static double previousTime = 0;
     public boolean rumble = false;
-    public static double close = 600;
+    public static double close = 720;
     public static double far = 800;
     public static double targetHoodClose = 0.7;
     public static double targetHoodFar = 0.5;
     public static double hoodMultClose = targetHoodClose/close;
     public static double hoodMultFar = targetHoodFar/far;
-    public static double maxBearingErr = 4.5;
+    public static double maxBearingErr = 3.25;
     public static double bearing;
     public static double lockSpeed = 0.1;
     public static double bearingErr = bearing - maxBearingErr;
@@ -59,7 +59,7 @@ public class GlobalVariable {
     public static class nearRed {
         public static double startX = -49;
         public static double startY = 49;
-        public static double startH = Math.toRadians(130);
+        public static double startH = Math.toRadians(120);
         public static double shootTopX = -15;
         public static double shootTopY = 0;
         public static double shootHalfX = 0;

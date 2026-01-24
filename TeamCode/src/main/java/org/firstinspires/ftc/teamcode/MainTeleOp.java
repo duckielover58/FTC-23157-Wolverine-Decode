@@ -202,7 +202,7 @@ public class MainTeleOp extends LinearOpMode {
             }
             if (!cG2.dpad_up && pG2.dpad_up) {
                 Actions.runBlocking(push.PushBallUp());
-                sleep(300);
+                sleep(200);
                 Actions.runBlocking(push.PushBallDown());
             }
             if (cG2.right_trigger >= 0.1) {
@@ -345,7 +345,7 @@ public class MainTeleOp extends LinearOpMode {
     }
 
     void flywheelPID (double target) {
-        double currentVelocity = flywheel.getVelocity();
+        double currentVelocity = flywheel2.getVelocity();
         double error = target - currentVelocity;
 
         double ff = kF * target;
@@ -354,11 +354,11 @@ public class MainTeleOp extends LinearOpMode {
 
         output = Math.max(0.0, Math.min(1.0, output));
 
-        flywheel.setPower(output);
+        flywheel2.setPower(output);
 
-        flywheelPID2(target);
+//        flywheelPID2(target);
     }
-
+/*
     void flywheelPID2 (double target) {
 
         double currentVelocity = flywheel2.getVelocity();
@@ -373,5 +373,6 @@ public class MainTeleOp extends LinearOpMode {
         flywheel2.setPower(output);
     }
 
+ */
 }
 
