@@ -47,7 +47,7 @@ public class closePassiveRed extends LinearOpMode {
                     index.outtakeIndex1(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
-                    new SleepAction(0.8),
+                    new SleepAction(0.7),
                     push.PushBallUp(),
 
                     hood.ten(),
@@ -55,7 +55,7 @@ public class closePassiveRed extends LinearOpMode {
                     push.PushBallDown(),
                     new SleepAction(0.45),
                     index.outtakeIndex2(),
-                    new SleepAction(0.25),
+                    new SleepAction(0.40),
                     push.PushBallUp(),
 
                     hood.ten(),
@@ -159,8 +159,8 @@ public class closePassiveRed extends LinearOpMode {
         flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel2");
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        Pose2d startPose = new Pose2d(startX, startY, startH);
-        Pose2d endShootPose = new Pose2d(-9.5, 44.5, 90);
+        Pose2d startPose = new Pose2d(startX, startY , startH);
+        Pose2d endShootPose = new Pose2d(-10.5, 50, 90);
 
         PinpointDrive drive = new PinpointDrive(hardwareMap, startPose);
 
@@ -174,50 +174,41 @@ public class closePassiveRed extends LinearOpMode {
         if (isStopRequested()) return;
 
         Action closePassive = drive.actionBuilder(startPose)
-                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(130))
+                .stopAndAdd(index.intakeIndex1())
+                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(125))
                 .stopAndAdd(new ShootThreeBalls())
                 .afterTime(0.8, intake.IntakeBallReverse())
-                .strafeToLinearHeading(new Vector2d(-10.5, 23), Math.toRadians(85))
+                .strafeToLinearHeading(new Vector2d(-10.5, 23), Math.toRadians(90))
                 .waitSeconds(0.2)
-                //.strafeTo(new Vector2d(-10.5, 28))
-                //.stopAndAdd(index.intakeIndex1())
-                //.strafeTo(new Vector2d(-10.5, 33))
+                .stopAndAdd(index.intakeIndex1())
+                .strafeTo(new Vector2d(-10.5, 52))
+                .waitSeconds(0.45)
                 .stopAndAdd(index.intakeIndex2())
-                .waitSeconds(0.2)
-                //.waitSeconds(0.85)
+                .waitSeconds(0.9)
                 .stopAndAdd(index.intakeIndex3())
-                .waitSeconds(0.2)
-                .strafeTo(new Vector2d(-10.5, 45))
-               // .stopAndAdd(index.intakeIndex3())
-                .waitSeconds(0.85)
+                .waitSeconds(0.8)
                 .stopAndAdd(intake.IntakeBallStop())
                 .build();
 
         Action postIntake = drive.actionBuilder(endShootPose)
                 .stopAndAdd(new StartRevShort())
-                .strafeToLinearHeading(new Vector2d(7.5, -7.5), Math.toRadians(130))
+                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(125))
                 .build();
 
         Action postIntake2 = drive.actionBuilder(
-                        new Pose2d(new Vector2d(7.5, -7.5), Math.toRadians(130)))
-                .stopAndAdd(new ShootThreeBallsCorner())
-                .stopAndAdd(hood.hoodDown())
-                .stopAndAdd(new ShootThreeBallsCornerTwo())
+                new Pose2d(new Vector2d(-12, 0), Math.toRadians(120)))
+                .stopAndAdd(new ShootThreeBalls())
                 .setTangent(Math.toRadians(270))
-                .splineToLinearHeading(
-                        new Pose2d(12, 31, Math.toRadians(90)),
-                        Math.toRadians(90)
-                )
+                .splineToLinearHeading(new Pose2d(15, 23, Math.toRadians(90)), Math.toRadians(90))
                 .stopAndAdd(intake.IntakeBallReverse())
-                .strafeTo(new Vector2d(12, 33))
+                .waitSeconds(0.2)
                 .stopAndAdd(index.intakeIndex1())
-                .waitSeconds(0.85)
-                .strafeTo(new Vector2d(12, 35))
+                .strafeTo(new Vector2d(15, 58))
+                .waitSeconds(0.45)
                 .stopAndAdd(index.intakeIndex2())
-                .waitSeconds(0.85)
-                .strafeTo(new Vector2d(12, 37))
+                .waitSeconds(0.9)
                 .stopAndAdd(index.intakeIndex3())
-                .waitSeconds(0.85)
+                .waitSeconds(0.8)
                 .stopAndAdd(intake.IntakeBallStop())
                 .build();
 
