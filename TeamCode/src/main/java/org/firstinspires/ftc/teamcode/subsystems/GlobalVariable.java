@@ -59,7 +59,7 @@ public class GlobalVariable {
     public static class nearRed {
         public static double startX = -49;
         public static double startY = 49;
-        public static double startH = Math.toRadians(130);
+        public static double startH = Math.toRadians(120);
         public static double shootTopX = -15;
         public static double shootTopY = 0;
         public static double shootHalfX = 0;

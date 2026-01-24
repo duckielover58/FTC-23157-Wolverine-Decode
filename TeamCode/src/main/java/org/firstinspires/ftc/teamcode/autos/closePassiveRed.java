@@ -63,12 +63,13 @@ public class closePassiveRed extends LinearOpMode {
                     push.PushBallDown(),
                     new SleepAction(0.5),
                     index.outtakeIndex3(),
-                    new SleepAction(0.3),
+                    new SleepAction(1),
                     push.PushBallUp(),
 
                     new SleepAction(0.3),
                     new InstantAction(() -> flywheelPID(0)),
                     push.PushBallDown(),
+                    new SleepAction(0.5),
                     index.intakeIndex1()
             );
         }
@@ -92,7 +93,7 @@ public class closePassiveRed extends LinearOpMode {
 
         public ShootThreeBallsCorner() {
             sequence = new SequentialAction(
-                    index.intakeIndex3(),
+                    index.outtakeIndex3(),
                     new SleepAction(0.2),
                     push.PushBallDown(),
                     new SleepAction(1.9),
@@ -100,7 +101,7 @@ public class closePassiveRed extends LinearOpMode {
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.3),
-                    index.intakeIndex2()
+                    index.outtakeIndex2()
             );
         }
 
@@ -175,14 +176,14 @@ public class closePassiveRed extends LinearOpMode {
         Action closePassive = drive.actionBuilder(startPose)
                 .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(130))
                 .stopAndAdd(new ShootThreeBalls())
-                .strafeToLinearHeading(new Vector2d(-9.5, 27), Math.toRadians(90))
-                .afterTime(0.3, intake.IntakeBall())
-                .strafeTo(new Vector2d(-9.5, 30))
+                .strafeToLinearHeading(new Vector2d(-10.5, 30), Math.toRadians(90))
+                .afterTime(0.3, intake.IntakeBallReverse())
+                .strafeTo(new Vector2d(-10.5, 32))
                 .stopAndAdd(index.intakeIndex1())
-                .strafeTo(new Vector2d(-9.5, 33))
+                .strafeTo(new Vector2d(-10.5, 37))
                 .stopAndAdd(index.intakeIndex2())
                 .waitSeconds(0.85)
-                .strafeTo(new Vector2d(-9.5, 36))
+                .strafeTo(new Vector2d(-10.5, 42))
                 .stopAndAdd(index.intakeIndex3())
                 .waitSeconds(0.85)
                 .stopAndAdd(intake.IntakeBallStop())
@@ -190,11 +191,11 @@ public class closePassiveRed extends LinearOpMode {
 
         Action postIntake = drive.actionBuilder(endShootPose)
                 .stopAndAdd(new StartRevShort())
-                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(130))
+                .strafeToLinearHeading(new Vector2d(7.5, -7.5), Math.toRadians(130))
                 .build();
 
         Action postIntake2 = drive.actionBuilder(
-                        new Pose2d(new Vector2d(-12, 0), Math.toRadians(130)))
+                        new Pose2d(new Vector2d(7.5, -7.5), Math.toRadians(130)))
                 .stopAndAdd(new ShootThreeBallsCorner())
                 .stopAndAdd(hood.hoodDown())
                 .stopAndAdd(new ShootThreeBallsCornerTwo())
@@ -203,7 +204,7 @@ public class closePassiveRed extends LinearOpMode {
                         new Pose2d(12, 31, Math.toRadians(90)),
                         Math.toRadians(90)
                 )
-                .stopAndAdd(intake.IntakeBall())
+                .stopAndAdd(intake.IntakeBallReverse())
                 .strafeTo(new Vector2d(12, 33))
                 .stopAndAdd(index.intakeIndex1())
                 .waitSeconds(0.85)
