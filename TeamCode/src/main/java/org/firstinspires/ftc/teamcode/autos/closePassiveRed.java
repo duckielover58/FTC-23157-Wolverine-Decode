@@ -27,6 +27,7 @@ import java.lang.Math;
 @Autonomous(name = "closePassiveRed", group = "Robot")
 public class closePassiveRed extends LinearOpMode {
 
+    //floor0 - constants
     private DcMotorEx flywheel;
     private Index index;
     private Intake intake;
@@ -154,6 +155,7 @@ public class closePassiveRed extends LinearOpMode {
     }
 
     @Override
+    //floor1
     public void runOpMode() {
 
         flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel2");
@@ -175,6 +177,7 @@ public class closePassiveRed extends LinearOpMode {
 
         Action closePassive = drive.actionBuilder(startPose)
                 .stopAndAdd(index.intakeIndex1())
+              //  .strafeToLinearHeading(new Vector2d(-40, 32), Math.toRadians(125))
                 .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(125))
                 .stopAndAdd(new ShootThreeBalls())
                 .afterTime(0.8, intake.IntakeBallReverse())
