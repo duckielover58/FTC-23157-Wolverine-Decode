@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.subsystems.*;
 import java.lang.Math;
 
 @Config
-@Autonomous(name = "closePassiveRed", group = "Robot")
+@Autonomous(name = "closePassiveBlue", group = "Robot")
 public class closePassiveBlue extends LinearOpMode {
 
     private DcMotorEx flywheel;
@@ -159,8 +159,8 @@ public class closePassiveBlue extends LinearOpMode {
         flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel2");
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        Pose2d startPose = new Pose2d(-59, -37 , 270);
-        Pose2d endShootPose = new Pose2d(-10.5, -50, 270);
+        Pose2d startPose = new Pose2d(-59, -37 , Math.toRadians(270));
+        Pose2d endShootPose = new Pose2d(-10.5, -50, Math.toRadians(270));
 
         PinpointDrive drive = new PinpointDrive(hardwareMap, startPose);
 
@@ -175,7 +175,7 @@ public class closePassiveBlue extends LinearOpMode {
 
         Action closePassive = drive.actionBuilder(startPose)
                 .stopAndAdd(index.intakeIndex1())
-                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(215))
+                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(220))
                 .stopAndAdd(new ShootThreeBalls())
                 .afterTime(0.8, intake.IntakeBallReverse())
                 .strafeToLinearHeading(new Vector2d(-10.5, -23), Math.toRadians(270))
@@ -192,11 +192,10 @@ public class closePassiveBlue extends LinearOpMode {
 
         Action postIntake = drive.actionBuilder(endShootPose)
                 .stopAndAdd(new StartRevShort())
-                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(215))
+                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(220))
                 .build();
 
-        Action postIntake2 = drive.actionBuilder(
-                        new Pose2d(new Vector2d(-12, 0), Math.toRadians(220)))
+        Action postIntake2 = drive.actionBuilder(new Pose2d(new Vector2d(-12, 0), Math.toRadians(220)))
                 .stopAndAdd(new ShootThreeBalls())
                 .setTangent(Math.toRadians(270))
                 .splineToLinearHeading(new Pose2d(15, -23, Math.toRadians(270)), Math.toRadians(90))
