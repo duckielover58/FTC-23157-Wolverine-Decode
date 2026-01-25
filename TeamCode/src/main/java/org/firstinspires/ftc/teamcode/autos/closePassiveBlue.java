@@ -1,45 +1,31 @@
 package org.firstinspires.ftc.teamcode.autos;
 
-
 // RR-specific imports
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.kF;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.*;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearRed.*;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.targetVelocity;
 
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.InstantAction;
-import com.acmerobotics.roadrunner.ParallelAction;
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
-import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.*;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.acmerobotics.roadrunner.Vector2d;
 
-import org.firstinspires.ftc.teamcode.subsystems.Index;
-import org.firstinspires.ftc.teamcode.subsystems.Intake;
-import org.firstinspires.ftc.teamcode.subsystems.Push;
-import org.firstinspires.ftc.teamcode.subsystems.Swivel;
-
-// Non-RR imports
-//import com.qualcomm.hardware.limelightvision.LLResult;
-//import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
-import org.firstinspires.ftc.teamcode.subsystems.Hood;
+import org.firstinspires.ftc.teamcode.subsystems.*;
 
+import java.lang.Math;
 
 @Config
-@Autonomous(name = "closePassiveBlue", group = "Robot")
+@Autonomous(name = "closePassiveRed", group = "Robot")
 public class closePassiveBlue extends LinearOpMode {
-    //
 
     private DcMotorEx flywheel;
     private Index index;
@@ -47,164 +33,67 @@ public class closePassiveBlue extends LinearOpMode {
     private Push push;
     private Hood hood;
     private Swivel swivel;
-//    private Limelight3A limelight;
-    int colorPipeline = 3;
-    boolean servoLocked = true;
-    double ServoPower = 1.0;
-    public final int redTag = 0;
-    double previousTime = 0;
-    double previousError = 0;
-    double integralSum = 0;
-    boolean rumble = false;
+
     double kP = 0.35;
-    double kI = 0.000001;
-    double kD = 0.5;
 
-    //GGP 21
-    //PGP 22
-    //PPG 23
-
-
-    public static final int RED_TAG_ID = 24;
     private class ShootThreeBalls implements Action {
         private final Action sequence;
 
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            return sequence.run(packet);
-        }
-
         public ShootThreeBalls() {
             sequence = new SequentialAction(
-                    //first
-                    new SleepAction(6.5),
-                    index.intakeIndex2(),
-                    new SleepAction(0.2),
+                    new InstantAction(() -> flywheel.setPower(1)),
+                    new SleepAction(0.4),
+                    hood.ten(),
+                    index.outtakeIndex1(),
+                    new SleepAction(0.3),
                     push.PushBallDown(),
-                    new SleepAction(1.3),
+                    new SleepAction(0.7),
                     push.PushBallUp(),
 
-
-                    //second ball
-                    hood.seven(),
+                    hood.ten(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.45),
-                    index.intakeIndex3(),
-                    new SleepAction(0.25),
+                    index.outtakeIndex2(),
+                    new SleepAction(0.40),
                     push.PushBallUp(),
 
-                    //third ball
-                    hood.six(),
+                    hood.ten(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.5),
-                    index.intakeIndex1(),
-                    new SleepAction(0.3),
+                    index.outtakeIndex3(),
+                    new SleepAction(1),
                     push.PushBallUp(),
 
-
-                    //wrap up
                     new SleepAction(0.3),
                     new InstantAction(() -> flywheelPID(0)),
                     push.PushBallDown(),
+                    new SleepAction(0.5),
                     index.intakeIndex1()
             );
         }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            return sequence.run(packet);
+        }
     }
+
     private class StartRevShort implements Action {
-
-        private final Action sequence;
-
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            return sequence.run(packet);
-        }
-
-        public StartRevShort() {
-            sequence = new SequentialAction(
-                    new InstantAction(() -> flywheelPID(500))
-            );
-        }
-
-    }
-
-    private class StartRevHalf implements Action {
-
-        private final Action sequence;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            return sequence.run(packet);
-        }
-
-        public StartRevHalf() {
-            sequence = new SequentialAction(
-                    new InstantAction(() -> flywheelPID(shootHalfTargetSpeed))
-            );
-        }
-
-    }
-
-    private class FlywheelPIDAction implements Action {
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            if (targetVelocity > 0) {
-                targetVelocity = 840;
-                flywheelPID(targetVelocity);
-                return true;   // keep running every loop
-            } else if (targetVelocity == 0) {
-                flywheel.setPower(0);
-                return false;
-            }
-            else {
-                flywheel.setPower(0);
-                return false;
-            }
-        }
-    }
-
-    public class StopFlywheelAction implements Action {
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            targetVelocity = 0;
+            flywheelPID(2000);
             return false;
         }
     }
-    private class IntakeRoutine implements Action {
 
-        private final Action sequence;
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            return sequence.run(packet);
-        }
-
-        public IntakeRoutine() {
-            sequence = new SequentialAction(
-                    intake.IntakeBall(),
-                    index.intakeTurnRight(),
-                    index.intakeTurnRight(),
-                    index.intakeTurnRight(),
-                    index.intakeTurnRight()
-                    //once we figure out how many times it actually has to turn we can add/remove turns respectively
-            );
-        }
-
-    }
     private class ShootThreeBallsCorner implements Action {
         private final Action sequence;
 
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            return sequence.run(packet);
-        }
-
         public ShootThreeBallsCorner() {
             sequence = new SequentialAction(
-                    index.intakeIndex3(),
+                    index.outtakeIndex3(),
                     new SleepAction(0.2),
                     push.PushBallDown(),
                     new SleepAction(1.9),
@@ -212,104 +101,67 @@ public class closePassiveBlue extends LinearOpMode {
                     new SleepAction(0.3),
                     push.PushBallDown(),
                     new SleepAction(0.3),
-                    index.intakeIndex2()
+                    index.outtakeIndex2()
             );
         }
-    }
-    private class ShootThreeBallsCornerTwo implements Action {
-        private final Action sequence;
 
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             return sequence.run(packet);
         }
-          public ShootThreeBallsCornerTwo() {        //hood
-                    sequence = new SequentialAction(
-                            new SleepAction(1.0),
-                            push.PushBallUp(),
-                            new SleepAction(0.3),
-                            push.PushBallDown(),
-                            new SleepAction(0.5),
-                            index.intakeIndex1(),
-                            new SleepAction(0.6),
-                            push.PushBallUp(),
-                            new SleepAction(0.3),
-                            push.PushBallDown(),
-                            new SleepAction(0.5),
-                            new InstantAction(() -> flywheelPID(0)),
-                            new SleepAction(0.2),
-                            index.intakeIndex1()
-                    );
-        }
-    }
-/*
-    void limelightInits() {
-        servoLocked = false;
-        telemetry.addLine("limelight ready");
-        telemetry.update();
-
-        limelight.pipelineSwitch(redTag);
-        sleep(100);
     }
 
-    void lodk() {
+    private class ShootThreeBallsCornerTwo implements Action {
+        private final Action sequence;
 
-        if (servoLocked) return; //this is so if its alr locked it wont do naything
-
-        LLResult result = limelight.getLatestResult();
-
-        if (result == null || !result.isValid()) {
-            telemetry.addLine("No valid Limelight target");
-            telemetry.update();
-            return;
+        public ShootThreeBallsCornerTwo() {
+            sequence = new SequentialAction(
+                    new StartRevShort(),
+                    new SleepAction(1.0),
+                    push.PushBallUp(),
+                    new SleepAction(0.3),
+                    push.PushBallDown(),
+                    new SleepAction(0.5),
+                    index.intakeIndex1(),
+                    new SleepAction(0.6),
+                    push.PushBallUp(),
+                    new SleepAction(0.3),
+                    push.PushBallDown(),
+                    new SleepAction(0.5),
+                    new InstantAction(() -> flywheelPID(0)),
+                    new SleepAction(0.2),
+                    index.intakeIndex1()
+            );
         }
 
-        double bearing = result.getTx();
-        double bearingThreshold = 3.0;
-        double servoSpeed = 1.0;
-
-        if (bearing > bearingThreshold) {
-            ServoPower = -servoSpeed;
-        } else if (bearing < -bearingThreshold) {
-            ServoPower = servoSpeed;
-        } else {
-            ServoPower = 0.0;
-            servoLocked = true;
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            return sequence.run(packet);
         }
-
-        swivel.setPower(ServoPower);
-
-        // Telemetry (clean + useful)
-        telemetry.addData("Limelight Bearing", bearing);
-        telemetry.addData("Servo Power", ServoPower);
-        telemetry.addData("Servo Locked", servoLocked);
-        telemetry.addData("Target Valid", result.isValid());
-        telemetry.update();'/
     }
-
- */
     void flywheelPID (double target) {
 
-    double currentVelocity = flywheel.getVelocity();
-    double error = target - currentVelocity;
+        double currentVelocity = flywheel.getVelocity();
+        double error = target - currentVelocity;
 
-    double ff = kF * target;
+        double ff = kF * target;
 
-    double output = ff + (kP * error);
+        double output = ff + (kP * error);
 
-    output = Math.max(0.0, Math.min(1.0, output));
+        output = Math.max(0.0, Math.min(1.0, output));
 
-    flywheel.setPower(output);
-}
+        flywheel.setPower(output);
+    }
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
 
-        flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel");
+        flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel2");
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
-        Pose2d startPose = new Pose2d(startX, startY, startH);
-//        Pose2d shootPose = new Pose2d(-12, 0, Math.toRadians(135));
-        Pose2d endShootPose = new Pose2d(-9.5, -41.5, Math.toRadians(230));
+
+        Pose2d startPose = new Pose2d(-59, -37 , 270);
+        Pose2d endShootPose = new Pose2d(-10.5, -50, 270);
+
         PinpointDrive drive = new PinpointDrive(hardwareMap, startPose);
 
         index = new Index(hardwareMap);
@@ -317,197 +169,64 @@ public class closePassiveBlue extends LinearOpMode {
         push = new Push(hardwareMap);
         swivel = new Swivel(hardwareMap);
         hood = new Hood(hardwareMap);
-//        limelight = hardwareMap.get(Limelight3A.class, "limelight");
-
-//        limelight.start();
-        sleep(200);
 
         waitForStart();
         if (isStopRequested()) return;
 
-        /*
-        limelight.pipelineSwitch(colorPipeline);
-        sleep(100);
-
-        LLResult results = limelight.getLatestResult();
-
-        if (results == null || !results.isValid()) {
-            colorPipeline = 4;
-            limelight.pipelineSwitch(colorPipeline);
-            sleep(100);
-            results = limelight.getLatestResult();
-
-            if (results == null || !results.isValid()) {
-                colorPipeline = 5;
-                limelight.pipelineSwitch(colorPipeline);
-                sleep(100);
-            }
-        }
-
-
-
-
-        limelightInits();
-        limelight.pipelineSwitch(0);
-        lodk();
-        Action closePassivetab1PPG = drive.actionBuilder(startPose)
-                .stopAndAdd(new ShootThreeBallsPPG())
-                .build();
-
-        Action closePassivetab1PGP = drive.actionBuilder(startPose)
-                .stopAndAdd(new ShootThreeBallsPGP())
-                .build();
-
-        Action closePassivetab1GPP = drive.actionBuilder(startPose)
-                .stopAndAdd(new ShootThreeBallsGPP())
-                .build();
-
-        Action closePassivetab2 = drive.actionBuilder(startPose)
-                .splineToLinearHeading(new Pose2d(-9.5,-30, Math.toRadians(270)),Math.toRadians(270))
-                .afterTime(0.3, intake.IntakeBallReverse())
-                .stopAndAdd(index.index1())
-                .strafeTo(new Vector2d(-9.5, -34.5))
-                .stopAndAdd(index.index2())
-                .strafeTo(new Vector2d(-9.5, -39))
-                .waitSeconds(0.85)
-                .stopAndAdd(index.index3())
-                .strafeTo(new Vector2d(-9.5, -43.5))
-                .waitSeconds(0.85)
-                .stopAndAdd(intake.IntakeBallStop())
-                .stopAndAdd(flywheel.shoot())
-                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(135))
-                .build();
-
-        limelightInits();
-        limelight.pipelineSwitch(0);
-        lodk();
-        Action closePassivetab3PPG = drive.actionBuilder(shootPose)
-                .stopAndAdd(new ShootThreeBallsCornerPPG())
-                .build();
-        Action closePassivetab3PGP = drive.actionBuilder(shootPose)
-                .stopAndAdd(new ShootThreeBallsCornerPGP())
-                .build();
-        Action closePassivetab3GPP = drive.actionBuilder(shootPose)
-                .stopAndAdd(new ShootThreeBallsCornerGPP())
-                .build();
-
-        Action closePassivetab4 = drive.actionBuilder(shootPose)
-                .setTangent(45)
-                .splineToLinearHeading(new Pose2d(14, -30, Math.toRadians(270)), Math.toRadians(270))
-                .stopAndAdd(intake.IntakeBallReverse())
-                .stopAndAdd(index.index1())
-                .strafeTo(new Vector2d(14, -35))
-                .waitSeconds(0.85)
-                .stopAndAdd(index.index2())
-                .strafeTo(new Vector2d(14, -39))
-                .waitSeconds(0.85)
-                .stopAndAdd(index.index3())
-                .strafeTo(new Vector2d(14, -43.5))
-                .waitSeconds(0.85)
+        Action closePassive = drive.actionBuilder(startPose)
+                .stopAndAdd(index.intakeIndex1())
+                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(215))
+                .stopAndAdd(new ShootThreeBalls())
+                .afterTime(0.8, intake.IntakeBallReverse())
+                .strafeToLinearHeading(new Vector2d(-10.5, -23), Math.toRadians(270))
+                .waitSeconds(0.2)
+                .stopAndAdd(index.intakeIndex1())
+                .strafeTo(new Vector2d(-10.5, -52))
+                .waitSeconds(0.45)
+                .stopAndAdd(index.intakeIndex2())
+                .waitSeconds(0.9)
+                .stopAndAdd(index.intakeIndex3())
+                .waitSeconds(0.8)
                 .stopAndAdd(intake.IntakeBallStop())
                 .build();
-
-        if (colorPipeline == 3) {
-            Actions.runBlocking(
-                    new SequentialAction(
-                        closePassivetab1PPG,
-                        closePassivetab2,
-                        closePassivetab3PPG,
-                        closePassivetab4
-                    )
-            );
-        }
-        else if (colorPipeline == 4) {
-            Actions.runBlocking(
-                    new SequentialAction(
-                            closePassivetab1GPP,
-                            closePassivetab2,
-                            closePassivetab3GPP,
-                            closePassivetab4
-                    )
-            );
-        }
-        else if (colorPipeline == 5) {
-            Actions.runBlocking(
-                    new SequentialAction(
-                            closePassivetab1PGP,
-                            closePassivetab2,
-                            closePassivetab3PGP,
-                            closePassivetab4
-                    )
-            );
-        }
-
-    }
-}
-
-         */
-
-            Action closePassive = drive.actionBuilder(startPose)
-                    // second option  .strafeToLinearHeading(new Vector2d(-30, -15), Math.toRadians(230))
-                    .stopAndAdd(new ParallelAction(
-                            new FlywheelPIDAction(),
-                            drive.actionBuilder(startPose)
-                                    .splineToLinearHeading(new Pose2d(shootShortX, shootShortY, shootH), shootH)
-                                    .stopAndAdd(hood.shortHoodPos())
-                                    .stopAndAdd(new ShootThreeBalls())
-                                    .build()
-                            )
-                    )
-                    .stopAndAdd(new StopFlywheelAction())
-
-                    .setTangent(-20)
-                    .splineToLinearHeading(new Pose2d(PreIntake1X, PreIntake1Y, PreIntakeH), Math.toRadians(270))
-                    .afterTime(0.3, new SequentialAction(intake.IntakeBall(), index.intakeIndex1()))
-                    .strafeToLinearHeading(new Vector2d(Intake1X, Intake1Y), IntakeH)
-                    .stopAndAdd(new IntakeRoutine())
-                    .build();
 
         Action postIntake = drive.actionBuilder(endShootPose)
                 .stopAndAdd(new StartRevShort())
-                .strafeToLinearHeading(new Vector2d(-29.3, -30.3), Math.toRadians(220))
+                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(215))
                 .build();
-        Action postIntake2 = drive.actionBuilder(new Pose2d(new Vector2d(-29.3, -30.3), Math.toRadians(220)))
-                .stopAndAdd(new ShootThreeBallsCorner())
-                .stopAndAdd(hood.hoodDown())
-                .stopAndAdd(new ShootThreeBallsCornerTwo())
-                .setTangent(45)
-                .splineToLinearHeading(new Pose2d(14, -28, Math.toRadians(270)), Math.toRadians(270))
-                .stopAndAdd(intake.IntakeBall())
-                .strafeTo(new Vector2d(14, -32)) // -35
+
+        Action postIntake2 = drive.actionBuilder(
+                        new Pose2d(new Vector2d(-12, 0), Math.toRadians(220)))
+                .stopAndAdd(new ShootThreeBalls())
+                .setTangent(Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(15, -23, Math.toRadians(270)), Math.toRadians(90))
+                .stopAndAdd(intake.IntakeBallReverse())
+                .waitSeconds(0.2)
                 .stopAndAdd(index.intakeIndex1())
-                .waitSeconds(0.85)
-                .strafeTo(new Vector2d(14, -37.5))  // -39
+                .strafeTo(new Vector2d(15, -58))
+                .waitSeconds(0.45)
                 .stopAndAdd(index.intakeIndex2())
-                .waitSeconds(0.85)
-                .strafeTo(new Vector2d(14, -41.5)) // -43.5
+                .waitSeconds(0.9)
                 .stopAndAdd(index.intakeIndex3())
-                .waitSeconds(0.85)
+                .waitSeconds(0.8)
                 .stopAndAdd(intake.IntakeBallStop())
                 .build();
 
-        Action tab1 = drive.actionBuilder(startPose)
-                .lineToX(-15)
-                .setTangent(-20)
-                .splineToLinearHeading(new Pose2d(-12, -43, Math.toRadians(270)), Math.toRadians(270))
-                .strafeTo(new Vector2d(-12, -43))
-                .strafeToLinearHeading(new Vector2d(-18.5, -18.5), Math.toRadians(225))
-                .setTangent(0)
-                .splineToSplineHeading(new Pose2d(12, -43, Math.toRadians(270)), Math.toRadians(270))
-                .setTangent(90)
-                .strafeToLinearHeading(new Vector2d(-18.5, -18.5), Math.toRadians(225))
-                .setTangent(0)
-                .splineToSplineHeading(new Pose2d(36, -30, Math.toRadians(270)), Math.toRadians(0))
-                .strafeTo(new Vector2d(36, -48))
-                .strafeToLinearHeading(new Vector2d(-18.5, -18.5), Math.toRadians(225))
-                .build();
+        Actions.runBlocking(
+                new SequentialAction(
+                        hood.hoodPositionInit(),
+                        hood.hoodUp(),
+                        hood.hoodUp(),
+                        hood.hoodUp()
+                )
+        );
 
+        flywheel.setPower(1);
         Actions.runBlocking(closePassive);
-//        Actions.runBlocking(tab1);
-//        Actions.runBlocking(new SequentialAction(hood.hoodPositionInit(), hood.hoodUp(), hood.hoodUp(), hood.hoodUp()));
-//        Actions.runBlocking(closePassive);
-//        Actions.runBlocking(postIntake);
-//        Actions.runBlocking(new SequentialAction(hood.hoodDown(), hood.hoodDown()));
-//        Actions.runBlocking(postIntake2);
+        flywheel.setPower(1);
+        Actions.runBlocking(postIntake);
+        flywheel.setPower(1);
+        Actions.runBlocking(new SequentialAction(hood.hoodDown(), hood.hoodDown()));
+        Actions.runBlocking(postIntake2);
     }
 }
