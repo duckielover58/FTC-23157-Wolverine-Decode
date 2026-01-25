@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -161,6 +163,19 @@ public class intakeIndex3 implements Action {
         }
     }
 
+    public class ReverseDirection implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (index.getDirection() == Servo.Direction.REVERSE) {
+                index.setDirection(Servo.Direction.FORWARD);
+            } else {
+                index.setDirection(Servo.Direction.REVERSE);
+            }
+
+            return false;
+        }
+    }
+
     public Action intakeIndex1() { return new Index.intakeIndex1(); }
     public Action outtakeIndex1() { return new Index.outtakeIndex1(); }
     public Action intakeIndex2() { return new Index.intakeIndex2(); }
@@ -169,6 +184,7 @@ public class intakeIndex3 implements Action {
     public Action outtakeIndex3() { return new Index.outtakeIndex3(); }
     public Action indexHome() { return new Index.intakeIndexHome(); }
     public Action intakeTurnRight() { return new Index.intakeTurnRight(); }
+    public Action reverseDirection() { return new Index.ReverseDirection(); }
     public Action outtakeTurnRight() { return new Index.outtakeTurnRight(); }
     public Action intakeTurnLeft() { return new Index.intakeTurnLeft(); }
     public Action outtakeTurnLeft() { return new Index.outtakeTurnLeft(); }

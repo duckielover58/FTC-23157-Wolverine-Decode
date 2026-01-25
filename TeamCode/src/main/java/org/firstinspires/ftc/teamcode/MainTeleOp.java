@@ -194,11 +194,10 @@ public class MainTeleOp extends LinearOpMode {
 
             if (cG1.right_trigger >= 0.1) {
                 intake1.setPower(1);
+            } else if (cG1.left_trigger >= 0.1) {
+                intake1.setPower(-1);
             } else {
                 intake1.setPower(0);
-            }
-            if (cG1.left_trigger >= 0.1) {
-                intake1.setPower(-1);
             }
             if (!cG2.dpad_up && pG2.dpad_up) {
                 Actions.runBlocking(push.PushBallUp());

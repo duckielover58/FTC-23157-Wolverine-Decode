@@ -1,5 +1,6 @@
 package com.example.meepmeep;
 
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
@@ -29,6 +30,16 @@ public class MeepMeepTesting {
                         .strafeTo(new Vector2d(36, -48))
                         .strafeToLinearHeading(new Vector2d(-18.5, -18.5), Math.toRadians(225))
                         .build());
+
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(-59, -37 , 270)))
+                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(215))
+                .strafeToLinearHeading(new Vector2d(-10.5, -23), Math.toRadians(270))
+                .waitSeconds(0.2)
+                .strafeTo(new Vector2d(-10.5, -52))
+                .waitSeconds(0.45)
+                .waitSeconds(0.9)
+                .waitSeconds(0.8)
+                .build();
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_JUICE_DARK)
                 .setDarkMode(true)
