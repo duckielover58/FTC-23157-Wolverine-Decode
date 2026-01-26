@@ -36,35 +36,38 @@ public class closePassiveRed extends LinearOpMode {
     private Swivel swivel;
 
     double kP = 0.35;
+    int first = 8;
+    int offset = 5;
+    int second = first + offset;
+    int third = second + offset;
 
     private class ShootThreeBalls implements Action {
         private final Action sequence;
 
         public ShootThreeBalls() {
             sequence = new SequentialAction(
-                    new InstantAction(() -> flywheel.setPower(1)),
-                    new SleepAction(0.4),
-                    hood.ten(),
                     index.outtakeIndex1(),
-                    new SleepAction(0.3),
+                    hood.three(),
+                    new InstantAction(() -> flywheel.setPower(1)),
+                    new SleepAction(0.63),
                     push.PushBallDown(),
-                    new SleepAction(0.7),
+                    new SleepAction(0.1),
                     push.PushBallUp(),
 
-                    hood.ten(),
-                    new SleepAction(0.3),
+                    hood.three(),
+                    new SleepAction(0.25),
                     push.PushBallDown(),
-                    new SleepAction(0.45),
+                    new SleepAction(0.2),
                     index.outtakeIndex2(),
-                    new SleepAction(0.40),
+                    new SleepAction(0.2),
                     push.PushBallUp(),
 
-                    hood.ten(),
-                    new SleepAction(0.3),
+                    hood.three(),
+                    new SleepAction(0.15),
                     push.PushBallDown(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.2),
                     index.outtakeIndex3(),
-                    new SleepAction(1),
+                    new SleepAction(0.3),
                     push.PushBallUp(),
 
                     new SleepAction(0.3),
@@ -79,7 +82,8 @@ public class closePassiveRed extends LinearOpMode {
         public boolean run(@NonNull TelemetryPacket packet) {
             return sequence.run(packet);
         }
-    }
+    } // 12.75-12.9 voltage
+
 
     private class StartRevShort implements Action {
         @Override
@@ -89,20 +93,39 @@ public class closePassiveRed extends LinearOpMode {
         }
     }
 
-    private class ShootThreeBallsCorner implements Action {
+    private class SecondShootThreeBalls implements Action {
         private final Action sequence;
 
-        public ShootThreeBallsCorner() {
+        public SecondShootThreeBalls() { // 12.7-12.9 voltage
             sequence = new SequentialAction(
-                    index.outtakeIndex3(),
-                    new SleepAction(0.2),
+                    index.outtakeIndex1(),
+                    hood.three(),
+                    new InstantAction(() -> flywheel.setPower(1)),
+                    new SleepAction(0.15),
                     push.PushBallDown(),
-                    new SleepAction(1.9),
                     push.PushBallUp(),
-                    new SleepAction(0.3),
+
+                    hood.three(),
+                    new SleepAction(0.1),
                     push.PushBallDown(),
+                    new SleepAction(0.15),
+                    index.outtakeIndex2(),
+                    new SleepAction(0.2),
+                    push.PushBallUp(),
+
+                    hood.three(),
+                    new SleepAction(0.1),
+                    push.PushBallDown(),
+                    new SleepAction(0.15),
+                    index.outtakeIndex3(),
+                    new SleepAction(0.15),
+                    push.PushBallUp(),
+
                     new SleepAction(0.3),
-                    index.outtakeIndex2()
+                    new InstantAction(() -> flywheelPID(0)),
+                    push.PushBallDown(),
+                    new SleepAction(0.2),
+                    index.intakeIndex1()
             );
         }
 
@@ -112,24 +135,37 @@ public class closePassiveRed extends LinearOpMode {
         }
     }
 
-    private class ShootThreeBallsCornerTwo implements Action {
+    private class ThirdShootThreeBalls implements Action {
         private final Action sequence;
 
-        public ShootThreeBallsCornerTwo() {
+        public ThirdShootThreeBalls() { // -16, 16 - test if this location works for third shooting - can change hood angle with it
             sequence = new SequentialAction(
-                    new StartRevShort(),
-                    new SleepAction(1.0),
+                    index.outtakeIndex1(),
+                    hood.four(),
+                    new InstantAction(() -> flywheel.setPower(1)),
+//                    new SleepAction(0.1),
+                    push.PushBallDown(),
                     push.PushBallUp(),
+
+                    hood.four(),
+                    new SleepAction(0.25),
+                    push.PushBallDown(),
+                    new SleepAction(0.3),
+                    index.outtakeIndex2(),
+                    new SleepAction(0.3),
+                    push.PushBallUp(),
+
+                    hood.four(),
                     new SleepAction(0.3),
                     push.PushBallDown(),
-                    new SleepAction(0.5),
-                    index.intakeIndex1(),
-                    new SleepAction(0.6),
-                    push.PushBallUp(),
                     new SleepAction(0.3),
-                    push.PushBallDown(),
-                    new SleepAction(0.5),
+                    index.outtakeIndex3(),
+                    new SleepAction(0.2),
+                    push.PushBallUp(),
+
+                    new SleepAction(0.2),
                     new InstantAction(() -> flywheelPID(0)),
+                    push.PushBallDown(),
                     new SleepAction(0.2),
                     index.intakeIndex1()
             );
@@ -163,6 +199,7 @@ public class closePassiveRed extends LinearOpMode {
 
         Pose2d startPose = new Pose2d(startX, startY , startH);
         Pose2d endShootPose = new Pose2d(-10.5, 50, 90);
+        Pose2d endShootPoseTwo = new Pose2d(15, 61, 90);
 
         PinpointDrive drive = new PinpointDrive(hardwareMap, startPose);
 
@@ -172,48 +209,63 @@ public class closePassiveRed extends LinearOpMode {
         swivel = new Swivel(hardwareMap);
         hood = new Hood(hardwareMap);
 
+        Actions.runBlocking(index.indexHome());
+        Actions.runBlocking(push.PushBallDown());
+
         waitForStart();
         if (isStopRequested()) return;
 
         Action closePassive = drive.actionBuilder(startPose)
-                .stopAndAdd(index.intakeIndex1())
-              //  .strafeToLinearHeading(new Vector2d(-40, 32), Math.toRadians(125))
-                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(125))
+                .stopAndAdd(index.outtakeIndex1())
+                .stopAndAdd(hood.three())
+                .strafeToLinearHeading(new Vector2d(-40, 32), Math.toRadians(125))
+              //  .strafeToLinearHeading(new Vector2d(tempX, tempY), tempH)
+              //  .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(125))
                 .stopAndAdd(new ShootThreeBalls())
                 .afterTime(0.8, intake.IntakeBallReverse())
-                .strafeToLinearHeading(new Vector2d(-10.5, 23), Math.toRadians(90))
-                .waitSeconds(0.2)
-                .stopAndAdd(index.intakeIndex1())
-                .strafeTo(new Vector2d(-10.5, 52))
-                .waitSeconds(0.45)
-                .stopAndAdd(index.intakeIndex2())
-                .waitSeconds(0.9)
-                .stopAndAdd(index.intakeIndex3())
-                .waitSeconds(0.8)
+                .strafeToLinearHeading(new Vector2d(-10.5, 27), Math.toRadians(90))
+                .stopAndAdd(intake.IntakeBallReverse())
+                .afterDisp(first, index.intakeIndex1())
+                .afterDisp(second, index.intakeIndex2())
+                .afterDisp(third, index.intakeIndex3())
+                .lineToY(58)
+                .waitSeconds(0.5)
                 .stopAndAdd(intake.IntakeBallStop())
                 .build();
 
         Action postIntake = drive.actionBuilder(endShootPose)
                 .stopAndAdd(new StartRevShort())
-                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(125))
+                .stopAndAdd(index.outtakeIndex1())
+                .strafeToLinearHeading(new Vector2d(-40, 32), Math.toRadians(125))
                 .build();
 
         Action postIntake2 = drive.actionBuilder(
-                new Pose2d(new Vector2d(-12, 0), Math.toRadians(120)))
-                .stopAndAdd(new ShootThreeBalls())
-                .setTangent(Math.toRadians(270))
-                .splineToLinearHeading(new Pose2d(15, 23, Math.toRadians(90)), Math.toRadians(90))
+                new Pose2d(new Vector2d(-40, 32), Math.toRadians(125)))
+                .stopAndAdd(new SecondShootThreeBalls())
                 .stopAndAdd(intake.IntakeBallReverse())
-                .waitSeconds(0.2)
-                .stopAndAdd(index.intakeIndex1())
-                .strafeTo(new Vector2d(15, 58))
-                .waitSeconds(0.45)
-                .stopAndAdd(index.intakeIndex2())
-                .waitSeconds(0.9)
-                .stopAndAdd(index.intakeIndex3())
-                .waitSeconds(0.8)
+                .strafeToLinearHeading(new Vector2d(15, 27), Math.toRadians(90))
+                .stopAndAdd(intake.IntakeBallReverse())
+                .afterDisp(first, index.intakeIndex1())
+                .afterDisp(second, index.intakeIndex2())
+                .afterDisp(third, index.intakeIndex3())
+                .lineToY(61)
+                .waitSeconds(0.85)
                 .stopAndAdd(intake.IntakeBallStop())
                 .build();
+
+        Action postIntake3 = drive.actionBuilder(endShootPoseTwo)
+                .stopAndAdd(index.outtakeIndex1())
+                .strafeToLinearHeading(new Vector2d(15, 50), Math.toRadians(90))
+                .stopAndAdd(new StartRevShort())
+                .build();
+
+        Action postIntake4 = drive.actionBuilder(
+                new Pose2d(new Vector2d(15, 50), Math.toRadians(90)))
+                .strafeToLinearHeading(new Vector2d(-16, 16), Math.toRadians(132))
+                .waitSeconds(0.45)
+                .stopAndAdd(new ThirdShootThreeBalls())
+                .build();
+
 
         Actions.runBlocking(
                 new SequentialAction(
@@ -231,5 +283,7 @@ public class closePassiveRed extends LinearOpMode {
         flywheel.setPower(1);
         Actions.runBlocking(new SequentialAction(hood.hoodDown(), hood.hoodDown()));
         Actions.runBlocking(postIntake2);
+        Actions.runBlocking(postIntake3);
+        Actions.runBlocking(postIntake4);
     }
 }
