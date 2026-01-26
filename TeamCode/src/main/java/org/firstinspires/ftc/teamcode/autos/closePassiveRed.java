@@ -73,7 +73,7 @@ public class closePassiveRed extends LinearOpMode {
                     new SleepAction(0.3),
                     new InstantAction(() -> flywheelPID(0)),
                     push.PushBallDown(),
-                    new SleepAction(0.5),
+                    new SleepAction(0.5), //TODO is this needed? (change to 0.15 if not)
                     index.intakeIndex1()
             );
         }
@@ -124,7 +124,7 @@ public class closePassiveRed extends LinearOpMode {
                     new SleepAction(0.3),
                     new InstantAction(() -> flywheelPID(0)),
                     push.PushBallDown(),
-                    new SleepAction(0.2),
+                    new SleepAction(0.2), //TODO if this is just to switch intake, this time can be 0.15
                     index.intakeIndex1()
             );
         }
@@ -166,7 +166,7 @@ public class closePassiveRed extends LinearOpMode {
                     new SleepAction(0.2),
                     new InstantAction(() -> flywheelPID(0)),
                     push.PushBallDown(),
-                    new SleepAction(0.2),
+                    new SleepAction(0.2), //TODO if this is just to switch intake, this time can be 0.15
                     index.intakeIndex1()
             );
         }
