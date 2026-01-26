@@ -14,6 +14,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.acmerobotics.roadrunner.Vector2d;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -24,6 +25,7 @@ import org.firstinspires.ftc.teamcode.subsystems.*;
 import java.lang.Math;
 
 @Config
+@Disabled
 @Autonomous(name = "closePassiveRed", group = "Robot")
 public class closePassiveRed extends LinearOpMode {
 
@@ -169,6 +171,8 @@ public class closePassiveRed extends LinearOpMode {
         push = new Push(hardwareMap);
         swivel = new Swivel(hardwareMap);
         hood = new Hood(hardwareMap);
+
+        Actions.runBlocking(hood.hoodPositionInit());
 
         waitForStart();
         if (isStopRequested()) return;

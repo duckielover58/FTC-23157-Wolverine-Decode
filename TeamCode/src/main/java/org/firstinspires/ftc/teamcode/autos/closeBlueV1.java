@@ -14,7 +14,6 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.acmerobotics.roadrunner.Vector2d;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -24,10 +23,9 @@ import org.firstinspires.ftc.teamcode.subsystems.*;
 
 import java.lang.Math;
 
-@Disabled
 @Config
-@Autonomous(name = "closePassiveBlue", group = "Robot")
-public class closePassiveBlue extends LinearOpMode {
+@Autonomous(name = "closeBlueV1", group = "Robot")
+public class closeBlueV1 extends LinearOpMode {
 
     private DcMotorEx flywheel;
     private Index index;

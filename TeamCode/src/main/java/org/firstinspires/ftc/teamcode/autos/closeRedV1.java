@@ -14,7 +14,6 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.acmerobotics.roadrunner.Vector2d;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -24,10 +23,9 @@ import org.firstinspires.ftc.teamcode.subsystems.*;
 
 import java.lang.Math;
 
-@Disabled
 @Config
-@Autonomous(name = "closePassiveBlue", group = "Robot")
-public class closePassiveBlue extends LinearOpMode {
+@Autonomous(name = "closeRedV1", group = "Robot")
+public class closeRedV1 extends LinearOpMode {
 
     private DcMotorEx flywheel;
     private Index index;
@@ -161,8 +159,8 @@ public class closePassiveBlue extends LinearOpMode {
         flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel2");
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        Pose2d startPose = new Pose2d(-59, -37 , Math.toRadians(270));
-        Pose2d endShootPose = new Pose2d(-10.5, -50, Math.toRadians(270));
+        Pose2d startPose = new Pose2d(startX, startY , startH);
+        Pose2d endShootPose = new Pose2d(-10.5, 50, 90);
 
         PinpointDrive drive = new PinpointDrive(hardwareMap, startPose);
 
@@ -179,13 +177,13 @@ public class closePassiveBlue extends LinearOpMode {
 
         Action closePassive = drive.actionBuilder(startPose)
                 .stopAndAdd(index.intakeIndex1())
-                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(220))
+                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(125))
                 .stopAndAdd(new ShootThreeBalls())
                 .afterTime(0.8, intake.IntakeBallReverse())
-                .strafeToLinearHeading(new Vector2d(-10.5, -23), Math.toRadians(270))
+                .strafeToLinearHeading(new Vector2d(-10.5, 23), Math.toRadians(90))
                 .waitSeconds(0.2)
                 .stopAndAdd(index.intakeIndex1())
-                .strafeTo(new Vector2d(-10.5, -52))
+                .strafeTo(new Vector2d(-10.5, 52))
                 .waitSeconds(0.45)
                 .stopAndAdd(index.intakeIndex2())
                 .waitSeconds(0.9)
@@ -196,17 +194,18 @@ public class closePassiveBlue extends LinearOpMode {
 
         Action postIntake = drive.actionBuilder(endShootPose)
                 .stopAndAdd(new StartRevShort())
-                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(220))
+                .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(125))
                 .build();
 
-        Action postIntake2 = drive.actionBuilder(new Pose2d(new Vector2d(-12, 0), Math.toRadians(220)))
+        Action postIntake2 = drive.actionBuilder(
+                        new Pose2d(new Vector2d(-12, 0), Math.toRadians(120)))
                 .stopAndAdd(new ShootThreeBalls())
                 .setTangent(Math.toRadians(270))
-                .splineToLinearHeading(new Pose2d(15, -23, Math.toRadians(270)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(15, 23, Math.toRadians(90)), Math.toRadians(90))
                 .stopAndAdd(intake.IntakeBallReverse())
                 .waitSeconds(0.2)
                 .stopAndAdd(index.intakeIndex1())
-                .strafeTo(new Vector2d(15, -58))
+                .strafeTo(new Vector2d(15, 58))
                 .waitSeconds(0.45)
                 .stopAndAdd(index.intakeIndex2())
                 .waitSeconds(0.9)
