@@ -59,7 +59,7 @@ public class farPassiveRed extends LinearOpMode {
             telemetry.addLine("In loop");
             telemetry.addData("i: ", i);
             telemetry.addData("Flywheel Vel: ", flywheelVel);
-            flywheelPID(far);
+            telemetry.update();
             if (flywheelVel >= far * 0.9 && flywheelVel <= far * 1.1) {
                 telemetry.addLine("running shot");
                 i++;
@@ -84,7 +84,6 @@ public class farPassiveRed extends LinearOpMode {
                     upies = false;
                 }
             }
-            telemetry.update();
         }
         telemetry.addLine("returning false");
         telemetry.update();
@@ -129,14 +128,18 @@ public class farPassiveRed extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(((24*3)-(16.75/2)), 17.5/2), Math.toRadians(90))
                 .build();
 
+        i = 0;
         while (true) {
+            flywheelPID(far);
             shootFar();
             if (!shootFar()) {
                 break;
             }
         }
         Actions.runBlocking(farPassive);
+        i = 0;
         while (true) {
+            flywheelPID(far);
             shootFar();
             if (!shootFar()) {
                 break;
