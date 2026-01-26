@@ -23,6 +23,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Push;
 import org.firstinspires.ftc.teamcode.subsystems.Swivel;
 
+@Disabled
 @TeleOp(name = "TestTeleOp")
 public class TestTeleOp extends OpMode {
 

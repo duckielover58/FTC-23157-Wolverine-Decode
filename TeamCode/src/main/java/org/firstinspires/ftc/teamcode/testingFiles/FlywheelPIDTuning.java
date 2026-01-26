@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import java.util.concurrent.ExecutionException;
 
+@Disabled
 @Autonomous(name = "FlywheelPIDTuning")
 public class FlywheelPIDTuning extends LinearOpMode {
 

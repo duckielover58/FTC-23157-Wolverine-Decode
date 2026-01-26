@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.testingFiles;
 import android.util.Size;
 
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 
+@Disabled
 @TeleOp public class ShootrLock extends LinearOpMode {
     private Position cameraPosition = new Position(DistanceUnit.INCH,
             0, 0, 0, 0);

@@ -21,12 +21,14 @@ import org.firstinspires.ftc.teamcode.subsystems.Swivel;
 
 // Non-RR imports
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
 
 
 @Config
+@Disabled
 @Autonomous(name = "fakeBlueAuto", group = "Robot")
 public class fakeBlueAuto extends LinearOpMode {
 

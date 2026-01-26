@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 
+@Disabled
 @Config
 @Autonomous(name = "Flywheelgm0PIDTest")
 public class Flywheelgm0PIDtest extends LinearOpMode {

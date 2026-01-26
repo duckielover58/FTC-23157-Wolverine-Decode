@@ -32,6 +32,7 @@ import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
 
 
 
+@Disabled
 @Config
 @TeleOp(name = "tes", group = "Robot")
 public class tes extends LinearOpMode {

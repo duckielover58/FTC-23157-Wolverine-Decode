@@ -37,10 +37,12 @@ public class farPassiveRed extends LinearOpMode {
     int offset = 5;
     int second = first + offset;
     int third = second + offset;
+    double flywheelVel = 0;
 
     void flywheelPID (double target) {
 
         double currentVelocity = flywheel.getVelocity();
+        flywheelVel = currentVelocity;
         double error = target - currentVelocity;
 
         double ff = kF * target;
@@ -56,8 +58,9 @@ public class farPassiveRed extends LinearOpMode {
             sleep(20);
             telemetry.addLine("In loop");
             telemetry.addData("i: ", i);
+            telemetry.addData("Flywheel Vel: ", flywheelVel);
             flywheelPID(far);
-            if (flywheel.getVelocity() >= far * 0.9 && flywheel.getVelocity() <= far * 1.1) {
+            if (flywheelVel >= far * 0.9 && flywheelVel <= far * 1.1) {
                 telemetry.addLine("running shot");
                 i++;
                 upies = true;
@@ -105,6 +108,8 @@ public class farPassiveRed extends LinearOpMode {
         Actions.runBlocking(index.indexHome());
         Actions.runBlocking(push.PushBallDown());
 
+        Actions.runBlocking(hood.hoodPositionInit());
+
         waitForStart();
         if (isStopRequested()) return;
 
@@ -118,20 +123,18 @@ public class farPassiveRed extends LinearOpMode {
                 .afterDisp(second, index.intakeIndex2())
                 .afterDisp(third, index.intakeIndex3())
                 .lineToY(63)
-                .waitSeconds(1)
+                .waitSeconds(0.5)
 //                .splineToLinearHeading(new Pose2d(((24*3)-35), 63, Math.toRadians(90)), Math.toRadians(90))
                 .stopAndAdd(intake.IntakeBallStop())
                 .strafeToLinearHeading(new Vector2d(((24*3)-(16.75/2)), 17.5/2), Math.toRadians(90))
                 .build();
-/*
+
         while (true) {
             shootFar();
             if (!shootFar()) {
                 break;
             }
         }
-
- */
         Actions.runBlocking(farPassive);
         while (true) {
             shootFar();

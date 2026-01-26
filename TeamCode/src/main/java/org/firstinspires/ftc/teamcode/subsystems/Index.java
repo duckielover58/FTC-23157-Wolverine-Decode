@@ -7,8 +7,6 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -35,7 +33,7 @@ public class Index {
             return false;
         }
     }
-    public class outtakeIndex1 implements Action {
+    public class OuttakeIndex1 implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             index.setPosition(outtakeBall1);
@@ -177,7 +175,7 @@ public class intakeIndex3 implements Action {
     }
 
     public Action intakeIndex1() { return new Index.intakeIndex1(); }
-    public Action outtakeIndex1() { return new Index.outtakeIndex1(); }
+    public Action outtakeIndex1() { return new OuttakeIndex1(); }
     public Action intakeIndex2() { return new Index.intakeIndex2(); }
     public Action outtakeIndex2() { return new Index.outtakeIndex2(); }
     public Action intakeIndex3() { return new Index.intakeIndex3(); }

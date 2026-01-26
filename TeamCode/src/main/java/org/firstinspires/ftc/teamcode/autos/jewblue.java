@@ -36,12 +36,14 @@ import org.firstinspires.ftc.teamcode.subsystems.Swivel;
 import org.firstinspires.ftc.teamcode.subsystems.Hood;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
 
+@Disabled
 @Config
 @Autonomous(name = "jewblue", group = "Robot")
 public class jewblue extends LinearOpMode {
