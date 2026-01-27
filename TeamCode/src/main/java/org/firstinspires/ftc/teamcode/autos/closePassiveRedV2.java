@@ -253,7 +253,7 @@ public class closePassiveRedV2 extends LinearOpMode {
                 .waitSeconds(0.1)
                 .stopAndAdd(index.outtakeIndex2())
                 .build();
-
+//
         Action postIntake3 = drive.actionBuilder(endShootPoseTwo)
                 .strafeToLinearHeading(new Vector2d(15, 50), Math.toRadians(90))
                 .stopAndAdd(new StartRevShort())
