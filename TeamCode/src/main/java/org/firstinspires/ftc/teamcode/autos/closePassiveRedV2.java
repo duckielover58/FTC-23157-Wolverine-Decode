@@ -257,11 +257,10 @@ public class closePassiveRedV2 extends LinearOpMode {
         Action postIntake3 = drive.actionBuilder(endShootPoseTwo)
                 .strafeToLinearHeading(new Vector2d(15, 50), Math.toRadians(90))
                 .stopAndAdd(new StartRevShort())
+                .splineToSplineHeading(new Pose2d(-16, 16, Math.toRadians(133)), Math.toRadians(180))
                 .build();
 
-        Action postIntake4 = drive.actionBuilder(
-                new Pose2d(new Vector2d(15, 50), Math.toRadians(90)))
-                .splineToSplineHeading(new Pose2d(-16, 16, Math.toRadians(133)), Math.toRadians(180))
+        Action postIntake4 = drive.actionBuilder(new Pose2d(-16, 16, Math.toRadians(133)))
                 .waitSeconds(0.45)
                 .stopAndAdd(new ThirdShootThreeBalls())
                 .stopAndAdd(push.PushBallDown())
