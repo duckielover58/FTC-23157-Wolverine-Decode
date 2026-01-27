@@ -265,7 +265,6 @@ public class closePassiveRedNine extends LinearOpMode {
                 .stopAndAdd(new ThirdShootThreeBalls())
                 .stopAndAdd(push.PushBallDown())
                 .strafeToLinearHeading(new Vector2d(16.5,53.5),Math.toRadians(127))
-                .strafeToLinearHeading(new Vector2d(12.5,59),Math.toRadians(127))
                 .build();
 
 

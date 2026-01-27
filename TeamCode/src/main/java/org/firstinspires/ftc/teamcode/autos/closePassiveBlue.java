@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.autos;
 
 // RR-specific imports
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.kF;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearRed.*;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.targetVelocity;
 
 import androidx.annotation.NonNull;
 
