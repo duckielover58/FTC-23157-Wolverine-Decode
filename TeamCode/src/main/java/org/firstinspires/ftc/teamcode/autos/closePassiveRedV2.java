@@ -23,8 +23,8 @@ import org.firstinspires.ftc.teamcode.subsystems.*;
 import java.lang.Math;
 
 @Config
-@Autonomous(name = "closePassiveRedNine", group = "Robot")
-public class closePassiveRedNine extends LinearOpMode {
+@Autonomous(name = "closePassiveRedV2", group = "Robot")
+public class closePassiveRedV2 extends LinearOpMode {
 
     //floor0 - constants
     private DcMotorEx flywheel;
@@ -217,8 +217,8 @@ public class closePassiveRedNine extends LinearOpMode {
                 .stopAndAdd(index.outtakeIndex1())
                 .stopAndAdd(hood.three())
                 .strafeToLinearHeading(new Vector2d(-40, 32), Math.toRadians(125))
-              //  .strafeToLinearHeading(new Vector2d(tempX, tempY), tempH)
-              //  .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(125))
+                //  .strafeToLinearHeading(new Vector2d(tempX, tempY), tempH)
+                //  .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(125))
                 .stopAndAdd(new ShootThreeBalls())
                 .afterTime(0.8, intake.IntakeBallReverse())
                 .strafeToLinearHeading(new Vector2d(-10.5, 27), Math.toRadians(90))
@@ -226,9 +226,10 @@ public class closePassiveRedNine extends LinearOpMode {
                 .afterDisp(first, index.intakeIndex1())
                 .afterDisp(second, index.intakeIndex2())
                 .afterDisp(third, index.intakeIndex3())
-                .lineToY(58)
+                .lineToY(57)
                 .waitSeconds(0.5)
                 .stopAndAdd(intake.IntakeBallStop())
+                .waitSeconds(0.2)
                 .stopAndAdd(index.outtakeIndex1())
                 .build();
 
@@ -238,7 +239,7 @@ public class closePassiveRedNine extends LinearOpMode {
                 .build();
 
         Action postIntake2 = drive.actionBuilder(
-                new Pose2d(new Vector2d(-40, 32), Math.toRadians(125)))
+                        new Pose2d(new Vector2d(-40, 32), Math.toRadians(125)))
                 .stopAndAdd(new SecondShootThreeBalls())
                 .stopAndAdd(intake.IntakeBallReverse())
                 .strafeToLinearHeading(new Vector2d(15, 27), Math.toRadians(90))
@@ -264,8 +265,16 @@ public class closePassiveRedNine extends LinearOpMode {
                 .waitSeconds(0.45)
                 .stopAndAdd(new ThirdShootThreeBalls())
                 .stopAndAdd(push.PushBallDown())
+                .stopAndAdd(index.intakeIndex1())
                 .strafeToLinearHeading(new Vector2d(16.5,53.5),Math.toRadians(127))
-                .strafeToLinearHeading(new Vector2d(12.5,59),Math.toRadians(127))
+                .strafeToLinearHeading(new Vector2d(13.5,60),Math.toRadians(127))
+                .stopAndAdd(intake.IntakeBallReverse())
+                .waitSeconds(0.5)
+                .stopAndAdd(index.intakeIndex2())
+                .waitSeconds(0.5)
+                .stopAndAdd(index.intakeIndex3())
+                .waitSeconds(0.5)
+                .stopAndAdd(intake.IntakeBallStop())
                 .build();
 
 
