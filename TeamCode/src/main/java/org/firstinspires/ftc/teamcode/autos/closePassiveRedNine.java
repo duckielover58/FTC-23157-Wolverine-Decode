@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.autos;
 // RR-specific imports
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.kF;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearRed.*;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.targetVelocity;
 
 import androidx.annotation.NonNull;
 
@@ -25,7 +24,7 @@ import java.lang.Math;
 
 @Config
 @Autonomous(name = "closePassiveRed", group = "Robot")
-public class closePassiveRed extends LinearOpMode {
+public class closePassiveRedNine extends LinearOpMode {
 
     //floor0 - constants
     private DcMotorEx flywheel;
@@ -49,13 +48,13 @@ public class closePassiveRed extends LinearOpMode {
                     index.outtakeIndex1(),
                     hood.three(),
                     new InstantAction(() -> flywheel.setPower(1)),
-                    new SleepAction(0.63),
+                    new SleepAction(0.7),
                     push.PushBallDown(),
                     new SleepAction(0.1),
                     push.PushBallUp(),
 
                     hood.three(),
-                    new SleepAction(0.25),
+                    new SleepAction(0.23),
                     push.PushBallDown(),
                     new SleepAction(0.2),
                     index.outtakeIndex2(),
@@ -63,17 +62,17 @@ public class closePassiveRed extends LinearOpMode {
                     push.PushBallUp(),
 
                     hood.three(),
-                    new SleepAction(0.15),
+                    new SleepAction(0.2),
                     push.PushBallDown(),
                     new SleepAction(0.2),
                     index.outtakeIndex3(),
-                    new SleepAction(0.3),
+                    new SleepAction(0.25),
                     push.PushBallUp(),
 
                     new SleepAction(0.3),
                     new InstantAction(() -> flywheelPID(0)),
                     push.PushBallDown(),
-                    new SleepAction(0.5), //TODO is this needed? (change to 0.15 if not)
+                    new SleepAction(0.01), //TODO is this needed? (change to 0.15 if not)
                     index.intakeIndex1()
             );
         }
@@ -98,23 +97,22 @@ public class closePassiveRed extends LinearOpMode {
 
         public SecondShootThreeBalls() { // 12.7-12.9 voltage
             sequence = new SequentialAction(
-                    index.outtakeIndex1(),
                     hood.three(),
                     new InstantAction(() -> flywheel.setPower(1)),
-                    new SleepAction(0.15),
+                    new SleepAction(0.23),
                     push.PushBallDown(),
                     push.PushBallUp(),
 
                     hood.three(),
-                    new SleepAction(0.1),
+                    new SleepAction(0.25),
                     push.PushBallDown(),
                     new SleepAction(0.15),
                     index.outtakeIndex2(),
-                    new SleepAction(0.2),
+                    new SleepAction(0.25),
                     push.PushBallUp(),
 
                     hood.three(),
-                    new SleepAction(0.1),
+                    new SleepAction(0.15),
                     push.PushBallDown(),
                     new SleepAction(0.15),
                     index.outtakeIndex3(),
@@ -124,7 +122,7 @@ public class closePassiveRed extends LinearOpMode {
                     new SleepAction(0.3),
                     new InstantAction(() -> flywheelPID(0)),
                     push.PushBallDown(),
-                    new SleepAction(0.2), //TODO if this is just to switch intake, this time can be 0.15
+                    new SleepAction(0.01), //TODO if this is just to switch intake, this time can be 0.15
                     index.intakeIndex1()
             );
         }
@@ -140,19 +138,11 @@ public class closePassiveRed extends LinearOpMode {
 
         public ThirdShootThreeBalls() { // -16, 16 - test if this location works for third shooting - can change hood angle with it
             sequence = new SequentialAction(
-                    index.outtakeIndex1(),
                     hood.four(),
                     new InstantAction(() -> flywheel.setPower(1)),
 //                    new SleepAction(0.1),
                     push.PushBallDown(),
-                    push.PushBallUp(),
-
-                    hood.four(),
                     new SleepAction(0.25),
-                    push.PushBallDown(),
-                    new SleepAction(0.3),
-                    index.outtakeIndex2(),
-                    new SleepAction(0.3),
                     push.PushBallUp(),
 
                     hood.four(),
@@ -160,13 +150,21 @@ public class closePassiveRed extends LinearOpMode {
                     push.PushBallDown(),
                     new SleepAction(0.3),
                     index.outtakeIndex3(),
+                    new SleepAction(0.3),
+                    push.PushBallUp(),
+
+                    hood.four(),
+                    new SleepAction(0.3),
+                    push.PushBallDown(),
+                    new SleepAction(0.25),
+                    index.outtakeIndex1(),
                     new SleepAction(0.2),
                     push.PushBallUp(),
 
                     new SleepAction(0.2),
                     new InstantAction(() -> flywheelPID(0)),
                     push.PushBallDown(),
-                    new SleepAction(0.2), //TODO if this is just to switch intake, this time can be 0.15
+                    new SleepAction(0.01), //TODO if this is just to switch intake, this time can be 0.15
                     index.intakeIndex1()
             );
         }
@@ -231,11 +229,11 @@ public class closePassiveRed extends LinearOpMode {
                 .lineToY(58)
                 .waitSeconds(0.5)
                 .stopAndAdd(intake.IntakeBallStop())
+                .stopAndAdd(index.outtakeIndex1())
                 .build();
 
         Action postIntake = drive.actionBuilder(endShootPose)
                 .stopAndAdd(new StartRevShort())
-                .stopAndAdd(index.outtakeIndex1())
                 .strafeToLinearHeading(new Vector2d(-40, 32), Math.toRadians(125))
                 .build();
 
@@ -251,19 +249,23 @@ public class closePassiveRed extends LinearOpMode {
                 .lineToY(61)
                 .waitSeconds(0.85)
                 .stopAndAdd(intake.IntakeBallStop())
+                .waitSeconds(0.1)
+                .stopAndAdd(index.outtakeIndex2())
                 .build();
 
         Action postIntake3 = drive.actionBuilder(endShootPoseTwo)
-                .stopAndAdd(index.outtakeIndex1())
                 .strafeToLinearHeading(new Vector2d(15, 50), Math.toRadians(90))
                 .stopAndAdd(new StartRevShort())
                 .build();
 
         Action postIntake4 = drive.actionBuilder(
                 new Pose2d(new Vector2d(15, 50), Math.toRadians(90)))
-                .strafeToLinearHeading(new Vector2d(-16, 16), Math.toRadians(132))
+                .strafeToLinearHeading(new Vector2d(-16, 16), Math.toRadians(133))
                 .waitSeconds(0.45)
                 .stopAndAdd(new ThirdShootThreeBalls())
+                .stopAndAdd(push.PushBallDown())
+                .strafeToLinearHeading(new Vector2d(16.5,53.5),Math.toRadians(127))
+                .strafeToLinearHeading(new Vector2d(12.5,59),Math.toRadians(127))
                 .build();
 
 
