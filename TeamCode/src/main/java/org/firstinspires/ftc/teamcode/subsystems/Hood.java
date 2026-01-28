@@ -153,6 +153,14 @@ public class Hood {
         }
     }
 
+    public class Fourhalf implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            hood.setPosition(0.45);
+            return false;
+        }
+    }
+
 
     public Action hoodPositionInit() { return new HoodPosition(); }
     public Action hoodDown() { return new HoodDown(); }
@@ -160,6 +168,8 @@ public class Hood {
     public Action setHoodPosShoot() { return new SetHoodPos(); }
     public Action hoodPosTelemetry() { return new HoodPos(); }
     public Action shortHoodPos() { return new HoodPosShortShoot(); }
+
+    public Action fourhalf() { return new Fourhalf(); }
 
     public Action ten() { return new ten(); }
     public Action nine() { return new nine(); }

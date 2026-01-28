@@ -14,9 +14,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Index {
 
     private Servo index;
-    private double outtakeBall1 = 0.15; //between 0.15-0.2
-    private double outtakeBall2 = 0.52; //0.40
-    private double outtakeBall3 = 0.89; //between 0.85 - 0.9
+    private double outtakeBall1 = 0.19; //between 0.15-0.2
+    private double outtakeBall2 = 0.55; //0.40
+    private double outtakeBall3 = 0.92; //between 0.85 - 0.9
     private double intakeBall1 = 0.00;
     private double intakeBall2 = 0.37;
     private double intakeBall3 = 0.74;

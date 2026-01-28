@@ -300,6 +300,14 @@ public class MainTeleOp extends LinearOpMode {
 
             }
 
+            if (!cG2.x && pG2.x) {
+                close += 50;
+            }
+
+            if (!cG2.a && cG2.a) {
+                close -= 50;
+            }
+
             telemetry.addData("Hood Position", hoodPoss);
             telemetry.addData("Target Hood Position", targetHoodClose);
             telemetry.addData("Servo Locked", servoLocked);
