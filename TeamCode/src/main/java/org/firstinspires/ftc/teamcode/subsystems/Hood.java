@@ -81,6 +81,14 @@ public class Hood {
         }
     }
 
+    public class Ninefive implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            hood.setPosition(0.95);
+            return false;
+        }
+    }
+
     public class two implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -181,6 +189,7 @@ public class Hood {
     public Action three() { return new three(); }
     public Action two() { return new two(); }
     public Action one() { return new one(); }
+    public Action ninefive() { return new Ninefive(); }
     /*
     public Action hoodPosTelemetry() {
         return new Action() {

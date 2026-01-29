@@ -24,8 +24,8 @@ import org.firstinspires.ftc.teamcode.subsystems.*;
 import java.lang.Math;
 
 @Config
-@Autonomous(name = "closePassiveRedNine", group = "Robot")
-public class closePassiveRedNine extends LinearOpMode {
+@Autonomous(name = "closePassiveBlueNine", group = "Robot")
+public class closePassiveBlueNine extends LinearOpMode {
 
     //floor0 - constants
     private DcMotorEx flywheel;
@@ -92,7 +92,7 @@ public class closePassiveRedNine extends LinearOpMode {
                     push.PushBallUp(),
 
 //                    hood.seven(),
-                    new SleepAction(0.15),
+                    new SleepAction(0.16),
                     push.PushBallDown(),
                     new SleepAction(0.1),
                     index.outtakeIndex2(),
@@ -142,13 +142,13 @@ public class closePassiveRedNine extends LinearOpMode {
         flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel2");
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        Pose2d startPose = new Pose2d(startX, startY , startH);
-        Pose2d endShootPose = new Pose2d(-10.5, 50, 90);
-        Pose2d endShootPoseTwo = new Pose2d(15, 61, 90);
+        Pose2d startPose = new Pose2d(startX, -startY , Math.toRadians(180)+startH);
+        Pose2d endShootPose = new Pose2d(-10.5, -50, Math.toRadians(90));
+
 
         PinpointDrive drive = new PinpointDrive(hardwareMap, startPose);
-        Vector2d shootVector = new Vector2d(-11, 11);
-        double shootHeading = Math.toRadians(125);
+        Vector2d shootVector = new Vector2d(-11, -11);
+        double shootHeading = Math.toRadians(90+125);
 
         index = new Index(hardwareMap);
         intake = new Intake(hardwareMap);
@@ -167,16 +167,16 @@ public class closePassiveRedNine extends LinearOpMode {
                 .stopAndAdd(hood.ten())
                 .stopAndAdd(index.outtakeIndex1())
                 .strafeToLinearHeading(shootVector, shootHeading)
-              //  .strafeToLinearHeading(new Vector2d(tempX, tempY), tempH)
-              //  .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(125))
+                //  .strafeToLinearHeading(new Vector2d(tempX, tempY), tempH)
+                //  .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(125))
                 .stopAndAdd(new ShootThreeBalls2())
                 .afterTime(0.8, intake.IntakeBallReverse())
-                .strafeToLinearHeading(new Vector2d(-10.5, 27), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(-10.5, -27), Math.toRadians(180+90))
                 .stopAndAdd(intake.IntakeBallReverse())
                 .afterDisp(first, index.intakeIndex1())
                 .afterDisp(second, index.intakeIndex2())
                 .afterDisp(third + 1, index.intakeIndex3())
-                .lineToY(58)
+                .lineToY(-58)
                 .waitSeconds(0.5)
                 .stopAndAdd(intake.IntakeBallStop())
                 .stopAndAdd(index.outtakeIndex1())
@@ -190,12 +190,12 @@ public class closePassiveRedNine extends LinearOpMode {
 
         Action postIntake2 = drive.actionBuilder(new Pose2d(shootVector, shootHeading))
                 .stopAndAdd(intake.IntakeBallReverse())
-                .strafeToLinearHeading(new Vector2d(15, 27), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(15, -27), Math.toRadians(180+90))
                 .stopAndAdd(intake.IntakeBallReverse())
                 .afterDisp(first, index.intakeIndex1())
                 .afterDisp(second - 1, index.intakeIndex2())
                 .afterDisp(third + offset, index.intakeIndex3())
-                .lineToY(63)
+                .lineToY(-63)
                 .waitSeconds(0.85/3)
 //                .stopAndAdd(index.intakeIndex2())
 //                .waitSeconds(0.85/3)
@@ -208,11 +208,11 @@ public class closePassiveRedNine extends LinearOpMode {
                 ))
                 .build();
 
-        Action postIntake4 = drive.actionBuilder(new Pose2d(15, 61, Math.toRadians(90)))
-                .lineToY(50)
-                .splineToSplineHeading(new Pose2d(shootVector, shootHeading), Math.toRadians(270-125))
+        Action postIntake4 = drive.actionBuilder(new Pose2d(15, -61, Math.toRadians(180+90)))
+                .lineToY(-50)
+                .splineToSplineHeading(new Pose2d(shootVector, shootHeading), Math.toRadians(270-125+180))
                 .stopAndAdd(new ShootThreeBalls2())
-                .splineToLinearHeading(new Pose2d(new Vector2d(11.5, 60), Math.toRadians(127)), Math.toRadians(127))
+                .splineToLinearHeading(new Pose2d(new Vector2d(11.5, -60), Math.toRadians(127+180)), Math.toRadians(127+180))
                 .stopAndAdd(new InstantAction(() -> flywheel.setPower(0)))
                 .stopAndAdd(intake.IntakeBallReverse()) //TODO find good speeds for this
                 .waitSeconds(0.5)

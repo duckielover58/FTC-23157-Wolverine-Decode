@@ -24,8 +24,8 @@ import org.firstinspires.ftc.teamcode.subsystems.*;
 import java.lang.Math;
 
 @Config
-@Autonomous(name = "closePassiveRedNine", group = "Robot")
-public class closePassiveRedNine extends LinearOpMode {
+@Autonomous(name = "closePassiveRedv3", group = "Robot")
+public class closePassiveRedv3 extends LinearOpMode {
 
     //floor0 - constants
     private DcMotorEx flywheel;
@@ -82,45 +82,7 @@ public class closePassiveRedNine extends LinearOpMode {
             return sequence.run(packet);
         }
     } // 12.75-12.9 voltage
-    private class ShootThreeBalls2 implements Action {
-        private final Action sequence;
 
-        public ShootThreeBalls2() {
-            sequence = new SequentialAction(
-                    hood.ten(),
-                    index.outtakeIndex1(),
-                    push.PushBallUp(),
-
-//                    hood.seven(),
-                    new SleepAction(0.15),
-                    push.PushBallDown(),
-                    new SleepAction(0.1),
-                    index.outtakeIndex2(),
-                    new SleepAction(0.15),
-                    push.PushBallUp(),
-
-                    hood.ninefive(),
-                    new SleepAction(0.15),
-                    push.PushBallDown(),
-                    new SleepAction(0.1),
-                    index.outtakeIndex3(),
-                    new SleepAction(0.15),
-                    push.PushBallUp(),
-
-                    hood.ten(),
-                    new SleepAction(0.1),
-                    push.PushBallDown(),
-                    new SleepAction(0.05), //TODO is this needed? (change to 0.15 if not)
-                    index.intakeIndex1(),
-                    new InstantAction(() -> flywheel.setPower(0))
-            );
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            return sequence.run(packet);
-        }
-    }
     void flywheelPID (double target) {
 
         double currentVelocity = flywheel.getVelocity();
@@ -147,7 +109,7 @@ public class closePassiveRedNine extends LinearOpMode {
         Pose2d endShootPoseTwo = new Pose2d(15, 61, 90);
 
         PinpointDrive drive = new PinpointDrive(hardwareMap, startPose);
-        Vector2d shootVector = new Vector2d(-11, 11);
+        Vector2d shootVector = new Vector2d(-35, 28);
         double shootHeading = Math.toRadians(125);
 
         index = new Index(hardwareMap);
@@ -167,15 +129,15 @@ public class closePassiveRedNine extends LinearOpMode {
                 .stopAndAdd(hood.ten())
                 .stopAndAdd(index.outtakeIndex1())
                 .strafeToLinearHeading(shootVector, shootHeading)
-              //  .strafeToLinearHeading(new Vector2d(tempX, tempY), tempH)
-              //  .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(125))
-                .stopAndAdd(new ShootThreeBalls2())
+                //  .strafeToLinearHeading(new Vector2d(tempX, tempY), tempH)
+                //  .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(125))
+                .stopAndAdd(new ShootThreeBalls())
                 .afterTime(0.8, intake.IntakeBallReverse())
                 .strafeToLinearHeading(new Vector2d(-10.5, 27), Math.toRadians(90))
                 .stopAndAdd(intake.IntakeBallReverse())
                 .afterDisp(first, index.intakeIndex1())
-                .afterDisp(second, index.intakeIndex2())
-                .afterDisp(third + 1, index.intakeIndex3())
+                .afterDisp(second + 1, index.intakeIndex2())
+                .afterDisp(third, index.intakeIndex3())
                 .lineToY(58)
                 .waitSeconds(0.5)
                 .stopAndAdd(intake.IntakeBallStop())
@@ -185,7 +147,7 @@ public class closePassiveRedNine extends LinearOpMode {
         Action postIntake = drive.actionBuilder(endShootPose)
 //                .stopAndAdd(new StartRevShort())
                 .strafeToLinearHeading(shootVector, shootHeading)
-                .stopAndAdd(new ShootThreeBalls2())
+                .stopAndAdd(new ShootThreeBalls())
                 .build();
 
         Action postIntake2 = drive.actionBuilder(new Pose2d(shootVector, shootHeading))
@@ -193,15 +155,15 @@ public class closePassiveRedNine extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(15, 27), Math.toRadians(90))
                 .stopAndAdd(intake.IntakeBallReverse())
                 .afterDisp(first, index.intakeIndex1())
-                .afterDisp(second - 1, index.intakeIndex2())
+                .afterDisp(second, index.intakeIndex2())
                 .afterDisp(third + offset, index.intakeIndex3())
-                .lineToY(63)
+                .lineToY(61)
                 .waitSeconds(0.85/3)
-//                .stopAndAdd(index.intakeIndex2())
-//                .waitSeconds(0.85/3)
-//                .stopAndAdd(index.intakeIndex3())
-//                .waitSeconds(0.85/3)
-//                .stopAndAdd(index.intakeIndex1())
+                .stopAndAdd(index.intakeIndex2())
+                .waitSeconds(0.85/3)
+                .stopAndAdd(index.intakeIndex1())
+                .waitSeconds(0.85/3)
+                .stopAndAdd(index.intakeIndex3())
                 .stopAndAdd(new ParallelAction(
                         intake.IntakeBallStop(),
                         index.outtakeIndex1()
@@ -211,8 +173,8 @@ public class closePassiveRedNine extends LinearOpMode {
         Action postIntake4 = drive.actionBuilder(new Pose2d(15, 61, Math.toRadians(90)))
                 .lineToY(50)
                 .splineToSplineHeading(new Pose2d(shootVector, shootHeading), Math.toRadians(270-125))
-                .stopAndAdd(new ShootThreeBalls2())
-                .splineToLinearHeading(new Pose2d(new Vector2d(11.5, 60), Math.toRadians(127)), Math.toRadians(127))
+                .stopAndAdd(new ShootThreeBalls())
+                .splineToLinearHeading(new Pose2d(new Vector2d(12.5, 60), Math.toRadians(127)), Math.toRadians(127))
                 .stopAndAdd(new InstantAction(() -> flywheel.setPower(0)))
                 .stopAndAdd(intake.IntakeBallReverse()) //TODO find good speeds for this
                 .waitSeconds(0.5)
@@ -228,10 +190,11 @@ public class closePassiveRedNine extends LinearOpMode {
         //TODO adjust the flywheel speed before every shooting cycle depending on power
         flywheel.setPower(0.95);
         Actions.runBlocking(closePassive);
-        flywheel.setPower(0.925);
+        flywheel.setPower(0.8);
         Actions.runBlocking(postIntake);
+        flywheel.setPower(0);
         Actions.runBlocking(postIntake2);
-        flywheel.setPower(0.9);
+        flywheel.setPower(0.8);
         Actions.runBlocking(postIntake4);
     }
 }

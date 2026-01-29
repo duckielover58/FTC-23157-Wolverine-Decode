@@ -18,9 +18,11 @@ import static org.firstinspires.ftc.teamcode.testingFiles.Flywheelgm0PIDtest.kF;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -42,6 +44,7 @@ import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Hood;
 import org.firstinspires.ftc.teamcode.subsystems.Index;
 import org.firstinspires.ftc.teamcode.subsystems.Push;
+import org.firstinspires.ftc.teamcode.subsystems.Swivel;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.teamcode.subsystems.GlobalVariable;
@@ -308,6 +311,22 @@ public class MainTeleOp extends LinearOpMode {
                 close -= 50;
             }
 
+            if (!cG1.right_bumper && pG1.right_bumper) {
+                runningActions.add(new SequentialAction(
+                        new InstantAction(() -> swivel.setPower(0.1)),
+                        new SleepAction(0.1),
+                        new InstantAction(() -> swivel.setPower(0))
+                        ));
+            }
+
+            if (!cG1.left_bumper && pG1.left_bumper) {
+                runningActions.add(new SequentialAction(
+                        new InstantAction(() -> swivel.setPower(-0.1)),
+                        new SleepAction(0.1),
+                        new InstantAction(() -> swivel.setPower(0))
+                ));
+            }
+
             telemetry.addData("Hood Position", hoodPoss);
             telemetry.addData("Target Hood Position", targetHoodClose);
             telemetry.addData("Servo Locked", servoLocked);
@@ -338,10 +357,10 @@ public class MainTeleOp extends LinearOpMode {
                 bearingErr = bearing - maxBearingErr;
                 lockSpeed = 0.1 * bearingErr;
                 lockSpeed = Math.max(-0.3, Math.min((lockSpeed), 0.3));
-                if (bearing > maxBearingErr) {
+                if (bearing > maxBearingErr - 0.5) {
                     swivel.setDirection(CRServo.Direction.FORWARD);
                     swivel.setPower(-lockSpeed);
-                } else if (bearing < -maxBearingErr) {
+                } else if (bearing < -maxBearingErr + 0.5) {
                     swivel.setDirection(CRServo.Direction.REVERSE);
                     swivel.setPower(lockSpeed);
                 } else {

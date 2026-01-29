@@ -3,15 +3,15 @@ package org.firstinspires.ftc.teamcode.subsystems;
 public class GlobalVariable {
 
     //PIDF constants
-    public static double kF = 0.00042;
-    public static double kP = 0.00009;
+    public static double kF = 0.0008;
+    public static double kP = 0.006;
     public static double targetVelocity = 600;
     public static double integralSum = 0;
     public static double previousError = 0;
     public static double previousTime = 0;
     public boolean rumble = false;
     public static double close = 1900;
-    public static double far = 800;
+    public static double far = 2100;
     public static double targetHoodClose = 0.7;
     public static double targetHoodFar = 0.5;
     public static double hoodMultClose = targetHoodClose/close;

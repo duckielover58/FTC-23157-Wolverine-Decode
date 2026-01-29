@@ -338,10 +338,10 @@ public class MainTeleOpBlue extends LinearOpMode {
                 bearingErr = bearing - maxBearingErr;
                 lockSpeed = 0.1 * bearingErr;
                 lockSpeed = Math.max(-0.3, Math.min((lockSpeed), 0.3));
-                if (bearing > maxBearingErr) {
+                if (bearing > maxBearingErr - 0.5) {
                     swivel.setDirection(CRServo.Direction.FORWARD);
                     swivel.setPower(-lockSpeed);
-                } else if (bearing < -maxBearingErr) {
+                } else if (bearing < -maxBearingErr + 0.5) {
                     swivel.setDirection(CRServo.Direction.REVERSE);
                     swivel.setPower(lockSpeed);
                 } else {
