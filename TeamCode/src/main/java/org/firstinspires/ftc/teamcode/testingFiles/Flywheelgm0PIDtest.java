@@ -4,24 +4,24 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 
-@Disabled
 @Config
 @Autonomous(name = "Flywheelgm0PIDTest")
 public class Flywheelgm0PIDtest extends LinearOpMode {
 
-    public static double kF = 0.00042;
-    public static double kP = 0.00009;
+    public static double kF = 0.00942;
+    public static double kP = 2.4509;
     public static double targetVelocity = 740;
 
     @Override
     public void runOpMode() {
 
-        DcMotorEx flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel");
+        DcMotorEx flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel2");
         flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
         flywheel.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);

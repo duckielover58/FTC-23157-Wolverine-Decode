@@ -10,7 +10,7 @@ public class GlobalVariable {
     public static double previousError = 0;
     public static double previousTime = 0;
     public boolean rumble = false;
-    public static double close = 720;
+    public static double close = 1900;
     public static double far = 800;
     public static double targetHoodClose = 0.7;
     public static double targetHoodFar = 0.5;
