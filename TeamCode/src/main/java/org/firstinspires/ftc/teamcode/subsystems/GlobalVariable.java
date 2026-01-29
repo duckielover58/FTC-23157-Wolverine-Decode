@@ -31,6 +31,8 @@ public class GlobalVariable {
     public static int ball1Color; // 0 -> Green, 1 -> Purple
     public static int ball2Color;
     public static int ball3Color;
+    public static boolean postIntake = true;
+
     //nearBlue
     public static class nearBlue {
         public static double startX = -49;

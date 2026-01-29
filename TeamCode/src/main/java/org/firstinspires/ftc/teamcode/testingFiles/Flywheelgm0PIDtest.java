@@ -14,8 +14,8 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 @Autonomous(name = "Flywheelgm0PIDTest")
 public class Flywheelgm0PIDtest extends LinearOpMode {
 
-    public static double kF = 0.00942;
-    public static double kP = 2.4509;
+    public static double kF = 0.0008;
+    public static double kP = 0.006;
     public static double targetVelocity = 740;
 
     @Override
