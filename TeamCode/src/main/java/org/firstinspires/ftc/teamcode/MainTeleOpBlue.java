@@ -49,8 +49,8 @@ import org.firstinspires.ftc.teamcode.subsystems.GlobalVariable;
 import java.util.ArrayList;
 import java.util.List;
 
-@TeleOp(name = "RED - MainTeleOp")
-public class MainTeleOp extends LinearOpMode {
+@TeleOp(name = "Blue - MainTeleOp")
+public class MainTeleOpBlue extends LinearOpMode {
 
     // Non-blocking lock state
     boolean lockActive = false;
@@ -144,7 +144,7 @@ public class MainTeleOp extends LinearOpMode {
         List<Action> runningActions = new ArrayList<>();
 
         //TODO switch tag
-        mainTag = redTag;
+        mainTag = blueTag;
         swivel = hardwareMap.get(CRServo.class, "Swivel");
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
