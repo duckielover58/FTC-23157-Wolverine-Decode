@@ -31,17 +31,17 @@ public class GlobalVariable {
     public static int ball1Color; // 0 -> Green, 1 -> Purple
     public static int ball2Color;
     public static int ball3Color;
-    public static boolean postIntake = true;
+    public static boolean postIntake100 = true;
 
     //nearBlue
     public static class nearBlue {
-        public static double startX = -49;
-        public static double startY = -49;
-        public static double startH = Math.toRadians(225);
+        public static double startX = -59;
+        public static double startY = -37;
+        public static double startH = Math.toRadians(270);
         public static double shootLongX = -15;
         public static double shootShortX = -18.5;
         public static double shootShortY = -18.5;
-        public static double shootH = Math.toRadians(225);
+        public static double shootH = Math.toRadians(135);
         public static double PreIntake1X = -9.5;
         public static double PreIntake1Y = -32;
         public static double PreIntakeH = Math.toRadians(270);

@@ -37,58 +37,6 @@ public class farPassiveRed extends LinearOpMode {
     int offset = 5;
     int second = first + offset;
     int third = second + offset;
-    double flywheelVel = 0;
-
-    void flywheelPID (double target) {
-
-        double currentVelocity = flywheel.getVelocity();
-        flywheelVel = currentVelocity;
-        double error = target - currentVelocity;
-
-        double ff = kF * target;
-
-        double output = ff + (kP * error);
-
-        output = Math.max(0.0, Math.min(1.0, output));
-
-        flywheel.setPower(output);
-    }
-    boolean shootFar() {
-        while (i < 4) {
-            sleep(20);
-            telemetry.addLine("In loop");
-            telemetry.addData("i: ", i);
-            telemetry.addData("Flywheel Vel: ", flywheelVel);
-            telemetry.update();
-            if (flywheelVel >= far * 0.9 && flywheelVel <= far * 1.1) {
-                telemetry.addLine("running shot");
-                i++;
-                upies = true;
-
-                if (i == 1) {
-                    Actions.runBlocking(new SequentialAction(index.outtakeIndex1()));
-                } else if (i == 2) {
-                    Actions.runBlocking(new SequentialAction(index.outtakeIndex2()));
-                } else {
-                    Actions.runBlocking(new SequentialAction(index.outtakeIndex3()));
-                }
-
-                Actions.runBlocking(new SequentialAction(
-                        new SleepAction(200),
-                        push.PushBallUp()
-                ));
-            } else {
-                if (upies) {
-                    sleep(200);
-                    Actions.runBlocking(push.PushBallDown());
-                    upies = false;
-                }
-            }
-        }
-        telemetry.addLine("returning false");
-        telemetry.update();
-        return false;
-    }
 
     @Override
     public void runOpMode() {
@@ -128,22 +76,6 @@ public class farPassiveRed extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(((24*3)-(16.75/2)), 17.5/2), Math.toRadians(90))
                 .build();
 
-        i = 0;
-        while (true) {
-            flywheelPID(far);
-            shootFar();
-            if (!shootFar()) {
-                break;
-            }
-        }
         Actions.runBlocking(farPassive);
-        i = 0;
-        while (true) {
-            flywheelPID(far);
-            shootFar();
-            if (!shootFar()) {
-                break;
-            }
-        }
     }
 }
