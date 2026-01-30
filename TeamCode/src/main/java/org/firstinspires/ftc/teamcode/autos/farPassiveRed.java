@@ -50,6 +50,9 @@ public class farPassiveRed extends LinearOpMode {
     int offset = 5;
     int second = first + offset;
     int third = second + offset;
+    double GPPTag = 21;
+    double PGPTag = 22;
+    double PPGTag = 23;
     boolean servoLocked = false;
     @Override
     public void runOpMode() {

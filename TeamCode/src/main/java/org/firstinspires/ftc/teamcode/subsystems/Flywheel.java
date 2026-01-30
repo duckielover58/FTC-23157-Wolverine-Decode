@@ -57,6 +57,19 @@ public class Flywheel {
         }
     }
 
+    public class PIDPinit implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            flywheelPID(shootPower);
+            if (postIntake100) {
+                return true;
+            } else {
+                flywheel.setPower(0);
+                return false;
+            }
+        }
+    }
+
     public class PIDP1 implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {

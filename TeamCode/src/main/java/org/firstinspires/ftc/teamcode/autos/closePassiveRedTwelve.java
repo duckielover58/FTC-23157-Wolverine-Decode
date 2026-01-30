@@ -17,12 +17,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
 import org.firstinspires.ftc.teamcode.subsystems.*;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.lang.Math;
 
 @Config
-@Autonomous(name = "closePassiveRedNine", group = "Robot")
-public class closePassiveRedNine extends LinearOpMode {
+@Autonomous(name = "closePassiveRedTwelve", group = "Robot")
+public class closePassiveRedTwelve extends LinearOpMode {
 
     //floor0 - constants
     private Index index;
@@ -88,6 +89,7 @@ public class closePassiveRedNine extends LinearOpMode {
         PinpointDrive drive = new PinpointDrive(hardwareMap, startPose);
         Vector2d shootVector = new Vector2d(-11, 11);
         double shootHeading = Math.toRadians(125);
+        Vector2d thirdShooting = new Vector2d(33, 27);
 
         index = new Index(hardwareMap);
         intake = new Intake(hardwareMap);
@@ -110,8 +112,8 @@ public class closePassiveRedNine extends LinearOpMode {
                 .stopAndAdd(hood.ten())
                 .stopAndAdd(index.outtakeIndex1())
                 .strafeToLinearHeading(shootVector, shootHeading)
-              //  .strafeToLinearHeading(new Vector2d(tempX, tempY), tempH)
-              //  .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(125))
+                //  .strafeToLinearHeading(new Vector2d(tempX, tempY), tempH)
+                //  .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(125))
                 .stopAndAdd(new SequentialAction(
                         new ShootThreeBalls2(),
                         new InstantAction(() -> postIntake100 = true)
@@ -168,20 +170,21 @@ public class closePassiveRedNine extends LinearOpMode {
                 ))
                 .build();
         Action postIntake5 = drive.actionBuilder(new Pose2d(shootVector, shootHeading))
-                .strafeToLinearHeading(new Vector2d(15.5, 60), Math.toRadians(120))
-          //      .splineToLinearHeading(new Pose2d(new Vector2d(11.5, 60), Math.toRadians(125)), Math.toRadians(125))
-                .stopAndAdd(intake.IntakeBallReverse()) //TODO find good speeds for this
-                .stopAndAdd(index.intakeIndex1())
-                .waitSeconds(1)
-                .stopAndAdd(index.intakeIndex2())
-                .waitSeconds(1)
-                .stopAndAdd(index.intakeIndex3())
-                .waitSeconds(0.9)
-                .stopAndAdd(intake.IntakeBallStop())
+                .strafeToLinearHeading(new Vector2d(37.5, 27), Math.toRadians(90))
+                .stopAndAdd(intake.IntakeBallReverse())
+                .afterDisp(first, index.intakeIndex1())
+                .afterDisp(second - 1, index.intakeIndex2())
+                .afterDisp(third + offset, index.intakeIndex3())
+                .lineToY(63)
+                .waitSeconds(0.85/3)
+                .stopAndAdd(new ParallelAction(
+                        intake.IntakeBallStop(),
+                        index.outtakeIndex1()
+                ))
                 //TODO add last shooting sequence
                 .build();
-        Action postIntake6 = drive.actionBuilder(new Pose2d(15.5, 60, Math.toRadians(120)))
-                .strafeToLinearHeading(shootVector, shootHeading)
+        Action postIntake6 = drive.actionBuilder(new Pose2d(thirdShooting, Math.toRadians(90)))
+                .strafeToLinearHeading(new Vector2d(-11, 11), Math.toRadians(127))
                 .stopAndAdd(new SequentialAction(
                         new ShootThreeBalls2(),
                         new InstantAction(() -> postIntake100 = false)
@@ -195,19 +198,19 @@ public class closePassiveRedNine extends LinearOpMode {
                 closePassive));
         Actions.runBlocking(new SequentialAction(
                 new InstantAction(() -> postIntake100 = true),
-                    new ParallelAction(
+                new ParallelAction(
                         flywheel1.PIDp1(),
                         postIntake
-                    ),
+                ),
                 postIntake2
         ));
 
         Actions.runBlocking(new SequentialAction(
                 new InstantAction(() -> postIntake100 = true),
                 new ParallelAction(
-                    flywheel1.PIDp1(),
-                    postIntake4
-        )));
+                        flywheel1.PIDp1(),
+                        postIntake4
+                )));
         Actions.runBlocking(postIntake5);
         Actions.runBlocking(new SequentialAction(
                 new InstantAction(() -> postIntake100 = true),
@@ -215,6 +218,7 @@ public class closePassiveRedNine extends LinearOpMode {
                         flywheel1.PIDp1(),
                         postIntake6
                 )));
+
 
 
         /*
