@@ -5,12 +5,13 @@ public class GlobalVariable {
     //PIDF constants
     public static double kF = 0.0008;
     public static double kP = 0.006;
+    public static boolean ServoLocked = false;
     public static double targetVelocity = 600;
     public static double integralSum = 0;
     public static double previousError = 0;
     public static double previousTime = 0;
     public boolean rumble = false;
-    public static double close = 1900;
+    public static double close = 1700;
     public static double far = 2100;
     public static double targetHoodClose = 0.7;
     public static double targetHoodFar = 0.5;
@@ -32,7 +33,8 @@ public class GlobalVariable {
     public static int ball2Color;
     public static int ball3Color;
     public static boolean postIntake100 = true;
-
+    public static int motif = 0; //21 -> gpp, 22 -> pgp, 23 -> ppg
+    public static int overUnder = 0;
     //nearBlue
     public static class nearBlue {
         public static double startX = -59;

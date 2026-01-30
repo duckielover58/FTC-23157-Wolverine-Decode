@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.*;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -74,6 +76,27 @@ public class Swivel {
         }
     }
 
+    public class Lodk implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (!ServoLocked) {
+                if (overUnder > 0) {
+                    swivel.setDirection(CRServo.Direction.FORWARD);
+                    swivel.setPower(-lockSpeed);
+                } else if (overUnder < 0) {
+                    swivel.setDirection(CRServo.Direction.REVERSE);
+                    swivel.setPower(lockSpeed);
+                } else {
+                    swivel.setPower(0);
+                }
+                return true;
+            } else {
+                swivel.setPower(0);
+                return false;
+            }
+        }
+    }
+
     public Action aim () {
         return new Aim();
     }
@@ -82,4 +105,5 @@ public class Swivel {
     public Action stop() {return new StopSwivel();}
     public Action targetBlue() { return new TargetBlue(); }
     public Action targetRed() { return new TargetRed(); }
+    public Action lodk() { return new Lodk(); }
 }

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.autos;
 
 // RR-specific imports
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.ServoLocked;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearRed.*;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.postIntake100;
 
@@ -19,6 +20,8 @@ import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
 import org.firstinspires.ftc.teamcode.subsystems.*;
 
 import java.lang.Math;
+
+import kotlin.jvm.internal.TypeParameterReference;
 
 @Config
 @Autonomous(name = "closePassiveRedNine", group = "Robot")
@@ -44,6 +47,7 @@ public class closePassiveRedNine extends LinearOpMode {
 
         public ShootThreeBalls2() {
             sequence = new SequentialAction(
+                    new InstantAction(() -> ServoLocked = false),
                     hood.ten(),
                     index.outtakeIndex1(),
                     push.PushBallUp(),
@@ -68,7 +72,8 @@ public class closePassiveRedNine extends LinearOpMode {
                     new SleepAction(0.2),
                     push.PushBallDown(),
                     new SleepAction(0.05), //TODO is this needed? (change to 0.15 if not)
-                    index.intakeIndex1()
+                    index.intakeIndex1(),
+                    new InstantAction(() -> ServoLocked = true)
             );
         }
 
@@ -77,6 +82,22 @@ public class closePassiveRedNine extends LinearOpMode {
             return sequence.run(packet);
         }
     }
+    private class lodking implements Action {
+        private final Action sequence;
+
+        public lodking() {
+            sequence = new ParallelAction(
+                    limelight.lodkRed(),
+                    swivel.lodk()
+            );
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            return sequence.run(packet);
+        }
+    }
+
 
     @Override
     //floor1
@@ -116,8 +137,8 @@ public class closePassiveRedNine extends LinearOpMode {
               //  .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(125))
                 .stopAndAdd(new SequentialAction(
                         new ParallelAction(
-                            new ShootThreeBalls2()
-//                            limelight.lodkRed()
+                            new ShootThreeBalls2(),
+                            new lodking()
                         ),
                         new InstantAction(() -> postIntake100 = true)
                 ))
@@ -141,8 +162,8 @@ public class closePassiveRedNine extends LinearOpMode {
                 .strafeToLinearHeading(shootVector, shootHeading)
                 .stopAndAdd(new SequentialAction(
                         new ParallelAction(
-                                new ShootThreeBalls2()
-//                                limelight.lodkRed()
+                                new ShootThreeBalls2(),
+                                new lodking()
                         ),
                         new InstantAction(() -> postIntake100 = false)
                 ))
@@ -172,8 +193,8 @@ public class closePassiveRedNine extends LinearOpMode {
                 .splineToSplineHeading(new Pose2d(shootVector, shootHeading), Math.toRadians(270-125))
                 .stopAndAdd(new SequentialAction(
                         new ParallelAction(
-                                new ShootThreeBalls2()
-//                                limelight.lodkRed()
+                                new ShootThreeBalls2(),
+                                new lodking()
                         ),
                         new InstantAction(() -> postIntake100 = false)
                 ))
@@ -212,7 +233,6 @@ public class closePassiveRedNine extends LinearOpMode {
                     ),
                 postIntake2
         ));
-        //
 
         Actions.runBlocking(new SequentialAction(
                 new InstantAction(() -> postIntake100 = true),

@@ -2,13 +2,13 @@ package org.firstinspires.ftc.teamcode.autos;
 
 // RR-specific imports
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.LLstart;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.ServoLocked;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.bearing;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.bearingErr;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.far;
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.kF;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.lockSpeed;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.mainTag;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.maxBearingErr;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.motif;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.postIntake100;
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.redTag;
 
@@ -22,9 +22,6 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.driveClasses.PinpointDrive;
 import org.firstinspires.ftc.teamcode.subsystems.*;
@@ -41,8 +38,8 @@ public class farPassiveRed extends LinearOpMode {
     private Hood hood;
     private CRServo swivel;
     private Flywheel flywheel;
+    private LimelightCam limelight1;
     private Limelight3A limelight;
-
     double kP = 0.35;
     double i = 0;
     boolean upies = false;
@@ -66,11 +63,12 @@ public class farPassiveRed extends LinearOpMode {
         push = new Push(hardwareMap);
         hood = new Hood(hardwareMap);
         flywheel = new Flywheel(hardwareMap);
+        limelight1 = new LimelightCam(hardwareMap);
         swivel = hardwareMap.get(CRServo.class, "Swivel");
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
 
-        Actions.runBlocking(index.indexHome());
         Actions.runBlocking(push.PushBallDown());
+        Actions.runBlocking(index.outtakeIndex1());
         Actions.runBlocking(hood.hoodPositionInit());
         Actions.runBlocking(flywheel.flywheelInit());
 
@@ -80,15 +78,20 @@ public class farPassiveRed extends LinearOpMode {
             telemetry.update();
         }
 
+        limelight.stop();
         telemetry.addLine("Locked");
         telemetry.update();
 
         waitForStart();
+        limelight.stop();
+        Actions.runBlocking(limelight1.motifCheck());
+
         if (isStopRequested()) return;
 
-        Action shootThreeBalls = drive.actionBuilder(new Pose2d(((24*3)-(16.75/2)), 17.5/2, Math.toRadians(90)))
+        Action shootThreeBalls21 = drive.actionBuilder(new Pose2d(((24*3)-(16.75/2)), 17.5/2, Math.toRadians(90)))
                 .waitSeconds(5)
                 .stopAndAdd(new SequentialAction(
+                        new InstantAction(() -> ServoLocked = false),
                         hood.ten(),
                         index.outtakeIndex1(),
                         push.PushBallUp(),
@@ -113,10 +116,80 @@ public class farPassiveRed extends LinearOpMode {
                         push.PushBallDown(),
                         hood.ten(),
                         new SleepAction(0.05), //TODO is this needed? (change to 0.15 if not)
-                        index.intakeIndex1()
+                        index.intakeIndex1(),
+                        new InstantAction(() -> ServoLocked = true)
                 ))
                 .stopAndAdd(new InstantAction(() -> postIntake100 = false))
                 .build();
+
+        Action shootThreeBalls22 = drive.actionBuilder(new Pose2d(((24*3)-(16.75/2)), 17.5/2, Math.toRadians(90)))
+                .waitSeconds(5)
+                .stopAndAdd(new SequentialAction(
+                        new InstantAction(() -> ServoLocked = false),
+                        hood.ten(),
+                        index.outtakeIndex2(),
+                        push.PushBallUp(),
+
+                        hood.eight(),
+                        new SleepAction(0.2),
+                        push.PushBallDown(),
+                        new SleepAction(0.1),
+                        index.outtakeIndex1(),
+                        new SleepAction(0.15),
+                        push.PushBallUp(),
+
+                        hood.six(),
+                        new SleepAction(0.2),
+                        push.PushBallDown(),
+                        new SleepAction(0.1),
+                        index.outtakeIndex3(),
+                        new SleepAction(0.15),
+                        push.PushBallUp(),
+
+                        new SleepAction(0.2),
+                        push.PushBallDown(),
+                        hood.ten(),
+                        new SleepAction(0.05), //TODO is this needed? (change to 0.15 if not)
+                        index.intakeIndex1(),
+                        new InstantAction(() -> ServoLocked = true)
+                        ))
+                .stopAndAdd(new InstantAction(() -> postIntake100 = false))
+                .build();
+
+        Action shootThreeBalls23 = drive.actionBuilder(new Pose2d(((24*3)-(16.75/2)), 17.5/2, Math.toRadians(90)))
+                .waitSeconds(5)
+                .stopAndAdd(new SequentialAction(
+                        new InstantAction(() -> ServoLocked = false),
+                        hood.ten(),
+                        index.outtakeIndex3(),
+                        push.PushBallUp(),
+
+                        hood.eight(),
+                        new SleepAction(0.2),
+                        push.PushBallDown(),
+                        new SleepAction(0.1),
+                        index.outtakeIndex2(),
+                        new SleepAction(0.15),
+                        push.PushBallUp(),
+
+                        hood.six(),
+                        new SleepAction(0.2),
+                        push.PushBallDown(),
+                        new SleepAction(0.1),
+                        index.outtakeIndex1(),
+                        new SleepAction(0.15),
+                        push.PushBallUp(),
+
+                        new SleepAction(0.2),
+                        push.PushBallDown(),
+                        hood.ten(),
+                        new SleepAction(0.05), //TODO is this needed? (change to 0.15 if not)
+                        index.intakeIndex1(),
+                        new InstantAction(() -> ServoLocked = true)
+                        ))
+                .stopAndAdd(new InstantAction(() -> postIntake100 = false))
+                .build();
+
 
         Action farPassive = drive.actionBuilder(new Pose2d(((24*3)-(16.75/2)), 17.5/2, Math.toRadians(90)))
                 .setTangent(180)
@@ -131,20 +204,49 @@ public class farPassiveRed extends LinearOpMode {
                 .stopAndAdd(intake.IntakeBallStop())
                 .strafeToLinearHeading(new Vector2d(((24*3)-(16.75/2)), 17.5/2), Math.toRadians(90))
                 .build();
-
-        Actions.runBlocking(new SequentialAction(
-                new InstantAction(() -> postIntake100 = true),
-                new ParallelAction(
-                    shootThreeBalls,
-                    flywheel.PIDp2()
-                ),
-                farPassive,
-                new InstantAction(() -> postIntake100 = true),
-                new ParallelAction(
-                    shootThreeBalls,
-                    flywheel.PIDp2()
-                )
-        ));
+        if (motif == 21) {
+            Actions.runBlocking(new SequentialAction(
+                    new InstantAction(() -> postIntake100 = true),
+                    new ParallelAction(
+                            shootThreeBalls21,
+                            flywheel.PIDp2()
+                    ),
+                    farPassive,
+                    new InstantAction(() -> postIntake100 = true),
+                    new ParallelAction(
+                            shootThreeBalls21,
+                            flywheel.PIDp2()
+                    )
+            ));
+        } else if (motif == 22) {
+            Actions.runBlocking(new SequentialAction(
+                    new InstantAction(() -> postIntake100 = true),
+                    new ParallelAction(
+                            shootThreeBalls21,
+                            flywheel.PIDp2()
+                    ),
+                    farPassive,
+                    new InstantAction(() -> postIntake100 = true),
+                    new ParallelAction(
+                            shootThreeBalls21,
+                            flywheel.PIDp2()
+                    )
+            ));
+        } else {
+            Actions.runBlocking(new SequentialAction(
+                    new InstantAction(() -> postIntake100 = true),
+                    new ParallelAction(
+                            shootThreeBalls21,
+                            flywheel.PIDp2()
+                    ),
+                    farPassive,
+                    new InstantAction(() -> postIntake100 = true),
+                    new ParallelAction(
+                            shootThreeBalls21,
+                            flywheel.PIDp2()
+                    )
+            ));
+        }
     }
 
     void lodk (int tag) {

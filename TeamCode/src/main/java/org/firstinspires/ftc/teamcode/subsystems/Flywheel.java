@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.MainTeleOp;
 public class Flywheel {
     private DcMotorEx flywheel;
-    double shootPower = close - 300;
+    double shootPower = 1600;
 
     public Flywheel (HardwareMap hardwareMap) {
         flywheel = hardwareMap.get(DcMotorEx.class, "Flywheel2");
