@@ -360,7 +360,7 @@ public class MainTeleOp extends LinearOpMode {
                 if (bearing > maxBearingErr - 0.5) {
                     swivel.setDirection(CRServo.Direction.FORWARD);
                     swivel.setPower(-lockSpeed);
-                } else if (bearing < -maxBearingErr + 0.5) {
+                } else if (bearing < -maxBearingErr - 0.5) {
                     swivel.setDirection(CRServo.Direction.REVERSE);
                     swivel.setPower(lockSpeed);
                 } else {
