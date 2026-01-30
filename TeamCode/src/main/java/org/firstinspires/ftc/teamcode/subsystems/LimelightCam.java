@@ -21,7 +21,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class LimelightCam {
     private Limelight3A limelight;
-    private CRServo swivel = hardwareMap.get(CRServo.class, "Swivel");
+//    private CRServo swivel = hardwareMap.get(CRServo.class, "Swivel");
     private boolean ServoLocked = false;
 
     public LimelightCam (HardwareMap hardwareMap) {
@@ -57,29 +57,26 @@ public class LimelightCam {
     public Action lodkRed() { return new LodkRed(); }
     public Action lodkBlue() { return new LodkBlue(); }
     void lodk1 (int tag) {
-        telemetry.addLine("Started");
         limelight.pipelineSwitch(tag);
         LLResult result = limelight.getLatestResult();
-        telemetry.addLine("Result?");
         if (result != null) {
             if (result.isValid()) {
-                telemetry.addLine("In Loop");
                 bearing = result.getTx();
                 bearingErr = bearing - maxBearingErr;
                 lockSpeed = 0.1 * bearingErr;
                 lockSpeed = Math.max(-0.3, Math.min((lockSpeed), 0.3));
                 if (bearing > maxBearingErr - 0.5) {
-                    swivel.setDirection(CRServo.Direction.FORWARD);
-                    swivel.setPower(-lockSpeed);
+//                    swivel.setDirection(CRServo.Direction.FORWARD);
+//                    swivel.setPower(-lockSpeed);
                 } else if (bearing < -maxBearingErr + 0.5) {
-                    swivel.setDirection(CRServo.Direction.REVERSE);
-                    swivel.setPower(lockSpeed);
+//                    swivel.setDirection(CRServo.Direction.REVERSE);
+//                    swivel.setPower(lockSpeed);
                 } else {
-                    swivel.setPower(0);
+//                    swivel.setPower(0);
                     ServoLocked = true;
                 }
-            } else swivel.setPower(0);
-        } else swivel.setPower(0);
+            } else ServoLocked = true;//swivel.setPower(0);
+        } else ServoLocked = true; //swivel.setPower(0);
     }
 
 }

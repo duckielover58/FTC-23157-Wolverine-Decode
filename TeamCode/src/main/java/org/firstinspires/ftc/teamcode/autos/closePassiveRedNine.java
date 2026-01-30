@@ -116,8 +116,8 @@ public class closePassiveRedNine extends LinearOpMode {
               //  .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(125))
                 .stopAndAdd(new SequentialAction(
                         new ParallelAction(
-                            new ShootThreeBalls2(),
-                            limelight.lodkRed()
+                            new ShootThreeBalls2()
+//                            limelight.lodkRed()
                         ),
                         new InstantAction(() -> postIntake100 = true)
                 ))
@@ -141,8 +141,8 @@ public class closePassiveRedNine extends LinearOpMode {
                 .strafeToLinearHeading(shootVector, shootHeading)
                 .stopAndAdd(new SequentialAction(
                         new ParallelAction(
-                                new ShootThreeBalls2(),
-                                limelight.lodkRed()
+                                new ShootThreeBalls2()
+//                                limelight.lodkRed()
                         ),
                         new InstantAction(() -> postIntake100 = false)
                 ))
@@ -172,8 +172,8 @@ public class closePassiveRedNine extends LinearOpMode {
                 .splineToSplineHeading(new Pose2d(shootVector, shootHeading), Math.toRadians(270-125))
                 .stopAndAdd(new SequentialAction(
                         new ParallelAction(
-                                new ShootThreeBalls2(),
-                                limelight.lodkRed()
+                                new ShootThreeBalls2()
+//                                limelight.lodkRed()
                         ),
                         new InstantAction(() -> postIntake100 = false)
                 ))
@@ -183,11 +183,11 @@ public class closePassiveRedNine extends LinearOpMode {
           //      .splineToLinearHeading(new Pose2d(new Vector2d(11.5, 60), Math.toRadians(125)), Math.toRadians(125))
                 .stopAndAdd(intake.IntakeBallReverse()) //TODO find good speeds for this
                 .stopAndAdd(index.intakeIndex1())
-                .waitSeconds(1)
+                .waitSeconds(0.75)
                 .stopAndAdd(index.intakeIndex2())
-                .waitSeconds(1)
+                .waitSeconds(0.75)
                 .stopAndAdd(index.intakeIndex3())
-                .waitSeconds(0.9)
+                .waitSeconds(0.8)
                 .stopAndAdd(intake.IntakeBallStop())
                 //TODO add last shooting sequence
                 .build();
