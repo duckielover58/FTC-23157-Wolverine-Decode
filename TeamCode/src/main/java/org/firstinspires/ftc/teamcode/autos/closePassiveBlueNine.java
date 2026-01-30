@@ -1,7 +1,8 @@
 package org.firstinspires.ftc.teamcode.autos;
 
 // RR-specific imports
-import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.*;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.ServoLocked;
+import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.nearBlue.*; // Switched to Blue
 import static org.firstinspires.ftc.teamcode.subsystems.GlobalVariable.postIntake100;
 
 import androidx.annotation.NonNull;
@@ -37,6 +38,7 @@ public class closePassiveBlueNine extends LinearOpMode {
         private final Action sequence;
         public ShootThreeBalls2() {
             sequence = new SequentialAction(
+                    new InstantAction(() -> ServoLocked = false),
                     hood.ten(),
                     index.outtakeIndex1(),
                     push.PushBallUp(),
@@ -57,7 +59,22 @@ public class closePassiveBlueNine extends LinearOpMode {
                     new SleepAction(0.2),
                     push.PushBallDown(),
                     new SleepAction(0.05),
-                    index.intakeIndex1()
+                    index.intakeIndex1(),
+                    new InstantAction(() -> ServoLocked = true)
+            );
+        }
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            return sequence.run(packet);
+        }
+    }
+
+    private class lodking implements Action {
+        private final Action sequence;
+        public lodking() {
+            sequence = new ParallelAction(
+                    limelight.lodkBlue(), // Mirror: Use Blue Tag
+                    swivel.lodk()
             );
         }
         @Override
@@ -70,11 +87,11 @@ public class closePassiveBlueNine extends LinearOpMode {
     public void runOpMode() {
         Pose2d startPose = new Pose2d(startX, startY, startH);
 
+        // Mirror Y and Heading
         Vector2d shootVector = new Vector2d(-11, -11);
         double shootHeading = Math.toRadians(-125);
 
         PinpointDrive drive = new PinpointDrive(hardwareMap, startPose);
-
         index = new Index(hardwareMap);
         intake = new Intake(hardwareMap);
         push = new Push(hardwareMap);
@@ -83,6 +100,7 @@ public class closePassiveBlueNine extends LinearOpMode {
         flywheel1 = new Flywheel(hardwareMap);
         limelight = new LimelightCam(hardwareMap);
 
+        postIntake100 = true;
         Actions.runBlocking(index.outtakeIndex1());
         Actions.runBlocking(push.PushBallDown());
         Actions.runBlocking(hood.ten());
@@ -98,7 +116,7 @@ public class closePassiveBlueNine extends LinearOpMode {
                 .stopAndAdd(new SequentialAction(
                         new ParallelAction(
                                 new ShootThreeBalls2(),
-                                limelight.lodkBlue()
+                                new lodking()
                         ),
                         new InstantAction(() -> postIntake100 = true)
                 ))
@@ -121,8 +139,7 @@ public class closePassiveBlueNine extends LinearOpMode {
                 .strafeToLinearHeading(shootVector, shootHeading)
                 .stopAndAdd(new SequentialAction(
                         new ParallelAction(
-                                new ShootThreeBalls2(),
-                                limelight.lodkBlue()
+                                new ShootThreeBalls2()
                         ),
                         new InstantAction(() -> postIntake100 = false)
                 ))
@@ -149,24 +166,37 @@ public class closePassiveBlueNine extends LinearOpMode {
                 .stopAndAdd(new SequentialAction(
                         new ParallelAction(
                                 new ShootThreeBalls2(),
-                                limelight.lodkBlue()
+                                new lodking()
                         ),
                         new InstantAction(() -> postIntake100 = false)
                 ))
                 .build();
 
         Action postIntake5 = drive.actionBuilder(new Pose2d(shootVector, shootHeading))
-                .splineToLinearHeading(new Pose2d(new Vector2d(11.5, -60), Math.toRadians(-127)), Math.toRadians(-127))
+                .strafeToLinearHeading(new Vector2d(15.5, -60), Math.toRadians(-120))
                 .stopAndAdd(intake.IntakeBallReverse())
-                .waitSeconds(0.5)
                 .stopAndAdd(index.intakeIndex1())
-                .waitSeconds(0.5)
+                .waitSeconds(0.75)
                 .stopAndAdd(index.intakeIndex2())
-                .waitSeconds(0.5)
+                .waitSeconds(0.75)
                 .stopAndAdd(index.intakeIndex3())
+                .waitSeconds(0.8)
                 .stopAndAdd(intake.IntakeBallStop())
                 .build();
 
+        Action postIntake6 = drive.actionBuilder(new Pose2d(15.5, -60, Math.toRadians(-120)))
+                .strafeToLinearHeading(shootVector, shootHeading)
+                .stopAndAdd(new SequentialAction(
+                        new ShootThreeBalls2(),
+                        new InstantAction(() -> postIntake100 = false)
+                ))
+                .build();
+
+        Action postIntake7 = drive.actionBuilder(new Pose2d(shootVector, shootHeading))
+                .strafeTo(new Vector2d(15, -61))
+                .build();
+
+        // Execution logic remains the same
         Actions.runBlocking(new ParallelAction(flywheel1.PIDp1(), closePassive));
 
         Actions.runBlocking(new SequentialAction(
@@ -181,5 +211,12 @@ public class closePassiveBlueNine extends LinearOpMode {
         ));
 
         Actions.runBlocking(postIntake5);
+
+        Actions.runBlocking(new SequentialAction(
+                new InstantAction(() -> postIntake100 = true),
+                new ParallelAction(flywheel1.PIDp1(), postIntake6)
+        ));
+
+        Actions.runBlocking(postIntake7);
     }
 }
