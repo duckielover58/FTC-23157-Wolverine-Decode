@@ -26,6 +26,7 @@ public class closePassiveBlueNine extends LinearOpMode {
     private Hood hood;
     private Swivel swivel;
     private Flywheel flywheel1;
+    private LimelightCam limelight;
 
     double first = 8;
     double offset = 4.5;
@@ -80,6 +81,7 @@ public class closePassiveBlueNine extends LinearOpMode {
         swivel = new Swivel(hardwareMap);
         hood = new Hood(hardwareMap);
         flywheel1 = new Flywheel(hardwareMap);
+        limelight = new LimelightCam(hardwareMap);
 
         Actions.runBlocking(index.outtakeIndex1());
         Actions.runBlocking(push.PushBallDown());
@@ -94,7 +96,10 @@ public class closePassiveBlueNine extends LinearOpMode {
                 .stopAndAdd(index.outtakeIndex1())
                 .strafeToLinearHeading(shootVector, shootHeading)
                 .stopAndAdd(new SequentialAction(
-                        new ShootThreeBalls2(),
+                        new ParallelAction(
+                                new ShootThreeBalls2(),
+                                limelight.lodkBlue()
+                        ),
                         new InstantAction(() -> postIntake100 = true)
                 ))
                 .afterTime(0.8, intake.IntakeBallReverse())
@@ -115,7 +120,10 @@ public class closePassiveBlueNine extends LinearOpMode {
         Action postIntake = drive.actionBuilder(new Pose2d(-10.5, -58, Math.toRadians(-90)))
                 .strafeToLinearHeading(shootVector, shootHeading)
                 .stopAndAdd(new SequentialAction(
-                        new ShootThreeBalls2(),
+                        new ParallelAction(
+                                new ShootThreeBalls2(),
+                                limelight.lodkBlue()
+                        ),
                         new InstantAction(() -> postIntake100 = false)
                 ))
                 .build();
@@ -139,7 +147,10 @@ public class closePassiveBlueNine extends LinearOpMode {
                 .lineToY(-50)
                 .splineToSplineHeading(new Pose2d(shootVector, shootHeading), Math.toRadians(-(270-125)))
                 .stopAndAdd(new SequentialAction(
-                        new ShootThreeBalls2(),
+                        new ParallelAction(
+                                new ShootThreeBalls2(),
+                                limelight.lodkBlue()
+                        ),
                         new InstantAction(() -> postIntake100 = false)
                 ))
                 .build();

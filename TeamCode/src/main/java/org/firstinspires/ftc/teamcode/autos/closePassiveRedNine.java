@@ -31,6 +31,7 @@ public class closePassiveRedNine extends LinearOpMode {
     private Hood hood;
     private Swivel swivel;
     private Flywheel flywheel1;
+    private LimelightCam limelight;
 
     double kP = 0.35;
     double first = 8;
@@ -95,6 +96,7 @@ public class closePassiveRedNine extends LinearOpMode {
         swivel = new Swivel(hardwareMap);
         hood = new Hood(hardwareMap);
         flywheel1 = new Flywheel(hardwareMap);
+        limelight = new LimelightCam(hardwareMap);
 
         //inits
         postIntake100 = true;
@@ -113,7 +115,10 @@ public class closePassiveRedNine extends LinearOpMode {
               //  .strafeToLinearHeading(new Vector2d(tempX, tempY), tempH)
               //  .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(125))
                 .stopAndAdd(new SequentialAction(
-                        new ShootThreeBalls2(),
+                        new ParallelAction(
+                            new ShootThreeBalls2(),
+                            limelight.lodkRed()
+                        ),
                         new InstantAction(() -> postIntake100 = true)
                 ))
                 .afterTime(0.8, intake.IntakeBallReverse())
@@ -135,7 +140,10 @@ public class closePassiveRedNine extends LinearOpMode {
 //                .stopAndAdd(new StartRevShort())
                 .strafeToLinearHeading(shootVector, shootHeading)
                 .stopAndAdd(new SequentialAction(
-                        new ShootThreeBalls2(),
+                        new ParallelAction(
+                                new ShootThreeBalls2(),
+                                limelight.lodkRed()
+                        ),
                         new InstantAction(() -> postIntake100 = false)
                 ))
                 .build();
@@ -163,7 +171,10 @@ public class closePassiveRedNine extends LinearOpMode {
                 .lineToY(50)
                 .splineToSplineHeading(new Pose2d(shootVector, shootHeading), Math.toRadians(270-125))
                 .stopAndAdd(new SequentialAction(
-                        new ShootThreeBalls2(),
+                        new ParallelAction(
+                                new ShootThreeBalls2(),
+                                limelight.lodkRed()
+                        ),
                         new InstantAction(() -> postIntake100 = false)
                 ))
                 .build();
@@ -216,35 +227,5 @@ public class closePassiveRedNine extends LinearOpMode {
                         postIntake6
                 )));
 
-
-        /*
-        Actions.runBlocking(new SequentialAction(
-                new ParallelAction(
-                        flywheel1.PIDp1(),
-                        closePassive
-                ),
-                new SequentialAction(
-                        new InstantAction(() -> GlobalVariable.postIntake = true),
-                        new ParallelAction(
-                                flywheel1.PIDp1(),
-                                new SequentialAction(
-                                        postIntake,
-                                        new InstantAction(() -> GlobalVariable.postIntake = false),
-                                        new InstantAction(() -> GlobalVariable.postIntake = true)
-                                )),
-                        postIntake2
-                ),
-                new SequentialAction(
-                        new ParallelAction(
-                                new InstantAction(() -> flywheel1.PIDp1()),
-                                new SequentialAction(
-                                        postIntake4,
-                                        new InstantAction(() -> GlobalVariable.postIntake = false)
-                                )
-                )),
-                postIntake5
-        ));
-
-         */
     }
 }
