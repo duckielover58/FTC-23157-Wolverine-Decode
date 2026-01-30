@@ -37,44 +37,6 @@ public class closePassiveRedNine extends LinearOpMode {
     double offset = 4.5;
     double second = first + offset;
     double third = second + offset;
-    private class ShootThreeBalls implements Action {
-        private final Action sequence;
-
-        public ShootThreeBalls() {
-            sequence = new SequentialAction(
-                    hood.ten(),
-                    index.outtakeIndex1(),
-                    push.PushBallUp(),
-
-                    hood.seven(),
-                    new SleepAction(0.15),
-                    push.PushBallDown(),
-                    new SleepAction(0.1),
-                    index.outtakeIndex2(),
-                    new SleepAction(0.15),
-                    push.PushBallUp(),
-
-                    hood.five(),
-                    new SleepAction(0.15),
-                    push.PushBallDown(),
-                    new SleepAction(0.1),
-                    index.outtakeIndex3(),
-                    new SleepAction(0.15),
-                    push.PushBallUp(),
-
-                    new SleepAction(0.1),
-                    push.PushBallDown(),
-//                    new SleepAction(0.05), //TODO is this needed? (change to 0.15 if not)
-                    index.intakeIndex1()
-            );
-        }
-
-        @Override
-        public boolean run(@NonNull TelemetryPacket packet) {
-            return sequence.run(packet);
-        }
-    } // 12.75-12.9 voltage
-
 
     private class ShootThreeBalls2 implements Action {
         private final Action sequence;

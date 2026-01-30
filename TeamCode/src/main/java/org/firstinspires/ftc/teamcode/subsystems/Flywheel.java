@@ -31,7 +31,7 @@ public class Flywheel {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             if (!initialized) {
-                flywheel.setPower(0.7);
+                flywheel.setPower(1);
             }
             return false;
         }
@@ -96,6 +96,7 @@ public class Flywheel {
     public Action shootStop() { return new ShootStop(); }
     public Action getV() { return new GetV(); }
     public Action PIDp1() { return new PIDP1(); }
+    public Action PIDp2() { return new PIDP2(); }
     public Action flywheelInit() { return new FlywheelInit(); }
     void flywheelPID (double target) {
 

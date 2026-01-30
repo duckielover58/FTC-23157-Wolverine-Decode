@@ -21,8 +21,8 @@ public class GlobalVariable {
     public static double lockSpeed = 0.1;
     public static double bearingErr = bearing - maxBearingErr;
     public static double velHoodPos = -100;
-    public static double redTag = 0;
-    public static double blueTag = 2;
+    public static int redTag = 0;
+    public static int blueTag = 2;
     public static int mainTag;
     public static boolean LLstart = false;
     public static double shortHoodPos = 0.9;
