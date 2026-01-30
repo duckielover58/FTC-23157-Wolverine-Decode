@@ -162,8 +162,8 @@ public class closePassiveRedNine extends LinearOpMode {
                 .strafeToLinearHeading(shootVector, shootHeading)
                 .stopAndAdd(new SequentialAction(
                         new ParallelAction(
-                                new ShootThreeBalls2(),
-                                new lodking()
+                                new ShootThreeBalls2()
+//                                new lodking()
                         ),
                         new InstantAction(() -> postIntake100 = false)
                 ))
@@ -219,6 +219,9 @@ public class closePassiveRedNine extends LinearOpMode {
                         new InstantAction(() -> postIntake100 = false)
                 ))
                 .build();
+        Action postIntake7 = drive.actionBuilder(new Pose2d(shootVector, shootHeading))
+                .strafeTo(new Vector2d(15, 61))
+                .build();
 
         //TODO adjust the flywheel speed before every shooting cycle depending on power
 
@@ -247,6 +250,6 @@ public class closePassiveRedNine extends LinearOpMode {
                         flywheel1.PIDp1(),
                         postIntake6
                 )));
-
+        Actions.runBlocking(postIntake7);
     }
 }

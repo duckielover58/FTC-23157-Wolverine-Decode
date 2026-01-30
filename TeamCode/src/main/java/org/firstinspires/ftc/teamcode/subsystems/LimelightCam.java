@@ -92,7 +92,7 @@ public class LimelightCam {
                 bearing = result.getTx();
                 bearingErr = bearing - maxBearingErr;
                 lockSpeed = 0.1 * bearingErr;
-                lockSpeed = Math.max(-0.3, Math.min((lockSpeed), 0.3));
+                lockSpeed = Math.max(-0.2, Math.min((lockSpeed), 0.2));
                 if (bearing > maxBearingErr - 0.5) {
                     overUnder = 100;
 //                    swivel.setDirection(CRServo.Direction.FORWARD);
