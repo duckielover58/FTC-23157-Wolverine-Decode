@@ -157,7 +157,7 @@ public class farPassiveRed extends LinearOpMode {
                 .build();
 
         Action shootThreeBalls23 = drive.actionBuilder(new Pose2d(((24*3)-(16.75/2)), 17.5/2, Math.toRadians(90)))
-                .waitSeconds(5)
+                .waitSeconds(7)
                 .stopAndAdd(new SequentialAction(
                         new InstantAction(() -> ServoLocked = false),
                         hood.ten(),
@@ -169,7 +169,7 @@ public class farPassiveRed extends LinearOpMode {
                         push.PushBallDown(),
                         new SleepAction(0.1),
                         index.outtakeIndex2(),
-                        new SleepAction(0.15),
+                        new SleepAction(0.4),
                         push.PushBallUp(),
 
                         hood.six(),
@@ -177,7 +177,7 @@ public class farPassiveRed extends LinearOpMode {
                         push.PushBallDown(),
                         new SleepAction(0.1),
                         index.outtakeIndex1(),
-                        new SleepAction(0.15),
+                        new SleepAction(0.5),
                         push.PushBallUp(),
 
                         new SleepAction(0.2),
@@ -222,13 +222,13 @@ public class farPassiveRed extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(
                     new InstantAction(() -> postIntake100 = true),
                     new ParallelAction(
-                            shootThreeBalls21,
+                            shootThreeBalls22,
                             flywheel.PIDp2()
                     ),
                     farPassive,
                     new InstantAction(() -> postIntake100 = true),
                     new ParallelAction(
-                            shootThreeBalls21,
+                            shootThreeBalls22,
                             flywheel.PIDp2()
                     )
             ));
@@ -236,13 +236,13 @@ public class farPassiveRed extends LinearOpMode {
             Actions.runBlocking(new SequentialAction(
                     new InstantAction(() -> postIntake100 = true),
                     new ParallelAction(
-                            shootThreeBalls21,
+                            shootThreeBalls23,
                             flywheel.PIDp2()
                     ),
                     farPassive,
                     new InstantAction(() -> postIntake100 = true),
                     new ParallelAction(
-                            shootThreeBalls21,
+                            shootThreeBalls23,
                             flywheel.PIDp2()
                     )
             ));
@@ -265,10 +265,10 @@ public class farPassiveRed extends LinearOpMode {
                 bearingErr = bearing - maxBearingErr;
                 lockSpeed = 0.1 * bearingErr;
                 lockSpeed = Math.max(-0.17, Math.min((lockSpeed), 0.17));
-                if (bearing > 0) {
+                if (bearing > -3) {
                     swivel.setDirection(CRServo.Direction.FORWARD);
                     swivel.setPower(-lockSpeed);
-                } else if (bearing < -1) {
+                } else if (bearing < -7) {
                     swivel.setDirection(CRServo.Direction.REVERSE);
                     swivel.setPower(lockSpeed);
                 } else {

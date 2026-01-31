@@ -22,7 +22,7 @@ import org.openftc.easyopencv.OpenCvWebcam;
 import java.lang.Math;
 
 @Config
-@Autonomous(name = "closePassiveRedTwelve", group = "Robot")
+@Autonomous(name = "Close Red - Spike Intake", group = "Robot")
 public class closePassiveRedTwelve extends LinearOpMode {
 
     //floor0 - constants
