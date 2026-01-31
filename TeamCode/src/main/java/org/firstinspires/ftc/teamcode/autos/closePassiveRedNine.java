@@ -21,8 +21,6 @@ import org.firstinspires.ftc.teamcode.subsystems.*;
 
 import java.lang.Math;
 
-import kotlin.jvm.internal.TypeParameterReference;
-
 @Config
 @Autonomous(name = "closePassiveRedNine", group = "Robot")
 public class closePassiveRedNine extends LinearOpMode {
@@ -35,8 +33,6 @@ public class closePassiveRedNine extends LinearOpMode {
     private Swivel swivel;
     private Flywheel flywheel1;
     private LimelightCam limelight;
-
-    double kP = 0.35;
     double first = 8;
     double offset = 4.5;
     double second = first + offset;
@@ -104,8 +100,7 @@ public class closePassiveRedNine extends LinearOpMode {
     public void runOpMode() {
 
         Pose2d startPose = new Pose2d(startX, startY , startH);
-        Pose2d endShootPose = new Pose2d(-10.5, 50, 90);
-        Pose2d endShootPoseTwo = new Pose2d(15, 61, 90);
+        Pose2d endShootPose = new Pose2d(-10.5, 50, Math.toRadians(90));
 
         PinpointDrive drive = new PinpointDrive(hardwareMap, startPose);
         Vector2d shootVector = new Vector2d(-11, 11);
@@ -176,7 +171,7 @@ public class closePassiveRedNine extends LinearOpMode {
                 .afterDisp(second - 1, index.intakeIndex2())
                 .afterDisp(third + offset, index.intakeIndex3())
                 .lineToY(63)
-                .waitSeconds(0.85/3)
+                .waitSeconds(0.25)
 //                .stopAndAdd(index.intakeIndex2())
 //                .waitSeconds(0.85/3)
 //                .stopAndAdd(index.intakeIndex3())
@@ -204,11 +199,11 @@ public class closePassiveRedNine extends LinearOpMode {
           //      .splineToLinearHeading(new Pose2d(new Vector2d(11.5, 60), Math.toRadians(125)), Math.toRadians(125))
                 .stopAndAdd(intake.IntakeBallReverse()) //TODO find good speeds for this
                 .stopAndAdd(index.intakeIndex1())
-                .waitSeconds(0.75)
+                .waitSeconds(0.5)
                 .stopAndAdd(index.intakeIndex2())
-                .waitSeconds(0.75)
+                .waitSeconds(0.5)
                 .stopAndAdd(index.intakeIndex3())
-                .waitSeconds(0.8)
+                .waitSeconds(0.5)
                 .stopAndAdd(intake.IntakeBallStop())
                 //TODO add last shooting sequence
                 .build();
