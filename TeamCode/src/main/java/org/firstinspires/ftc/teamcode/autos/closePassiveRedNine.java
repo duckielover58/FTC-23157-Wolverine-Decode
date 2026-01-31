@@ -195,7 +195,7 @@ public class closePassiveRedNine extends LinearOpMode {
                 ))
                 .build();
         Action postIntake5 = drive.actionBuilder(new Pose2d(shootVector, shootHeading))
-                .strafeToLinearHeading(new Vector2d(15.5, 60), Math.toRadians(120))
+                .strafeToLinearHeading(new Vector2d(14.5, 60), Math.toRadians(120))
           //      .splineToLinearHeading(new Pose2d(new Vector2d(11.5, 60), Math.toRadians(125)), Math.toRadians(125))
                 .stopAndAdd(intake.IntakeBallReverse()) //TODO find good speeds for this
                 .stopAndAdd(index.intakeIndex1())
@@ -205,6 +205,7 @@ public class closePassiveRedNine extends LinearOpMode {
                 .stopAndAdd(index.intakeIndex3())
                 .waitSeconds(0.5)
                 .stopAndAdd(intake.IntakeBallStop())
+                .stopAndAdd(index.outtakeIndex1())
                 //TODO add last shooting sequence
                 .build();
         Action postIntake6 = drive.actionBuilder(new Pose2d(15.5, 60, Math.toRadians(120)))
@@ -215,7 +216,7 @@ public class closePassiveRedNine extends LinearOpMode {
                 ))
                 .build();
         Action postIntake7 = drive.actionBuilder(new Pose2d(shootVector, shootHeading))
-                .strafeTo(new Vector2d(15, 61))
+                .strafeTo(new Vector2d(15, 59))
                 .build();
 
         //TODO adjust the flywheel speed before every shooting cycle depending on power
