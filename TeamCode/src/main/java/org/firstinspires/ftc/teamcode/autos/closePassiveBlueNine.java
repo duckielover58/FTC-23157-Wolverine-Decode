@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.subsystems.*;
 import java.lang.Math;
 
 @Config
-@Autonomous(name = "closePassiveBlueNine", group = "Robot") // MIRRORED
+@Autonomous(name = "Close Blue - Ramp Intake", group = "Robot") // MIRRORED
 public class closePassiveBlueNine extends LinearOpMode {
 
     //floor0 - constants
