@@ -25,7 +25,7 @@ import java.lang.Math;
 @Autonomous(name = "Close Red - Spike Intake", group = "Robot")
 public class closePassiveRedTwelve extends LinearOpMode {
 
-    //floor0 - constants
+    // floor0 - constants
     private Index index;
     private Intake intake;
     private Push push;
@@ -39,6 +39,7 @@ public class closePassiveRedTwelve extends LinearOpMode {
     double second = first + offset;
     double third = second + offset;
 
+    // sequence to fire 3 shots back to back with custom sleep timings
     private class ShootThreeBalls2 implements Action {
         private final Action sequence;
 
@@ -47,15 +48,12 @@ public class closePassiveRedTwelve extends LinearOpMode {
                     hood.ten(),
                     index.outtakeIndex1(),
                     push.PushBallUp(),
-
-//                    hood.seven(),
                     new SleepAction(0.2),
                     push.PushBallDown(),
                     new SleepAction(0.1),
                     index.outtakeIndex2(),
                     new SleepAction(0.15),
                     push.PushBallUp(),
-
                     hood.ninefive(),
                     new SleepAction(0.2),
                     push.PushBallDown(),
@@ -63,11 +61,10 @@ public class closePassiveRedTwelve extends LinearOpMode {
                     index.outtakeIndex3(),
                     new SleepAction(0.15),
                     push.PushBallUp(),
-
                     hood.ten(),
                     new SleepAction(0.2),
                     push.PushBallDown(),
-                    new SleepAction(0.05), //TODO is this needed? (change to 0.15 if not)
+                    new SleepAction(0.05), 
                     index.intakeIndex1()
             );
         }
@@ -79,7 +76,7 @@ public class closePassiveRedTwelve extends LinearOpMode {
     }
 
     @Override
-    //floor1
+    // floor1
     public void runOpMode() {
 
         Pose2d startPose = new Pose2d(startX, startY , startH);
@@ -98,7 +95,7 @@ public class closePassiveRedTwelve extends LinearOpMode {
         hood = new Hood(hardwareMap);
         flywheel1 = new Flywheel(hardwareMap);
 
-        //inits
+        // inits
         postIntake100 = true;
         Actions.runBlocking(index.outtakeIndex1());
         Actions.runBlocking(push.PushBallDown());
@@ -108,12 +105,11 @@ public class closePassiveRedTwelve extends LinearOpMode {
         waitForStart();
         if (isStopRequested()) return;
 
+        // initial auto path: setup subsystems, drive to shooting position, fire, then go intake off the stack
         Action closePassive = drive.actionBuilder(startPose)
                 .stopAndAdd(hood.ten())
                 .stopAndAdd(index.outtakeIndex1())
                 .strafeToLinearHeading(shootVector, shootHeading)
-                //  .strafeToLinearHeading(new Vector2d(tempX, tempY), tempH)
-                //  .strafeToLinearHeading(new Vector2d(-12, 0), Math.toRadians(125))
                 .stopAndAdd(new SequentialAction(
                         new ShootThreeBalls2(),
                         new InstantAction(() -> postIntake100 = true)
@@ -133,14 +129,16 @@ public class closePassiveRedTwelve extends LinearOpMode {
                 ))
                 .build();
 
+        // cycle 2: strafe back to the shooting vector and fire
         Action postIntake = drive.actionBuilder(endShootPose)
-//                .stopAndAdd(new StartRevShort())
                 .strafeToLinearHeading(shootVector, shootHeading)
                 .stopAndAdd(new SequentialAction(
                         new ShootThreeBalls2(),
                         new InstantAction(() -> postIntake100 = false)
                 ))
                 .build();
+                
+        // cycle 2 intake: push into stack and load indexer
         Action postIntake2 = drive.actionBuilder(new Pose2d(shootVector, shootHeading))
                 .stopAndAdd(intake.IntakeBallReverse())
                 .strafeToLinearHeading(new Vector2d(15, 27), Math.toRadians(90))
@@ -150,17 +148,13 @@ public class closePassiveRedTwelve extends LinearOpMode {
                 .afterDisp(third + offset, index.intakeIndex3())
                 .lineToY(63)
                 .waitSeconds(0.85/3)
-//                .stopAndAdd(index.intakeIndex2())
-//                .waitSeconds(0.85/3)
-//                .stopAndAdd(index.intakeIndex3())
-//                .waitSeconds(0.85/3)
-//                .stopAndAdd(index.intakeIndex1())
                 .stopAndAdd(new ParallelAction(
                         intake.IntakeBallStop(),
                         index.outtakeIndex1()
                 ))
                 .build();
 
+        // cycle 3: head back to shoot
         Action postIntake4 = drive.actionBuilder(new Pose2d(15, 61, Math.toRadians(90)))
                 .lineToY(50)
                 .splineToSplineHeading(new Pose2d(shootVector, shootHeading), Math.toRadians(270-125))
@@ -169,6 +163,8 @@ public class closePassiveRedTwelve extends LinearOpMode {
                         new InstantAction(() -> postIntake100 = false)
                 ))
                 .build();
+                
+        // cycle 3 intake: grab the last few from the stack
         Action postIntake5 = drive.actionBuilder(new Pose2d(shootVector, shootHeading))
                 .strafeToLinearHeading(new Vector2d(37.5, 27), Math.toRadians(90))
                 .stopAndAdd(intake.IntakeBallReverse())
@@ -181,8 +177,9 @@ public class closePassiveRedTwelve extends LinearOpMode {
                         intake.IntakeBallStop(),
                         index.outtakeIndex1()
                 ))
-                //TODO add last shooting sequence
                 .build();
+                
+        // final sequence: shoot last loaded elements
         Action postIntake6 = drive.actionBuilder(new Pose2d(thirdShooting, Math.toRadians(90)))
                 .strafeToLinearHeading(new Vector2d(-11, 11), Math.toRadians(127))
                 .stopAndAdd(new SequentialAction(
@@ -191,11 +188,11 @@ public class closePassiveRedTwelve extends LinearOpMode {
                 ))
                 .build();
 
-        //TODO adjust the flywheel speed before every shooting cycle depending on power
-
+        // run the actual paths with the flywheel pid running in the background
         Actions.runBlocking(new ParallelAction(
                 flywheel1.PIDp1(),
                 closePassive));
+                
         Actions.runBlocking(new SequentialAction(
                 new InstantAction(() -> postIntake100 = true),
                 new ParallelAction(
@@ -211,44 +208,14 @@ public class closePassiveRedTwelve extends LinearOpMode {
                         flywheel1.PIDp1(),
                         postIntake4
                 )));
+                
         Actions.runBlocking(postIntake5);
+        
         Actions.runBlocking(new SequentialAction(
                 new InstantAction(() -> postIntake100 = true),
                 new ParallelAction(
                         flywheel1.PIDp1(),
                         postIntake6
                 )));
-
-
-
-        /*
-        Actions.runBlocking(new SequentialAction(
-                new ParallelAction(
-                        flywheel1.PIDp1(),
-                        closePassive
-                ),
-                new SequentialAction(
-                        new InstantAction(() -> GlobalVariable.postIntake = true),
-                        new ParallelAction(
-                                flywheel1.PIDp1(),
-                                new SequentialAction(
-                                        postIntake,
-                                        new InstantAction(() -> GlobalVariable.postIntake = false),
-                                        new InstantAction(() -> GlobalVariable.postIntake = true)
-                                )),
-                        postIntake2
-                ),
-                new SequentialAction(
-                        new ParallelAction(
-                                new InstantAction(() -> flywheel1.PIDp1()),
-                                new SequentialAction(
-                                        postIntake4,
-                                        new InstantAction(() -> GlobalVariable.postIntake = false)
-                                )
-                )),
-                postIntake5
-        ));
-
-         */
     }
 }
